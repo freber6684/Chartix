@@ -1,0 +1,221 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://freber6684.github.io/Chartix/dist/embed/chartix.schema.json",
+  "title": "Chartix configuration",
+  "description": "A JSON-serializable Chartix chart configuration.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["type", "data"],
+  "properties": {
+    "type": { "type": "string", "minLength": 1 },
+    "theme": {
+      "oneOf": [
+        {
+          "enum": [
+            "light",
+            "dark",
+            "minimal",
+            "vibrant",
+            "corporate",
+            "ocean",
+            "forest",
+            "sunset",
+            "rose"
+          ]
+        },
+        { "$ref": "#/$defs/theme" }
+      ]
+    },
+    "data": { "$ref": "#/$defs/data" },
+    "options": { "$ref": "#/$defs/options" }
+  },
+  "$defs": {
+    "color": { "type": "string", "minLength": 1 },
+    "dataset": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["label", "values"],
+      "properties": {
+        "label": { "type": "string", "minLength": 1 },
+        "values": { "type": "array", "minItems": 1, "items": { "type": "number" } },
+        "color": { "$ref": "#/$defs/color" }
+      }
+    },
+    "data": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["labels", "datasets"],
+      "properties": {
+        "labels": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+        "datasets": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/dataset" } }
+      }
+    },
+    "labelOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "show": { "type": "boolean" },
+        "color": { "$ref": "#/$defs/color" },
+        "backgroundColor": { "$ref": "#/$defs/color" },
+        "fontFamily": { "type": "string" },
+        "fontSize": { "type": "number", "exclusiveMinimum": 0 },
+        "fontWeight": { "type": "number", "minimum": 1, "maximum": 1000 },
+        "rotation": { "type": "number" },
+        "position": { "enum": ["auto", "inside", "outside", "center"] },
+        "offset": { "type": "number" }
+      }
+    },
+    "options": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "annotations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["type"],
+            "properties": {
+              "type": { "enum": ["line", "band"] },
+              "value": { "type": "number" },
+              "from": { "type": "number" },
+              "to": { "type": "number" },
+              "label": { "type": "string" },
+              "color": { "$ref": "#/$defs/color" },
+              "width": { "type": "number", "exclusiveMinimum": 0 }
+            }
+          }
+        },
+        "ariaLabel": { "type": "string" },
+        "animation": {
+          "oneOf": [
+            { "const": false },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "duration": { "type": "number", "minimum": 0 },
+                "easing": { "enum": ["easeOutCubic", "easeOutQuad", "linear"] }
+              }
+            }
+          ]
+        },
+        "backgroundColor": { "$ref": "#/$defs/color" },
+        "colors": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/color" } },
+        "crosshair": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "enabled": { "type": "boolean" },
+            "color": { "$ref": "#/$defs/color" },
+            "width": { "type": "number", "exclusiveMinimum": 0 }
+          }
+        },
+        "dataLabels": { "$ref": "#/$defs/labelOptions" },
+        "decimation": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "enabled": { "type": "boolean" },
+            "threshold": { "type": "integer", "minimum": 2 },
+            "samples": { "type": "integer", "minimum": 4 }
+          }
+        },
+        "fill": { "type": "boolean" },
+        "horizontal": { "type": "boolean" },
+        "height": { "type": "number", "exclusiveMinimum": 0 },
+        "innerRadius": { "type": "number", "minimum": 0, "maximum": 0.9 },
+        "interaction": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "enabled": { "type": "boolean" },
+            "keyboard": { "type": "boolean" },
+            "intersect": { "type": "boolean" }
+          }
+        },
+        "legend": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": { "interactive": { "type": "boolean" } }
+        },
+        "padding": { "type": "number", "minimum": 0 },
+        "responsive": { "type": "boolean" },
+        "resizable": { "type": "boolean" },
+        "scales": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "y": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": { "beginAtZero": { "type": "boolean" } }
+            }
+          }
+        },
+        "showDataTable": { "type": "boolean" },
+        "showGrid": { "type": "boolean" },
+        "showLegend": { "type": "boolean" },
+        "startAngle": { "type": "number" },
+        "title": { "type": "string" },
+        "tooltip": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "enabled": { "type": "boolean" },
+            "backgroundColor": { "$ref": "#/$defs/color" },
+            "color": { "$ref": "#/$defs/color" }
+          }
+        },
+        "typography": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "fontFamily": { "type": "string" },
+            "titleSize": { "type": "number", "exclusiveMinimum": 0 },
+            "labelSize": { "type": "number", "exclusiveMinimum": 0 },
+            "tickSize": { "type": "number", "exclusiveMinimum": 0 }
+          }
+        },
+        "width": { "type": "number", "exclusiveMinimum": 0 },
+        "xLabels": { "$ref": "#/$defs/labelOptions" },
+        "yLabels": { "$ref": "#/$defs/labelOptions" }
+      }
+    },
+    "theme": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "background",
+        "text",
+        "mutedText",
+        "grid",
+        "palette",
+        "fontFamily",
+        "fontSize",
+        "radius"
+      ],
+      "properties": {
+        "name": { "type": "string" },
+        "background": { "$ref": "#/$defs/color" },
+        "text": { "$ref": "#/$defs/color" },
+        "mutedText": { "$ref": "#/$defs/color" },
+        "grid": { "$ref": "#/$defs/color" },
+        "palette": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/color" } },
+        "fontFamily": { "type": "string" },
+        "fontSize": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["title", "label", "tick"],
+          "properties": {
+            "title": { "type": "number", "exclusiveMinimum": 0 },
+            "label": { "type": "number", "exclusiveMinimum": 0 },
+            "tick": { "type": "number", "exclusiveMinimum": 0 }
+          }
+        },
+        "radius": { "type": "number", "minimum": 0 }
+      }
+    }
+  }
+}

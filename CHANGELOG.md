@@ -11,6 +11,10 @@ All notable Chartix changes are documented here. The project follows semantic ve
 - Optional Cartesian crosshairs, line/range annotations, and active-mark emphasis.
 - Automatic min/max decimation for line series over 1,000 values.
 - Public playground switches and documentation for the new interaction features.
+- Complete public option/lifecycle reference and strict JSON Schema for saved and embedded configs.
+- Independent 15 KB core and 25 KB full-embed gzip budgets with downloadable CI build artifacts.
+- Forty-five visual-command snapshot baselines spanning every MVP chart and built-in theme.
+- A pinned, reproducible visual benchmark page for Chartix, Chart.js, ApexCharts, and Recharts.
 
 ## 0.1.0-alpha.2 - 2026-07-21
 

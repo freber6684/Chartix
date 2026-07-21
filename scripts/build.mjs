@@ -1,5 +1,5 @@
 import { gzipSync } from 'node:zlib';
-import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
+import { copyFile, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { build } from 'esbuild';
@@ -23,6 +23,20 @@ const shared = {
 await Promise.all([
   build({ ...shared, format: 'esm', outfile: fromRoot('dist/index.js') }),
   build({ ...shared, format: 'cjs', outfile: fromRoot('dist/index.cjs') }),
+  build({
+    ...shared,
+    format: 'esm',
+    minify: true,
+    outfile: fromRoot('dist/chartix.core.min.js'),
+  }),
+  build({
+    bundle: true,
+    absWorkingDir: projectRoot,
+    entryPoints: [fromRoot('src/embed/schema.ts')],
+    format: 'esm',
+    outfile: fromRoot('dist/embed/schema.js'),
+    target: ['es2020'],
+  }),
   build({
     bundle: true,
     absWorkingDir: projectRoot,
@@ -51,6 +65,10 @@ await Promise.all([
     target: ['es2020'],
   }),
 ]);
+await copyFile(
+  fromRoot('src/embed/chartix.schema.json'),
+  fromRoot('dist/embed/chartix.schema.json'),
+);
 
 const parsed = ts.getParsedCommandLineOfConfigFile(
   fromRoot('tsconfig.json'),
@@ -77,19 +95,35 @@ if (diagnostics.length > 0) {
   );
 }
 
-const bundleBytes = await readFile(fromRoot('dist/chartix.min.js'));
+const [coreBytes, embedBytes] = await Promise.all([
+  readFile(fromRoot('dist/chartix.core.min.js')),
+  readFile(fromRoot('dist/chartix.min.js')),
+]);
 const report = {
   generatedAt: new Date().toISOString(),
-  rawBytes: bundleBytes.byteLength,
-  gzipBytes: gzipSync(bundleBytes).byteLength,
-  budgetBytes: 25 * 1024,
+  core: {
+    rawBytes: coreBytes.byteLength,
+    gzipBytes: gzipSync(coreBytes).byteLength,
+    budgetBytes: 15 * 1024,
+  },
+  embed: {
+    rawBytes: embedBytes.byteLength,
+    gzipBytes: gzipSync(embedBytes).byteLength,
+    budgetBytes: 25 * 1024,
+  },
 };
 await writeFile(fromRoot('dist/bundle-size.json'), `${JSON.stringify(report, null, 2)}\n`);
 
-if (report.gzipBytes > report.budgetBytes) {
+if (report.core.gzipBytes > report.core.budgetBytes) {
   throw new Error(
-    `Embed bundle is ${report.gzipBytes} bytes gzipped; budget is ${report.budgetBytes}.`,
+    `Core bundle is ${report.core.gzipBytes} bytes gzipped; budget is ${report.core.budgetBytes}.`,
+  );
+}
+if (report.embed.gzipBytes > report.embed.budgetBytes) {
+  throw new Error(
+    `Embed bundle is ${report.embed.gzipBytes} bytes gzipped; budget is ${report.embed.budgetBytes}.`,
   );
 }
 
-console.log(`Embed bundle: ${(report.gzipBytes / 1024).toFixed(2)} KB gzipped`);
+console.log(`Core bundle: ${(report.core.gzipBytes / 1024).toFixed(2)} KB gzipped`);
+console.log(`Embed bundle: ${(report.embed.gzipBytes / 1024).toFixed(2)} KB gzipped`);

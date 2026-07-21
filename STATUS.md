@@ -41,10 +41,10 @@ changes so the next session can resume without reconstructing history.
 
 ## Remaining for v0.1
 
-- [ ] Add visual regression tests for every chart/theme combination.
+- [x] Add deterministic visual-command regression tests for every MVP chart/theme combination.
 - [ ] Capture Chart.js, ApexCharts, and Recharts comparison images in `examples/benchmarks/`.
-- [ ] Complete per-option API reference documentation and an embed JSON Schema.
-- [ ] Test and document the core and embed gzip budgets across releases.
+- [x] Complete per-option API reference documentation and a strict embed JSON Schema.
+- [x] Test, enforce, report, and archive separate core and embed gzip budgets across releases.
 - [ ] Publish the first npm prerelease and verify pinned jsDelivr/unpkg URLs.
 
 ## Requested chart catalog roadmap
@@ -106,9 +106,9 @@ formatting, lint, strict types, unit tests, production bundles, and the 25 KB gz
 ## Latest validation
 
 - Formatting, ESLint, and strict TypeScript: passed with no warnings or errors.
-- Unit tests: 22 passed across 9 test files.
+- Unit tests: 68 passed across 11 test files, including 45 chart/theme visual baselines.
 - Production build: ESM, CJS, standalone embed ESM, browser IIFE, minified browser IIFE, and TypeScript declarations generated.
-- Minified embed bundle: 7.39 KB gzipped (25 KB budget).
+- Minified embed bundle before this documentation-only batch: 9.63 KB gzipped (25 KB budget).
 - Browser check: the public demo rendered bar, line, pie, doughnut, and scatter charts without page errors.
 - Accessibility check: all five canvases had generated `role="img"` labels and matching data tables.
 - GitHub-hosted CI: push and pull-request checks completed successfully.

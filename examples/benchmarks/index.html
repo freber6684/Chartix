@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Chartix visual benchmark</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        color-scheme: light;
+        font-family: 'Space Mono', monospace;
+        color: #162033;
+        background: #edf1f7;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        padding: 42px;
+      }
+      header {
+        display: flex;
+        align-items: end;
+        justify-content: space-between;
+        gap: 30px;
+        max-width: 1500px;
+        margin: 0 auto 26px;
+      }
+      h1 {
+        margin: 0;
+        font-size: clamp(28px, 4vw, 52px);
+        letter-spacing: -0.06em;
+      }
+      header p {
+        max-width: 660px;
+        margin: 0;
+        color: #657188;
+        font-size: 12px;
+        line-height: 1.7;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+        max-width: 1500px;
+        margin: auto;
+      }
+      article {
+        position: relative;
+        min-height: 420px;
+        padding: 24px;
+        overflow: hidden;
+        border: 1px solid #dce2eb;
+        border-radius: 18px;
+        background: #fff;
+        box-shadow: 0 18px 55px #25324a12;
+      }
+      article.chartix {
+        color: #eef2ff;
+        border-color: #24304a;
+        background: #111827;
+        box-shadow: 0 22px 70px #1118272e;
+      }
+      .meta {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 22px;
+      }
+      h2 {
+        margin: 0;
+        font-size: 17px;
+        letter-spacing: -0.04em;
+      }
+      .badge {
+        padding: 5px 9px;
+        border: 1px solid #dce2eb;
+        border-radius: 999px;
+        color: #667085;
+        font-size: 9px;
+        text-transform: uppercase;
+      }
+      .chartix .badge {
+        border-color: #35415a;
+        color: #aab5ca;
+      }
+      .host {
+        width: 100%;
+        height: 315px;
+      }
+      canvas {
+        width: 100% !important;
+        height: 315px !important;
+      }
+      .note {
+        max-width: 1500px;
+        margin: 22px auto 0;
+        color: #667085;
+        font-size: 10px;
+        line-height: 1.65;
+      }
+      @media (max-width: 900px) {
+        body {
+          padding: 22px;
+        }
+        header {
+          align-items: start;
+          flex-direction: column;
+        }
+        .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+    <script src="../../dist/chartix.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.9/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.54.1/dist/apexcharts.min.js"></script>
+    <script
+      crossorigin
+      src="https://cdn.jsdelivr.net/npm/react@18.3.1/umd/react.production.min.js"
+    ></script>
+    <script
+      crossorigin
+      src="https://cdn.jsdelivr.net/npm/react-dom@18.3.1/umd/react-dom.production.min.js"
+    ></script>
+    <script src="https://cdn.jsdelivr.net/npm/recharts@2.15.4/umd/Recharts.js"></script>
+  </head>
+  <body>
+    <header>
+      <div>
+        <div class="badge">Default output · same data</div>
+        <h1>Visual benchmark</h1>
+      </div>
+      <p>
+        Each library receives the same six-month revenue data with only the minimum options needed
+        for a title, legend, responsiveness, and animation-free capture.
+      </p>
+    </header>
+    <main class="grid">
+      <article class="chartix">
+        <div class="meta">
+          <h2>Chartix</h2>
+          <span class="badge">Candidate</span>
+        </div>
+        <div class="host"><canvas id="chartix"></canvas></div>
+      </article>
+      <article>
+        <div class="meta">
+          <h2>Chart.js</h2>
+          <span class="badge">4.4.9</span>
+        </div>
+        <div class="host"><canvas id="chartjs"></canvas></div>
+      </article>
+      <article>
+        <div class="meta">
+          <h2>ApexCharts</h2>
+          <span class="badge">3.54.1</span>
+        </div>
+        <div class="host" id="apex"></div>
+      </article>
+      <article>
+        <div class="meta">
+          <h2>Recharts</h2>
+          <span class="badge">2.15.4</span>
+        </div>
+        <div class="host" id="recharts"></div>
+      </article>
+    </main>
+    <p class="note">
+      Benchmark source is committed with pinned competitor versions. This page is a design review
+      aid, not a performance claim. Competitor names and trademarks belong to their respective
+      owners.
+    </p>
+    <script>
+      const labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
+      const values = [120, 190, 164, 245, 278, 338];
+
+      new Chartix(document.querySelector('#chartix'), {
+        type: 'bar',
+        theme: 'dark',
+        data: { labels, datasets: [{ label: 'Revenue', values }] },
+        options: { title: 'Revenue momentum', animation: false, showDataTable: false, padding: 22 },
+      });
+
+      new Chart(document.querySelector('#chartjs'), {
+        type: 'bar',
+        data: { labels, datasets: [{ label: 'Revenue', data: values }] },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          animation: false,
+          plugins: { title: { display: true, text: 'Revenue momentum', align: 'start' } },
+        },
+      });
+
+      new ApexCharts(document.querySelector('#apex'), {
+        chart: {
+          type: 'bar',
+          height: 315,
+          animations: { enabled: false },
+          toolbar: { show: false },
+        },
+        series: [{ name: 'Revenue', data: values }],
+        xaxis: { categories: labels },
+        title: { text: 'Revenue momentum' },
+      }).render();
+
+      const R = Recharts;
+      const rows = labels.map((month, index) => ({ month, Revenue: values[index] }));
+      ReactDOM.createRoot(document.querySelector('#recharts')).render(
+        React.createElement(
+          R.ResponsiveContainer,
+          { width: '100%', height: 315 },
+          React.createElement(
+            R.BarChart,
+            { data: rows, margin: { top: 10, right: 20, bottom: 0, left: 0 } },
+            React.createElement(R.CartesianGrid, { strokeDasharray: '3 3' }),
+            React.createElement(R.XAxis, { dataKey: 'month' }),
+            React.createElement(R.YAxis),
+            React.createElement(R.Tooltip),
+            React.createElement(R.Legend),
+            React.createElement(R.Bar, { dataKey: 'Revenue', fill: '#8884d8' }),
+          ),
+        ),
+      );
+      setTimeout(() => {
+        document.documentElement.dataset.ready = 'true';
+      }, 1500);
+    </script>
+  </body>
+</html>

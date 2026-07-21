@@ -30,3 +30,18 @@ jobs:
 
       - name: Run the complete quality gate
         run: npm run check
+
+      - name: Publish bundle-budget report
+        run: |
+          echo '### Bundle budgets' >> "$GITHUB_STEP_SUMMARY"
+          echo '```json' >> "$GITHUB_STEP_SUMMARY"
+          cat dist/bundle-size.json >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload production bundles and size report
+        uses: actions/upload-artifact@v6
+        with:
+          name: chartix-dist-${{ github.sha }}
+          path: |
+            dist
+          retention-days: 14

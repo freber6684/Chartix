@@ -8,6 +8,9 @@ rendering; animations; detailed label styling; and declarative `data-*` embeds.
 Project progress is tracked in [STATUS.md](./STATUS.md), with the complete requested feature ledger in
 [FEATURE_ROADMAP.md](./FEATURE_ROADMAP.md).
 
+Reference: [API options](./docs/api-reference.md) · [Customization](./docs/customization.md) ·
+[Chart types](./docs/chart-types.md) · [JSON Schema](./src/embed/chartix.schema.json)
+
 > Chartix is under active development. Use the pinned alpha version while the v0.1 API settles.
 
 ## Live Demo

@@ -18,10 +18,17 @@
     "./embed": {
       "types": "./dist/embed/autoload.d.ts",
       "import": "./dist/embed/autoload.js"
+    },
+    "./schema": {
+      "types": "./dist/embed/schema.d.ts",
+      "import": "./dist/embed/schema.js",
+      "default": "./dist/embed/chartix.schema.json"
     }
   },
   "files": [
     "dist",
+    "docs",
+    "FEATURE_ROADMAP.md",
     "README.md",
     "LICENSE"
   ],
