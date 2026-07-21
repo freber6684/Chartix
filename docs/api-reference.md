@@ -222,3 +222,25 @@ themes, tooltips, and exporters, alongside the chart/scale/interaction/plugin AP
 sampling, animation, and progressive-render settings. `progressiveBatches` and `viewportData`
 support incremental/virtualized rendering; `SpatialIndex` accelerates large-scatter hit testing;
 `detectRenderingCapabilities` reports optional browser acceleration.
+
+## Linked interaction and visual editing
+
+Set `zoom.pinch` for two-pointer zoom and `tooltip.pinOnClick` for persistent value cards;
+`tooltip.formatter` safely returns row text. `focusMark`, `getViewport`, and `setViewport` expose
+navigation state, while `linkCharts` synchronizes focus and zoom across dashboard or
+overview/detail canvases with a cleanup function.
+
+`VisualEditor` keeps selections and generated configuration synchronized. It supports label edits,
+legend moves, margin/dimension changes, doughnut-hole resizing, and multi-mark colors, sizes, and
+shapes. Chart instances expose immutable `getConfig`, nested `updateOptions`, and `setLabel` APIs.
+
+## Quality automation and live data
+
+`assessPublicationQuality` returns missing-data and small-sample badges/warnings;
+`repairChartContrast` immutably repairs text, label, and grid contrast. `commandToConfigPatches`
+turns a documented natural-language command subset into reviewable patches, and
+`applyConfigPatches` applies only allow-listed paths. `generateTestData` creates deterministic
+empty, missing, negative, outlier, long-label, time-series, and large-data fixtures.
+
+`googleSheetsCSVURL` creates a public-sheet CSV endpoint. `connectTabularStream` consumes JSON,
+CSV, or TSV over WebSocket or Server-Sent Events and returns an explicit disconnect function.

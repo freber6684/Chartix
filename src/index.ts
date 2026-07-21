@@ -63,6 +63,8 @@ export type {
 export { applyDataTransforms } from './utils/transforms.js';
 /** CSV, TSV, JSON, schema inference, remote loading, and table-to-chart connectors. */
 export {
+  connectTabularStream,
+  googleSheetsCSVURL,
   loadTabular,
   parseCSV,
   parseDelimited,
@@ -70,6 +72,7 @@ export {
   parseTSV,
   tableToChartData,
   type InferredType,
+  type StreamConnectorOptions,
   type TabularData,
 } from './data/connectors.js';
 /** CSV and portable HTML export helpers usable without constructing a chart. */
@@ -211,3 +214,17 @@ export {
   type SankeyNode,
   type TreemapNode,
 } from './layouts/primitives.js';
+export { linkCharts, type LinkedChartOptions } from './authoring/linking.js';
+export { VisualEditor, type VisualSelection } from './authoring/visual-editor.js';
+export {
+  assessPublicationQuality,
+  repairChartContrast,
+  type PublicationQualityReport,
+} from './intelligence/quality.js';
+export {
+  applyConfigPatches,
+  commandToConfigPatches,
+  generateTestData,
+  type ConfigPatch,
+  type TestDataScenario,
+} from './intelligence/commands.js';

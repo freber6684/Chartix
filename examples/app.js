@@ -238,12 +238,26 @@ const controls = {
   labels: document.querySelector('#control-labels'),
   position: document.querySelector('#control-position'),
   angle: document.querySelector('#control-angle'),
+  labelColor: document.querySelector('#control-label-color'),
+  labelBackground: document.querySelector('#control-label-background'),
+  lineStyle: document.querySelector('#control-line-style'),
+  borderWidth: document.querySelector('#control-border-width'),
+  yScale: document.querySelector('#control-y-scale'),
+  reverseAxis: document.querySelector('#control-reverse-axis'),
+  stacked: document.querySelector('#control-stacked'),
+  fill: document.querySelector('#control-fill'),
   tooltips: document.querySelector('#control-tooltips'),
+  pinTooltip: document.querySelector('#control-pin-tooltip'),
   crosshair: document.querySelector('#control-crosshair'),
   interactionMode: document.querySelector('#control-interaction-mode'),
   legendPosition: document.querySelector('#control-legend-position'),
   zoom: document.querySelector('#control-zoom'),
+  htmlLegend: document.querySelector('#control-html-legend'),
   selection: document.querySelector('#control-selection'),
+  adaptive: document.querySelector('#control-adaptive'),
+  highContrast: document.querySelector('#control-high-contrast'),
+  dyslexia: document.querySelector('#control-dyslexia'),
+  dataTable: document.querySelector('#control-data-table'),
 };
 
 function deepClone(value) {
@@ -312,14 +326,28 @@ function resetControls() {
   controls.titleSize.value = '17';
   controls.labelSize.value = '11';
   controls.angle.value = '0';
+  controls.labelColor.value = '#172033';
+  controls.labelBackground.value = '#ffffff';
+  controls.lineStyle.value = chart.datasets[0]?.lineStyle ?? 'straight';
+  controls.borderWidth.value = String(chart.datasets[0]?.borderWidth ?? 2);
+  controls.yScale.value = chart.options.scales?.y?.type ?? 'linear';
+  controls.reverseAxis.checked = Boolean(chart.options.scales?.y?.reverse);
+  controls.stacked.checked = Boolean(chart.options.stacked);
+  controls.fill.checked = Boolean(chart.options.fill);
   controls.labels.checked = Boolean(chart.options.dataLabels?.show);
   controls.position.value = chart.options.dataLabels?.position ?? 'outside';
   controls.tooltips.checked = true;
+  controls.pinTooltip.checked = false;
   controls.crosshair.checked = chart.family === 'cartesian';
   controls.interactionMode.value = chart.datasets.length > 1 ? 'index' : 'nearest';
   controls.legendPosition.value = 'top';
   controls.zoom.checked = false;
+  controls.htmlLegend.checked = false;
   controls.selection.value = 'off';
+  controls.adaptive.checked = true;
+  controls.highContrast.checked = false;
+  controls.dyslexia.checked = false;
+  controls.dataTable.checked = true;
   updateOutputs();
   renderPlayground();
 }
@@ -350,18 +378,52 @@ function currentConfig() {
     position: controls.position.value,
     fontSize: Number(controls.labelSize.value),
     fontFamily: controls.font.value,
+    color: controls.labelColor.value,
+    backgroundColor: controls.labelBackground.value,
   };
-  config.options.tooltip = { enabled: controls.tooltips.checked };
+  config.options.tooltip = {
+    enabled: controls.tooltips.checked,
+    pinOnClick: controls.pinTooltip.checked,
+  };
   config.options.crosshair = { enabled: controls.crosshair.checked, color: '#94a3b888' };
   config.options.interaction = { mode: controls.interactionMode.value, keyboard: true };
-  config.options.legend = { interactive: true, position: controls.legendPosition.value };
+  config.options.legend = {
+    interactive: true,
+    position: controls.legendPosition.value,
+    html: controls.htmlLegend.checked,
+  };
   config.options.zoom = {
     enabled: controls.zoom.checked,
     wheel: true,
+    pinch: true,
     pan: true,
     box: true,
     resetButton: true,
   };
+  config.options.stacked = controls.stacked.checked;
+  config.options.fill = controls.fill.checked;
+  config.options.responsiveMode = controls.adaptive.checked ? 'adaptive' : 'fixed';
+  config.options.showDataTable = controls.dataTable.checked;
+  config.options.accessibility = {
+    autoSummary: true,
+    keyboardHelp: true,
+    explorationMode: true,
+    highContrast: controls.highContrast.checked,
+    dyslexiaFriendly: controls.dyslexia.checked,
+  };
+  config.options.scales = {
+    ...config.options.scales,
+    y: {
+      ...config.options.scales?.y,
+      type: controls.yScale.value,
+      reverse: controls.reverseAxis.checked,
+    },
+  };
+  config.data.datasets = config.data.datasets.map((dataset) => ({
+    ...dataset,
+    lineStyle: controls.lineStyle.value,
+    borderWidth: Number(controls.borderWidth.value),
+  }));
   config.options.selection = {
     enabled: controls.selection.value !== 'off',
     mode: controls.selection.value === 'lasso' ? 'lasso' : 'brush',
@@ -471,6 +533,7 @@ function updateOutputs() {
   document.querySelector('#title-size-value').textContent = `${controls.titleSize.value}px`;
   document.querySelector('#label-size-value').textContent = `${controls.labelSize.value}px`;
   document.querySelector('#angle-value').textContent = `${controls.angle.value}°`;
+  document.querySelector('#border-width-value').textContent = `${controls.borderWidth.value}px`;
 }
 
 themes.forEach((theme) =>

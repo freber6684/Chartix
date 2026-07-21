@@ -44,6 +44,10 @@ export function recommendChart(data: ChartData): ChartAdvice {
   if (longLabels) suggestions.push('Use horizontal bars so long labels stay readable.');
   if (data.labels.length > 20)
     suggestions.push('Aggregate or filter categories before presenting the chart.');
+  if (data.datasets.length > 1)
+    suggestions.push('Use a color-vision-safe categorical palette and direct labels.');
+  if (data.datasets.some((dataset) => dataset.values.some((value) => value === null)))
+    suggestions.push('Explain missing values and avoid silently connecting gaps.');
   if (looksTemporal(data.labels)) {
     return {
       recommendedType: 'line',
@@ -144,6 +148,16 @@ export function auditChart(config: ChartConfig): ChartAudit {
       message: 'Dual axes can imply a relationship created by independent scaling.',
       fix: 'Label both axes clearly and consider aligned small multiples.',
     });
+  if (
+    options.scales?.y?.max !== undefined &&
+    values.some((value) => value > (options.scales?.y?.max ?? Number.POSITIVE_INFINITY))
+  )
+    issues.push({
+      code: 'clipped-values',
+      severity: 'error',
+      message: 'The configured axis maximum clips one or more reported values.',
+      fix: 'Increase the maximum or use an automatic domain.',
+    });
   if ((options.colors?.length ?? theme.palette.length) > 8)
     issues.push({
       code: 'too-many-colors',
@@ -177,6 +191,25 @@ export function auditChart(config: ChartConfig): ChartAudit {
       message: 'Part-to-whole radial charts cannot truthfully represent negative values.',
       fix: 'Use a diverging bar chart.',
     });
+  const missing = config.data.datasets
+    .flatMap((dataset) => dataset.values)
+    .filter((value) => value === null).length;
+  if (missing)
+    issues.push({
+      code: 'missing-data',
+      severity: 'info',
+      message: `${missing} values are missing from the chart.`,
+      fix: 'Show a missing-data indicator and explain the collection gap.',
+    });
+  config.data.datasets.forEach((dataset) => {
+    if (dataset.sampleSize !== undefined && dataset.sampleSize < 30)
+      issues.push({
+        code: 'small-sample',
+        severity: 'warning',
+        message: `${dataset.label} is based on only ${dataset.sampleSize} observations.`,
+        fix: 'Display the sample size and avoid strong claims.',
+      });
+  });
   if (!options.ariaLabel && options.showDataTable === false)
     issues.push({
       code: 'missing-accessible-alternative',

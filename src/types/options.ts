@@ -152,6 +152,19 @@ export interface TooltipOptions {
   backgroundColor?: string;
   /** Tooltip text color. */
   color?: string;
+  /** Keep a tooltip open after a mark is clicked or keyboard-activated. */
+  pinOnClick?: boolean;
+  /** Format one tooltip row without allowing unsafe HTML injection. */
+  formatter?: (context: TooltipContext) => string;
+}
+
+/** Read-only values passed to a custom tooltip formatter. */
+export interface TooltipContext {
+  label: string;
+  datasetLabel: string;
+  value: number;
+  datasetIndex: number;
+  valueIndex?: number;
 }
 
 /** Crosshair styling for Cartesian charts. */
@@ -243,6 +256,8 @@ export interface ZoomOptions {
   enabled?: boolean;
   /** Enable wheel or trackpad zooming. */
   wheel?: boolean;
+  /** Enable two-pointer pinch zoom on touch screens and trackpads. */
+  pinch?: boolean;
   /** Enable horizontal drag-panning. */
   pan?: boolean;
   /** Enable Shift+drag box zooming. */

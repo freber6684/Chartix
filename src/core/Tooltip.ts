@@ -4,6 +4,7 @@ import type { TooltipOptions } from '../types/options.js';
 /** Accessible DOM tooltip positioned over a canvas chart. */
 export class Tooltip {
   private readonly element: HTMLDivElement;
+  private pinned = false;
 
   public constructor(canvas: HTMLCanvasElement) {
     const parent = canvas.parentElement;
@@ -31,7 +32,15 @@ export class Tooltip {
     this.element.append(heading);
     regions.forEach((region) => {
       const row = document.createElement('span');
-      row.textContent = `${region.datasetLabel}: ${new Intl.NumberFormat().format(region.value)}`;
+      row.textContent = options.formatter
+        ? options.formatter({
+            label: region.label,
+            datasetLabel: region.datasetLabel,
+            value: region.value,
+            datasetIndex: region.datasetIndex,
+            ...(region.valueIndex === undefined ? {} : { valueIndex: region.valueIndex }),
+          })
+        : `${region.datasetLabel}: ${new Intl.NumberFormat().format(region.value)}`;
       row.style.display = 'block';
       row.style.color = region.color;
       this.element.append(row);
@@ -44,8 +53,26 @@ export class Tooltip {
   }
 
   public hide(): void {
+    if (this.pinned) return;
     this.element.style.display = 'none';
     this.element.textContent = '';
+  }
+
+  /** Keep the current tooltip visible until explicitly unpinned. */
+  public pin(): void {
+    this.pinned = true;
+    this.element.setAttribute('aria-live', 'off');
+  }
+
+  /** Resume transient tooltip behavior and optionally close the current card. */
+  public unpin(hide = true): void {
+    this.pinned = false;
+    this.element.setAttribute('aria-live', 'polite');
+    if (hide) this.hide();
+  }
+
+  public isPinned(): boolean {
+    return this.pinned;
   }
 
   public destroy(): void {

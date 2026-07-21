@@ -148,3 +148,49 @@ export async function loadTabular(
   const text = await response.text();
   return format === 'json' ? parseJSON(text) : parseDelimited(text, format === 'tsv' ? '\t' : ',');
 }
+
+/** Build the documented CSV export URL for a public Google Sheets tab. */
+export function googleSheetsCSVURL(sheetId: string, sheet = '0'): string {
+  if (!/^[\w-]+$/.test(sheetId)) throw new Error('Chartix: invalid Google Sheets document ID.');
+  return `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=${encodeURIComponent(sheet)}`;
+}
+
+export interface StreamConnectorOptions {
+  transport?: 'websocket' | 'sse';
+  format?: 'csv' | 'tsv' | 'json';
+  onData: (table: TabularData) => void;
+  onError?: (error: unknown) => void;
+  webSocketFactory?: (url: string) => WebSocket;
+  eventSourceFactory?: (url: string) => EventSource;
+}
+
+function parseStreamPayload(
+  payload: string,
+  format: NonNullable<StreamConnectorOptions['format']>,
+): TabularData {
+  return format === 'json'
+    ? parseJSON(payload)
+    : parseDelimited(payload, format === 'tsv' ? '\t' : ',');
+}
+
+/** Subscribe to WebSocket or Server-Sent Event tabular messages with explicit cleanup. */
+export function connectTabularStream(url: string, options: StreamConnectorOptions): () => void {
+  const format = options.format ?? 'json';
+  const receive = (payload: string): void => {
+    try {
+      options.onData(parseStreamPayload(payload, format));
+    } catch (error) {
+      options.onError?.(error);
+    }
+  };
+  if ((options.transport ?? 'websocket') === 'sse') {
+    const source = options.eventSourceFactory?.(url) ?? new EventSource(url);
+    source.onmessage = (event) => receive(event.data);
+    source.onerror = (event) => options.onError?.(event);
+    return () => source.close();
+  }
+  const socket = options.webSocketFactory?.(url) ?? new WebSocket(url);
+  socket.onmessage = (event) => receive(String(event.data));
+  socket.onerror = (event) => options.onError?.(event);
+  return () => socket.close();
+}

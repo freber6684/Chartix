@@ -1,5 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import {
+  connectTabularStream,
+  googleSheetsCSVURL,
   loadTabular,
   parseCSV,
   parseJSON,
@@ -23,6 +25,23 @@ describe('data connectors and advanced transforms', () => {
     const table = await loadTabular('https://example.com/data.csv', 'csv', fetcher);
     expect(fetcher).toHaveBeenCalledOnce();
     expect(table.rows[0]?.y).toBe(1);
+  });
+
+  it('builds Sheets URLs and consumes cleanup-safe streaming messages', () => {
+    expect(googleSheetsCSVURL('sheet_123', '42')).toContain('sheet_123/export?format=csv&gid=42');
+    const close = vi.fn();
+    const socket = { close, onmessage: null, onerror: null };
+    const onData = vi.fn();
+    const disconnect = connectTabularStream('wss://example.test/data', {
+      onData,
+      webSocketFactory: () => socket as unknown as WebSocket,
+    });
+    (socket.onmessage as unknown as (event: { data: string }) => void)({
+      data: '[{"label":"A","value":4}]',
+    });
+    expect(onData.mock.calls[0]?.[0].rows[0]?.value).toBe(4);
+    disconnect();
+    expect(close).toHaveBeenCalledOnce();
   });
 
   it('groups, bins, windows, and pivots aligned data', () => {

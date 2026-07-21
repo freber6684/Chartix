@@ -229,6 +229,9 @@ export class Chartix {
       onWheel: (delta, point) => this.handleWheelZoom(delta, point),
       wheelEnabled: () =>
         this.config.options.zoom?.enabled === true && this.config.options.zoom.wheel !== false,
+      pinchEnabled: () =>
+        this.config.options.zoom?.enabled === true && this.config.options.zoom.pinch !== false,
+      onPinch: (scale, point) => this.handlePinchZoom(scale, point),
       onReset: () => this.resetZoom(),
     });
     this.applyContainerSizing();
@@ -258,6 +261,63 @@ export class Chartix {
     };
     this.applyAccessibility();
     this.render(options.animate !== false);
+  }
+
+  /** Return a detached snapshot suitable for editors and generated code. */
+  public getConfig(): ChartConfig {
+    this.assertActive();
+    return normalizeConfig(this.config);
+  }
+
+  /** Update runtime options while preserving nested option groups. */
+  public updateOptions(options: Partial<ChartOptions>, update: { animate?: boolean } = {}): void {
+    this.assertActive();
+    const merged: ChartOptions = {
+      ...this.config.options,
+      ...options,
+      ...(options.scales
+        ? {
+            scales: {
+              ...this.config.options.scales,
+              ...options.scales,
+              x: { ...this.config.options.scales?.x, ...options.scales.x },
+              y: { ...this.config.options.scales?.y, ...options.scales.y },
+              ...(options.scales.y1
+                ? { y1: { ...this.config.options.scales?.y1, ...options.scales.y1 } }
+                : {}),
+            },
+          }
+        : {}),
+      ...(options.legend ? { legend: { ...this.config.options.legend, ...options.legend } } : {}),
+      ...(options.dataLabels
+        ? { dataLabels: { ...this.config.options.dataLabels, ...options.dataLabels } }
+        : {}),
+      ...(options.typography
+        ? { typography: { ...this.config.options.typography, ...options.typography } }
+        : {}),
+    };
+    validateConfig({ ...this.config, options: merged });
+    this.config = normalizeConfig({ ...this.config, options: merged });
+    this.applyContainerSizing();
+    this.applyAccessibility();
+    this.render(update.animate !== false);
+  }
+
+  /** Rename one category and synchronize rendered and accessible output. */
+  public setLabel(valueIndex: number, label: string): void {
+    this.assertActive();
+    if (
+      !Number.isInteger(valueIndex) ||
+      valueIndex < 0 ||
+      valueIndex >= this.config.data.labels.length
+    )
+      throw new Error('Chartix: editable label index is out of range.');
+    const data = cloneData(this.config.data);
+    data.labels[valueIndex] = label;
+    this.config = { ...this.config, data };
+    this.applyAccessibility();
+    this.render(false);
+    this.dispatchInteraction('change');
   }
 
   /** Change one value and record a reversible history entry. */
@@ -355,6 +415,56 @@ export class Chartix {
   /** Return the last completed render measurement. */
   public getPerformanceStats(): Readonly<PerformanceStats> {
     return { ...this.performanceStats };
+  }
+
+  /** Focus a rendered data mark and expose its accessible tooltip. */
+  public focusMark(datasetIndex: number, valueIndex: number): boolean {
+    this.assertActive();
+    const region = this.regions.find(
+      (candidate) =>
+        candidate.kind !== 'legend' &&
+        candidate.datasetIndex === datasetIndex &&
+        candidate.valueIndex === valueIndex,
+    );
+    if (!region) return false;
+    this.setActiveRegions([region]);
+    return true;
+  }
+
+  /** Pin the current tooltip so it remains visible across pointer changes. */
+  public pinTooltip(): boolean {
+    this.assertActive();
+    if (!this.activeRegion || this.activeRegion.kind === 'legend') return false;
+    this.tooltip.pin();
+    return true;
+  }
+
+  /** Close a pinned tooltip and resume transient hover behavior. */
+  public unpinTooltip(): void {
+    this.assertActive();
+    this.tooltip.unpin();
+    this.activeRegion = undefined;
+    this.activeRegions = [];
+    this.draw(1);
+  }
+
+  /** Return the visible category interval for navigators and linked charts. */
+  public getViewport(): Readonly<{ start: number; end: number }> {
+    return this.viewport ? { ...this.viewport } : { start: 0, end: this.config.data.labels.length };
+  }
+
+  /** Apply an externally controlled category viewport. */
+  public setViewport(start: number, end: number): void {
+    this.assertActive();
+    const total = this.config.data.labels.length;
+    const normalizedStart = Math.max(0, Math.min(total - 1, Math.floor(start)));
+    const normalizedEnd = Math.max(normalizedStart + 1, Math.min(total, Math.ceil(end)));
+    this.viewport =
+      normalizedStart === 0 && normalizedEnd === total
+        ? undefined
+        : { start: normalizedStart, end: normalizedEnd };
+    if (this.resetZoomButton) this.resetZoomButton.hidden = !this.viewport;
+    this.render(false);
   }
 
   /** Return a row-oriented representation suitable for Braille displays and screen readers. */
@@ -789,6 +899,7 @@ export class Chartix {
 
   private setActiveRegions(regions: HitRegion[]): void {
     if (this.config.options.interaction?.enabled === false) return;
+    if (!regions.length && this.tooltip.isPinned()) return;
     this.activeRegions = regions;
     this.activeRegion = regions[0];
     if (this.explorationLive) {
@@ -806,10 +917,15 @@ export class Chartix {
       this.tooltip.hide();
     }
     this.draw(1);
+    this.dispatchInteraction(regions.length ? 'active' : 'inactive', this.activeRegion);
   }
 
   private activateRegion(region: HitRegion): void {
     if (region.kind !== 'legend') {
+      if (this.config.options.tooltip?.pinOnClick) {
+        if (this.tooltip.isPinned()) this.tooltip.unpin(false);
+        else this.tooltip.pin();
+      }
       this.dispatchInteraction('click', region);
       const drilldown = this.config.options.drilldown;
       const sourceIndex = (this.viewport?.start ?? 0) + (region.valueIndex ?? 0);
@@ -849,6 +965,7 @@ export class Chartix {
           type,
           ...(region ? { region } : {}),
           data: cloneData(this.config.data),
+          viewport: this.getViewport(),
         },
       }),
     );
@@ -892,6 +1009,12 @@ export class Chartix {
     if (this.resetZoomButton) this.resetZoomButton.hidden = !this.viewport;
     this.render();
     this.dispatchInteraction('zoom');
+  }
+
+  private handlePinchZoom(scale: number, point: Point): void {
+    if (!Number.isFinite(scale) || scale <= 0 || Math.abs(scale - 1) < 0.015) return;
+    this.handleWheelZoom(scale > 1 ? -1 : 1, point);
+    this.dispatchInteraction('pinchzoom');
   }
 
   private handleGesture(points: readonly Point[], mode: GestureMode, complete: boolean): void {

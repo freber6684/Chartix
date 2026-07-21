@@ -12,6 +12,8 @@ interface EventManagerCallbacks {
   onGesture: (points: readonly Point[], mode: GestureMode, complete: boolean) => void;
   onWheel: (delta: number, point: Point) => void;
   wheelEnabled: () => boolean;
+  pinchEnabled: () => boolean;
+  onPinch: (scale: number, point: Point) => void;
   onReset: () => void;
 }
 
@@ -19,6 +21,8 @@ interface EventManagerCallbacks {
 export class EventManager {
   private activeIndex = -1;
   private gesture: { mode: GestureMode; points: Point[]; pointerId: number } | undefined;
+  private readonly pointers = new Map<number, Point>();
+  private pinchDistance: number | undefined;
 
   public constructor(
     private readonly canvas: HTMLCanvasElement,
@@ -54,6 +58,15 @@ export class EventManager {
   }
 
   private readonly onPointerDown = (event: PointerEvent): void => {
+    this.pointers.set(event.pointerId, this.point(event));
+    if (this.callbacks.pinchEnabled() && this.pointers.size === 2) {
+      const [first, second] = [...this.pointers.values()];
+      if (first && second) this.pinchDistance = Math.hypot(second.x - first.x, second.y - first.y);
+      this.gesture = undefined;
+      event.preventDefault();
+      this.canvas.setPointerCapture?.(event.pointerId);
+      return;
+    }
     const mode = this.callbacks.gestureMode(event);
     if (!mode) return;
     event.preventDefault();
@@ -62,6 +75,17 @@ export class EventManager {
   };
 
   private readonly onPointerMove = (event: PointerEvent): void => {
+    if (this.pointers.has(event.pointerId)) this.pointers.set(event.pointerId, this.point(event));
+    if (this.callbacks.pinchEnabled() && this.pointers.size >= 2 && this.pinchDistance) {
+      const [first, second] = [...this.pointers.values()];
+      if (first && second) {
+        const distance = Math.hypot(second.x - first.x, second.y - first.y);
+        const center = { x: (first.x + second.x) / 2, y: (first.y + second.y) / 2 };
+        if (distance > 0) this.callbacks.onPinch(distance / this.pinchDistance, center);
+        this.pinchDistance = distance;
+      }
+      return;
+    }
     if (this.gesture) {
       const point = this.point(event);
       if (this.gesture.mode === 'lasso') this.gesture.points.push(point);
@@ -81,6 +105,8 @@ export class EventManager {
   };
 
   private readonly onPointerUp = (event: PointerEvent): void => {
+    this.pointers.delete(event.pointerId);
+    if (this.pointers.size < 2) this.pinchDistance = undefined;
     if (!this.gesture || this.gesture.pointerId !== event.pointerId) return;
     this.callbacks.onGesture(this.gesture.points, this.gesture.mode, true);
     this.canvas.releasePointerCapture?.(event.pointerId);

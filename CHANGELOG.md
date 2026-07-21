@@ -50,6 +50,12 @@ All notable Chartix changes are documented here. The project follows semantic ve
   annotation, theme, tooltip, and export extension registries.
 - Self-optimizing complexity scores, backend/sampling recommendations, progressive batches,
   viewport virtualization, scatter spatial indexing, and browser acceleration detection.
+- Reusable geographic, hierarchy, force, packing, Voronoi/Delaunay, contour, chord, Sankey, and
+  keyed data-join geometry primitives.
+- Pinch zoom, pinned/custom-formatted tooltips, linked focus/viewports, and navigator-ready APIs.
+- Automatic contrast repair, missing/sample-quality badges, deterministic text-to-config patches,
+  generated edge-case data, and synchronized visual editing commands.
+- Google Sheets URL helpers and cleanup-safe WebSocket/Server-Sent Event data connectors.
 
 ## 0.1.0-alpha.2 - 2026-07-21
 

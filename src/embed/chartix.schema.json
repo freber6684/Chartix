@@ -316,7 +316,8 @@
           "properties": {
             "enabled": { "type": "boolean" },
             "backgroundColor": { "$ref": "#/$defs/color" },
-            "color": { "$ref": "#/$defs/color" }
+            "color": { "$ref": "#/$defs/color" },
+            "pinOnClick": { "type": "boolean" }
           }
         },
         "transforms": {
@@ -423,6 +424,7 @@
           "properties": {
             "enabled": { "type": "boolean" },
             "wheel": { "type": "boolean" },
+            "pinch": { "type": "boolean" },
             "pan": { "type": "boolean" },
             "box": { "type": "boolean" },
             "resetButton": { "type": "boolean" }

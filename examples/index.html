@@ -246,6 +246,42 @@ Chartix.register(BarChart);
                     >X-axis angle <output id="angle-value"></output>
                     <input id="control-angle" type="range" min="-60" max="60" value="0" />
                   </label>
+                  <div class="control-pair">
+                    <label>Label color<input id="control-label-color" type="color" /></label>
+                    <label>Label backing<input id="control-label-background" type="color" /></label>
+                  </div>
+                </fieldset>
+                <fieldset>
+                  <legend>Marks + axes</legend>
+                  <label
+                    >Line style
+                    <select id="control-line-style">
+                      <option value="straight">Straight</option>
+                      <option value="smooth">Smooth spline</option>
+                      <option value="step-after">Step</option>
+                    </select>
+                  </label>
+                  <label class="range-label"
+                    >Border width <output id="border-width-value"></output>
+                    <input id="control-border-width" type="range" min="1" max="8" value="2" />
+                  </label>
+                  <label
+                    >Y scale
+                    <select id="control-y-scale">
+                      <option value="linear">Linear</option>
+                      <option value="logarithmic">Logarithmic</option>
+                      <option value="percentage">Percentage</option>
+                    </select>
+                  </label>
+                  <label class="toggle-row"
+                    >Reverse Y axis<input id="control-reverse-axis" type="checkbox" /><span></span
+                  ></label>
+                  <label class="toggle-row"
+                    >Stack datasets<input id="control-stacked" type="checkbox" /><span></span
+                  ></label>
+                  <label class="toggle-row"
+                    >Fill area<input id="control-fill" type="checkbox" /><span></span
+                  ></label>
                 </fieldset>
                 <fieldset>
                   <legend>Interaction</legend>
@@ -254,6 +290,11 @@ Chartix.register(BarChart);
                       id="control-tooltips"
                       type="checkbox"
                       checked /><span></span
+                  ></label>
+                  <label class="toggle-row"
+                    >Pin tooltip on click<input
+                      id="control-pin-tooltip"
+                      type="checkbox" /><span></span
                   ></label>
                   <label class="toggle-row"
                     >Show crosshair<input id="control-crosshair" type="checkbox" /><span></span
@@ -280,6 +321,9 @@ Chartix.register(BarChart);
                   <label class="toggle-row"
                     >Enable zoom + pan<input id="control-zoom" type="checkbox" /><span></span
                   ></label>
+                  <label class="toggle-row"
+                    >HTML legend<input id="control-html-legend" type="checkbox" /><span></span
+                  ></label>
                   <label
                     >Drag selection
                     <select id="control-selection">
@@ -293,6 +337,28 @@ Chartix.register(BarChart);
                     Hover/tap marks; use arrows, +/−/0 keys, wheel zoom, drag pan, Shift+drag box
                     zoom, or click January to test drill-down.
                   </p>
+                </fieldset>
+                <fieldset>
+                  <legend>Accessibility + layout</legend>
+                  <label class="toggle-row"
+                    >Adaptive mobile layout<input
+                      id="control-adaptive"
+                      type="checkbox" /><span></span
+                  ></label>
+                  <label class="toggle-row"
+                    >High contrast<input id="control-high-contrast" type="checkbox" /><span></span
+                  ></label>
+                  <label class="toggle-row"
+                    >Dyslexia-friendly type<input
+                      id="control-dyslexia"
+                      type="checkbox" /><span></span
+                  ></label>
+                  <label class="toggle-row"
+                    >Screen-reader table<input
+                      id="control-data-table"
+                      type="checkbox"
+                      checked /><span></span
+                  ></label>
                 </fieldset>
               </form>
             </section>
