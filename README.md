@@ -1,0 +1,88 @@
+# Chartix
+
+Chartix is an early-stage, MIT-licensed charting library focused on refined defaults, a small
+TypeScript-first API, accessible output, and copy-paste embedding. The current alpha includes
+vertical and horizontal bar charts, line/area charts, light and dark themes, responsive canvas
+rendering, animations, and declarative `data-*` embeds.
+
+> Chartix is under active development. Use the pinned alpha version while the v0.1 API settles.
+
+## Quick Start
+
+```bash
+npm install chartix
+```
+
+```ts
+import { BarChart, Chartix, LineChart } from 'chartix';
+
+Chartix.register(BarChart, LineChart);
+
+const canvas = document.querySelector<HTMLCanvasElement>('#revenue');
+if (!canvas) throw new Error('Missing chart canvas');
+
+const chart = new Chartix(canvas, {
+  type: 'bar',
+  theme: 'light',
+  data: {
+    labels: ['Jan', 'Feb', 'Mar'],
+    datasets: [{ label: 'Revenue', values: [120, 190, 300] }],
+  },
+  options: {
+    title: 'Monthly revenue',
+    responsive: true,
+    animation: { duration: 360, easing: 'easeOutCubic' },
+  },
+});
+
+chart.update({
+  datasets: [{ label: 'Revenue', values: [150, 230, 340] }],
+});
+```
+
+## Quick Embed
+
+After Chartix is published to npm, the browser bundle can be loaded from jsDelivr or unpkg. For
+local development, replace the URL with `../dist/chartix.min.js` as shown in `examples/index.html`.
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/chartix@0.1.0-alpha.1/dist/chartix.min.js"></script>
+
+<div
+  data-chartix
+  data-type="bar"
+  data-labels="Jan,Feb,Mar"
+  data-values="120,190,300"
+  data-label="Revenue"
+  data-title="Monthly revenue"
+  data-theme="light"
+></div>
+```
+
+The browser bundle scans on page load and observes charts inserted later. Complex embeds can put
+the same JSON-serializable configuration used by the JavaScript API in `data-config`.
+
+## Development
+
+```bash
+npm install
+npm run check
+npm run demo
+```
+
+The demo is served at `http://127.0.0.1:5173/examples/`. See [STATUS.md](STATUS.md) for the completed work,
+remaining milestones, and exact resume instructions.
+
+## Accessibility
+
+Every chart receives `role="img"`, an informative `aria-label`, and an enabled-by-default visually
+hidden data table. Set `options.showDataTable` to `false` only when equivalent accessible content is
+already present nearby.
+
+## Browser support
+
+The alpha targets current evergreen browsers with Canvas 2D, `ResizeObserver`, and ES2020 support.
+
+## License
+
+[MIT](LICENSE)

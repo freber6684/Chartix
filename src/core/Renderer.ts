@@ -1,0 +1,157 @@
+import { gradientEndColor } from '../utils/color.js';
+
+/** A coordinate in chart space. */
+export interface Point {
+  x: number;
+  y: number;
+}
+
+/** Renderer contract used by chart modules. */
+export interface Renderer {
+  readonly width: number;
+  readonly height: number;
+  clear(background: string): void;
+  gradient(x0: number, y0: number, x1: number, y1: number, color: string): CanvasGradient;
+  line(points: Point[], color: string, width: number): void;
+  area(points: Point[], baseline: number, fill: string | CanvasGradient): void;
+  circle(point: Point, radius: number, fill: string, stroke?: string): void;
+  roundedRect(
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    radius: number,
+    fill: string | CanvasGradient,
+  ): void;
+  text(
+    value: string,
+    x: number,
+    y: number,
+    options: {
+      align?: CanvasTextAlign;
+      color: string;
+      font: string;
+      baseline?: CanvasTextBaseline;
+    },
+  ): void;
+  resize(width: number, height: number, pixelRatio?: number): void;
+}
+
+/** Canvas implementation of the renderer contract. */
+export class CanvasRenderer implements Renderer {
+  public width = 0;
+  public height = 0;
+  private readonly context: CanvasRenderingContext2D;
+
+  /** Create a renderer for a canvas element. */
+  public constructor(private readonly canvas: HTMLCanvasElement) {
+    const context = canvas.getContext('2d');
+    if (!context) throw new Error('Chartix: this browser does not provide a 2D canvas context.');
+    this.context = context;
+  }
+
+  /** Resize the backing buffer while keeping drawing coordinates in CSS pixels. */
+  public resize(width: number, height: number, pixelRatio = 1): void {
+    this.width = Math.max(1, width);
+    this.height = Math.max(1, height);
+    this.canvas.width = Math.round(this.width * pixelRatio);
+    this.canvas.height = Math.round(this.height * pixelRatio);
+    this.canvas.style.width = `${this.width}px`;
+    this.canvas.style.height = `${this.height}px`;
+    this.context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+  }
+
+  /** Clear the canvas with the theme background. */
+  public clear(background: string): void {
+    this.context.save();
+    this.context.fillStyle = background;
+    this.context.fillRect(0, 0, this.width, this.height);
+    this.context.restore();
+  }
+
+  /** Create a subtle color-to-transparent vertical gradient. */
+  public gradient(x0: number, y0: number, x1: number, y1: number, color: string): CanvasGradient {
+    const gradient = this.context.createLinearGradient(x0, y0, x1, y1);
+    gradient.addColorStop(0, color);
+    gradient.addColorStop(1, gradientEndColor(color));
+    return gradient;
+  }
+
+  /** Draw a rounded rectangle. */
+  public roundedRect(
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    radius: number,
+    fill: string | CanvasGradient,
+  ): void {
+    if (width <= 0 || height <= 0) return;
+    const safeRadius = Math.min(radius, width / 2, height / 2);
+    this.context.beginPath();
+    this.context.roundRect(x, y, width, height, safeRadius);
+    this.context.fillStyle = fill;
+    this.context.fill();
+  }
+
+  /** Draw a polyline with rounded joins. */
+  public line(points: Point[], color: string, width: number): void {
+    if (points.length === 0) return;
+    this.context.beginPath();
+    points.forEach((point, index) => {
+      if (index === 0) this.context.moveTo(point.x, point.y);
+      else this.context.lineTo(point.x, point.y);
+    });
+    this.context.strokeStyle = color;
+    this.context.lineWidth = width;
+    this.context.lineCap = 'round';
+    this.context.lineJoin = 'round';
+    this.context.stroke();
+  }
+
+  /** Fill the area between a polyline and a baseline. */
+  public area(points: Point[], baseline: number, fill: string | CanvasGradient): void {
+    const first = points[0];
+    const last = points.at(-1);
+    if (!first || !last) return;
+    this.context.beginPath();
+    this.context.moveTo(first.x, baseline);
+    points.forEach((point) => this.context.lineTo(point.x, point.y));
+    this.context.lineTo(last.x, baseline);
+    this.context.closePath();
+    this.context.fillStyle = fill;
+    this.context.fill();
+  }
+
+  /** Draw a circular data marker. */
+  public circle(point: Point, radius: number, fill: string, stroke?: string): void {
+    this.context.beginPath();
+    this.context.arc(point.x, point.y, radius, 0, Math.PI * 2);
+    this.context.fillStyle = fill;
+    this.context.fill();
+    if (stroke) {
+      this.context.strokeStyle = stroke;
+      this.context.lineWidth = 2;
+      this.context.stroke();
+    }
+  }
+
+  /** Draw a single text label. */
+  public text(
+    value: string,
+    x: number,
+    y: number,
+    options: {
+      align?: CanvasTextAlign;
+      color: string;
+      font: string;
+      baseline?: CanvasTextBaseline;
+    },
+  ): void {
+    this.context.fillStyle = options.color;
+    this.context.font = options.font;
+    this.context.textAlign = options.align ?? 'left';
+    this.context.textBaseline = options.baseline ?? 'alphabetic';
+    this.context.fillText(value, x, y);
+  }
+}

@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chartix alpha preview</title>
+    <style>
+      :root {
+        color: #172033;
+        background: #f4f6fa;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      }
+      body {
+        margin: 0;
+        padding: 48px 24px;
+      }
+      main {
+        width: min(1180px, 100%);
+        margin: 0 auto;
+      }
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: end;
+        gap: 24px;
+        margin-bottom: 24px;
+      }
+      h1,
+      p {
+        margin: 0;
+      }
+      h1 {
+        font-size: clamp(32px, 5vw, 52px);
+        letter-spacing: -0.04em;
+      }
+      header p {
+        max-width: 520px;
+        color: #64748b;
+        line-height: 1.55;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 440px), 1fr));
+        gap: 20px;
+      }
+      .card {
+        overflow: hidden;
+        min-width: 0;
+        border: 1px solid #e3e8ef;
+        border-radius: 18px;
+        background: #fff;
+        box-shadow: 0 14px 40px rgb(31 41 55 / 8%);
+      }
+      .dark {
+        border-color: #263246;
+        background: #111827;
+      }
+      [data-chartix] {
+        position: relative;
+        width: 100%;
+      }
+      @media (max-width: 700px) {
+        body {
+          padding: 28px 14px;
+        }
+        header {
+          display: block;
+        }
+        header p {
+          margin-top: 12px;
+        }
+      }
+    </style>
+    <script src="../dist/chartix.min.js" defer></script>
+  </head>
+  <body>
+    <main>
+      <header>
+        <h1>Chartix alpha</h1>
+        <p>
+          A testable preview of polished defaults, accessible output, responsive Canvas rendering,
+          and the no-build embed API.
+        </p>
+      </header>
+      <section class="grid" aria-label="Chart examples">
+        <article class="card">
+          <div
+            data-chartix
+            data-type="bar"
+            data-labels="Jan,Feb,Mar,Apr,May,Jun"
+            data-values="120,190,164,245,278,338"
+            data-label="Revenue"
+            data-title="Revenue momentum"
+            data-theme="light"
+            data-height="410"
+          ></div>
+        </article>
+        <article class="card dark">
+          <div
+            data-chartix
+            data-height="410"
+            data-config='{"type":"line","theme":"dark","data":{"labels":["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],"datasets":[{"label":"Active users","values":[180,248,221,310,365,342,430]},{"label":"New users","values":[96,122,108,158,174,168,210]}]},"options":{"title":"Weekly audience","fill":true,"animation":{"duration":480,"easing":"easeOutCubic"},"showDataTable":true}}'
+          ></div>
+        </article>
+      </section>
+    </main>
+  </body>
+</html>

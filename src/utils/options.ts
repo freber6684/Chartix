@@ -1,0 +1,51 @@
+import type { ChartConfig, ChartData, ChartOptions } from '../types/options.js';
+
+export const defaultOptions: Required<
+  Pick<
+    ChartOptions,
+    'fill' | 'horizontal' | 'padding' | 'responsive' | 'showDataTable' | 'showGrid' | 'showLegend'
+  >
+> &
+  ChartOptions = {
+  animation: { duration: 420, easing: 'easeOutCubic' },
+  fill: false,
+  horizontal: false,
+  padding: 24,
+  responsive: true,
+  scales: { y: { beginAtZero: true } },
+  showDataTable: true,
+  showGrid: true,
+  showLegend: true,
+};
+
+/** Clone chart data without mutating user-owned arrays. */
+export function cloneData(data: ChartData): ChartData {
+  return {
+    labels: [...data.labels],
+    datasets: data.datasets.map((dataset) => ({ ...dataset, values: [...dataset.values] })),
+  };
+}
+
+/** Normalize a user config into an immutable internal copy. */
+export function normalizeConfig(config: ChartConfig): ChartConfig & { options: ChartOptions } {
+  return {
+    ...config,
+    data: cloneData(config.data),
+    options: {
+      ...defaultOptions,
+      ...config.options,
+      scales: {
+        ...defaultOptions.scales,
+        ...config.options?.scales,
+        y: {
+          ...defaultOptions.scales?.y,
+          ...config.options?.scales?.y,
+        },
+      },
+      animation:
+        config.options?.animation === false
+          ? false
+          : { ...defaultOptions.animation, ...config.options?.animation },
+    },
+  };
+}
