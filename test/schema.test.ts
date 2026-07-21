@@ -23,6 +23,7 @@ describe('embed JSON Schema', () => {
         'dataLabels',
         'decimation',
         'drilldown',
+        'editable',
         'fill',
         'height',
         'horizontal',

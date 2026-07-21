@@ -36,6 +36,8 @@ All notable Chartix changes are documented here. The project follows semantic ve
   contrast, dyslexia-friendly typography, Braille text, and local sonification.
 - Confidence/forecast bands, error bars, estimated-value markers, series provenance metadata,
   regression, moving averages, anomaly detection, linear forecasts, and data-quality reports.
+- Editable values with immutable undo/redo histories and change events, plus animation delay, loop,
+  lifecycle callbacks, pause, resume, and seek controls.
 
 ## 0.1.0-alpha.2 - 2026-07-21
 

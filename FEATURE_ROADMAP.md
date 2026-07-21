@@ -19,7 +19,7 @@ delivered in stable releases so partially implemented features never appear prod
 - [x] Wheel/keyboard zoom, drag pan, box zoom, and reset controls.
 - [ ] Pinch zoom.
 - [x] Drill-down/up and data-point click events.
-- [ ] Editable marks with undo/redo and change-history output.
+- [x] Editable value API with undo/redo and change-history output.
 
 ## Scales, axes, and layout
 
@@ -36,7 +36,8 @@ delivered in stable releases so partially implemented features never appear prod
 - [x] Reduced-motion support and entrance animation easing.
 - [ ] Per-mark colors/sizes/shapes and borders are complete; patterns, textures, shadows, and CSS variables remain.
 - [x] Line curves, steps, dashes, point symbols, stacked marks, and mixed series.
-- [ ] Update/exit transitions, staggered animation, motion-path morphing, and timeline controls.
+- [ ] Update transitions and pause/resume/seek/delay/loop controls are complete; exit transitions,
+      staggering, and motion-path morphing remain.
 - [ ] Theme designer, brand-token import, dark-mode auto switching, and style presets.
 
 ## Data, transformation, and performance

@@ -124,6 +124,10 @@ and source complexity. Expensive animation is automatically disabled above 5,000
 - `chart.drillUp()` restores the previous drill-down level.
 - `chart.toDataURL()`, `toCSV()`, and `toHTML()` return portable exports.
 - `chart.download('png' | 'jpeg' | 'csv' | 'html', filename?)` starts a browser download.
+- `chart.setValue(datasetIndex, valueIndex, value)` records an editable change when `editable` is
+  enabled; `undo()`, `redo()`, and `getHistory()` provide deterministic change control.
+- `pauseAnimation()`, `resumeAnimation()`, and `seekAnimation(progress)` control active playback.
+  Animation options also accept `delay`, `loop`, and runtime `onStart`/`onComplete` callbacks.
 
 ## JSON Schema
 

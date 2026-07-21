@@ -57,6 +57,8 @@ changes so the next session can resume without reconstructing history.
       typography, Braille text output, and local Web Audio sonification.
 - [x] Add confidence/forecast bands, error bars, estimated-value markers, dataset provenance,
       linear regression, moving averages, anomaly detection, forecasting, and data-quality scores.
+- [x] Add deterministic value editing, undo/redo history, change events, and animation
+      delay/loop/pause/resume/seek controls with lifecycle callbacks.
 
 ## Remaining for v0.1
 
@@ -125,7 +127,7 @@ formatting, lint, strict types, unit tests, production bundles, and the 25 KB gz
 ## Latest validation
 
 - Formatting, ESLint, and strict TypeScript: passed with no warnings or errors.
-- Unit tests: 93 passed across 17 test files, including 45 chart/theme visual baselines.
+- Unit tests: 95 passed across 18 test files, including 45 chart/theme visual baselines.
 - Production build: ESM, CJS, standalone embed ESM, browser IIFE, minified browser IIFE, and TypeScript declarations generated.
 - Minified core bundle: 9.72 KB gzipped (15 KB budget).
 - Minified full embed bundle: 9.63 KB gzipped (25 KB budget).

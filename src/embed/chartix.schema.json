@@ -188,7 +188,9 @@
               "additionalProperties": false,
               "properties": {
                 "duration": { "type": "number", "minimum": 0 },
-                "easing": { "enum": ["easeOutCubic", "easeOutQuad", "linear"] }
+                "easing": { "enum": ["easeOutCubic", "easeOutQuad", "linear"] },
+                "delay": { "type": "number", "minimum": 0 },
+                "loop": { "type": "boolean" }
               }
             }
           ]
@@ -216,6 +218,7 @@
           }
         },
         "fill": { "type": "boolean" },
+        "editable": { "type": "boolean" },
         "stacked": { "type": "boolean" },
         "stackMode": { "enum": ["normal", "percent"] },
         "spanGaps": { "type": "boolean" },

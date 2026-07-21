@@ -1,4 +1,4 @@
-import { animate } from './Animator.js';
+import { animate, type AnimationController, type ResolvedAnimationOptions } from './Animator.js';
 import { CanvasRenderer, type Point } from './Renderer.js';
 import { EventManager, type GestureMode } from './EventManager.js';
 import { Tooltip } from './Tooltip.js';
@@ -12,13 +12,7 @@ import { describeChart, updateDataTable } from './accessibility.js';
 import { resolveTheme } from './theme.js';
 import { createPlotArea } from '../charts/cartesian.js';
 import type { ChartModule, PlotArea } from '../charts/types.js';
-import type {
-  AnimationOptions,
-  ChartConfig,
-  ChartData,
-  ChartOptions,
-  PerformanceStats,
-} from '../types/options.js';
+import type { ChartConfig, ChartData, ChartOptions, PerformanceStats } from '../types/options.js';
 import { cloneData, normalizeConfig } from '../utils/options.js';
 import { applyDataTransforms } from '../utils/transforms.js';
 import { chartConfigToHTML, chartDataToCSV } from '../utils/export.js';
@@ -39,6 +33,7 @@ const validOptionKeys = new Set<keyof ChartOptions>([
   'dataLabels',
   'decimation',
   'drilldown',
+  'editable',
   'fill',
   'stacked',
   'stackMode',
@@ -121,7 +116,7 @@ export class Chartix {
   private readonly renderer: CanvasRenderer;
   private config: ChartConfig & { options: ChartOptions };
   private resizeObserver?: ResizeObserver;
-  private cancelAnimation?: () => void;
+  private animationController?: AnimationController;
   private dataTable: HTMLTableElement | undefined;
   private readonly eventManager: EventManager;
   private readonly tooltip: Tooltip;
@@ -130,6 +125,8 @@ export class Chartix {
   private activeRegions: HitRegion[] = [];
   private readonly hiddenDatasets = new Set<number>();
   private readonly drillHistory: ChartData[] = [];
+  private readonly undoHistory: ChartData[] = [];
+  private readonly redoHistory: ChartData[] = [];
   private viewport: { start: number; end: number } | undefined;
   private lastPlot: PlotArea | undefined;
   private gesturePoints: readonly Point[] = [];
@@ -248,6 +245,81 @@ export class Chartix {
     };
     this.applyAccessibility();
     this.render(options.animate !== false);
+  }
+
+  /** Change one value and record a reversible history entry. */
+  public setValue(datasetIndex: number, valueIndex: number, value: number | null): void {
+    this.assertActive();
+    if (!this.config.options.editable) throw new Error('Chartix: editing is not enabled.');
+    const dataset = this.config.data.datasets[datasetIndex];
+    if (!dataset || valueIndex < 0 || valueIndex >= dataset.values.length) {
+      throw new Error('Chartix: editable value index is out of range.');
+    }
+    if (value !== null && !Number.isFinite(value)) {
+      throw new Error('Chartix: edited values must be finite numbers or null.');
+    }
+    this.undoHistory.push(cloneData(this.config.data));
+    this.redoHistory.length = 0;
+    const data = cloneData(this.config.data);
+    const target = data.datasets[datasetIndex];
+    if (target) target.values[valueIndex] = value;
+    this.config = { ...this.config, data };
+    this.applyAccessibility();
+    this.render();
+    this.canvas.dispatchEvent(
+      new CustomEvent('chartix:change', {
+        detail: { datasetIndex, valueIndex, previous: dataset.values[valueIndex], value },
+      }),
+    );
+  }
+
+  /** Restore the previous editable data state. */
+  public undo(): boolean {
+    this.assertActive();
+    const previous = this.undoHistory.pop();
+    if (!previous) return false;
+    this.redoHistory.push(cloneData(this.config.data));
+    this.config = { ...this.config, data: previous };
+    this.applyAccessibility();
+    this.render();
+    this.dispatchInteraction('undo');
+    return true;
+  }
+
+  /** Reapply the next editable data state. */
+  public redo(): boolean {
+    this.assertActive();
+    const next = this.redoHistory.pop();
+    if (!next) return false;
+    this.undoHistory.push(cloneData(this.config.data));
+    this.config = { ...this.config, data: next };
+    this.applyAccessibility();
+    this.render();
+    this.dispatchInteraction('redo');
+    return true;
+  }
+
+  /** Return immutable snapshots for audit/change-history interfaces. */
+  public getHistory(): { undo: ChartData[]; redo: ChartData[] } {
+    return {
+      undo: this.undoHistory.map(cloneData),
+      redo: this.redoHistory.map(cloneData),
+    };
+  }
+
+  /** Pause a running chart animation. */
+  public pauseAnimation(): void {
+    this.animationController?.pause();
+  }
+
+  /** Resume a paused chart animation. */
+  public resumeAnimation(): void {
+    this.animationController?.resume();
+  }
+
+  /** Seek the active chart animation to a normalized position. */
+  public seekAnimation(progress: number): void {
+    this.animationController?.seek(progress);
   }
 
   /** Append one aligned category to a bounded streaming buffer. */
@@ -388,7 +460,7 @@ export class Chartix {
   public destroy(): void {
     if (this.destroyed) return;
     this.runPlugins('beforeDestroy');
-    this.cancelAnimation?.();
+    this.animationController?.cancel();
     this.resizeObserver?.disconnect();
     this.eventManager.destroy();
     this.tooltip.destroy();
@@ -405,14 +477,14 @@ export class Chartix {
   }
 
   private render(animateRender = true): void {
-    this.cancelAnimation?.();
+    this.animationController?.cancel();
     this.animateNextRender = animateRender;
     const animation = this.resolveAnimation();
     if (!animation) {
       this.draw(1);
       return;
     }
-    this.cancelAnimation = animate(animation, (progress) => this.draw(progress));
+    this.animationController = animate(animation, (progress) => this.draw(progress));
   }
 
   private draw(progress: number): void {
@@ -526,7 +598,7 @@ export class Chartix {
     }
   }
 
-  private resolveAnimation(): Required<AnimationOptions> | null {
+  private resolveAnimation(): ResolvedAnimationOptions | null {
     const options = this.config.options.animation;
     const reduceMotion =
       typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -542,6 +614,10 @@ export class Chartix {
     return {
       duration: Math.max(1, options?.duration ?? 420),
       easing: options?.easing ?? 'easeOutCubic',
+      delay: Math.max(0, options?.delay ?? 0),
+      loop: options?.loop ?? false,
+      ...(options?.onStart ? { onStart: options.onStart } : {}),
+      ...(options?.onComplete ? { onComplete: options.onComplete } : {}),
     };
   }
 

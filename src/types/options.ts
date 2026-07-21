@@ -70,6 +70,14 @@ export interface AnimationOptions {
   duration?: number;
   /** Built-in easing curve. */
   easing?: 'easeOutCubic' | 'easeOutQuad' | 'linear';
+  /** Wait before playback begins. */
+  delay?: number;
+  /** Restart entrance playback until cancelled. */
+  loop?: boolean;
+  /** Runtime-only callback invoked when playback starts. */
+  onStart?: () => void;
+  /** Runtime-only callback invoked when playback completes. */
+  onComplete?: () => void;
 }
 
 /** Axis options available in the first Chartix alpha. */
@@ -314,6 +322,8 @@ export interface ChartOptions {
   decimation?: DecimationOptions;
   /** Point-specific drill-down data keyed by `datasetIndex:valueIndex` or label. */
   drilldown?: Record<string, ChartData>;
+  /** Permit values to be changed through the editing/history API. */
+  editable?: boolean;
   /** Fill the area below a line. */
   fill?: boolean;
   /** Stack bar/area series that share the same category. */
