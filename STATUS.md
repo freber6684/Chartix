@@ -42,7 +42,7 @@ changes so the next session can resume without reconstructing history.
 ## Remaining for v0.1
 
 - [x] Add deterministic visual-command regression tests for every MVP chart/theme combination.
-- [ ] Capture Chart.js, ApexCharts, and Recharts comparison images in `examples/benchmarks/`.
+- [x] Capture a pinned Chart.js, ApexCharts, and Recharts comparison in `examples/benchmarks/`.
 - [x] Complete per-option API reference documentation and a strict embed JSON Schema.
 - [x] Test, enforce, report, and archive separate core and embed gzip budgets across releases.
 - [ ] Publish the first npm prerelease and verify pinned jsDelivr/unpkg URLs.
@@ -108,9 +108,11 @@ formatting, lint, strict types, unit tests, production bundles, and the 25 KB gz
 - Formatting, ESLint, and strict TypeScript: passed with no warnings or errors.
 - Unit tests: 68 passed across 11 test files, including 45 chart/theme visual baselines.
 - Production build: ESM, CJS, standalone embed ESM, browser IIFE, minified browser IIFE, and TypeScript declarations generated.
-- Minified embed bundle before this documentation-only batch: 9.63 KB gzipped (25 KB budget).
+- Minified core bundle: 9.72 KB gzipped (15 KB budget).
+- Minified full embed bundle: 9.63 KB gzipped (25 KB budget).
 - Browser check: the public demo rendered bar, line, pie, doughnut, and scatter charts without page errors.
 - Accessibility check: all five canvases had generated `role="img"` labels and matching data tables.
 - GitHub-hosted CI: push and pull-request checks completed successfully.
 - GitHub Pages: deployment completed successfully at `https://freber6684.github.io/Chartix/`.
 - Public URL check: all five chart examples and their customization styles rendered successfully.
+- Benchmark check: all four pinned comparison charts rendered; the 1600 × 1200 capture was visually reviewed.

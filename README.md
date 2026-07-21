@@ -11,6 +11,9 @@ Project progress is tracked in [STATUS.md](./STATUS.md), with the complete reque
 Reference: [API options](./docs/api-reference.md) · [Customization](./docs/customization.md) ·
 [Chart types](./docs/chart-types.md) · [JSON Schema](./src/embed/chartix.schema.json)
 
+Design review: [live competitor benchmark](https://freber6684.github.io/Chartix/examples/benchmarks/)
+· [captured comparison](./examples/benchmarks/chart-comparison.png)
+
 > Chartix is under active development. Use the pinned alpha version while the v0.1 API settles.
 
 ## Live Demo
