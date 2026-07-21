@@ -177,3 +177,57 @@ export class ThemeLibrary {
     return [...this.themes.values()].map((entry) => structuredClone(entry));
   }
 }
+
+/** Stateful theme authoring API suitable for a visual color/font editor. */
+export class ThemeDesigner {
+  private current: ThemeObject;
+
+  public constructor(theme: ThemeObject = lightTheme) {
+    this.current = structuredClone(theme);
+  }
+
+  public setColors(
+    patch: Partial<Pick<ThemeObject, 'background' | 'text' | 'mutedText' | 'grid'>>,
+  ): this {
+    this.current = { ...this.current, ...patch };
+    return this;
+  }
+
+  public setPalette(palette: string[]): this {
+    if (!palette.length) throw new Error('Chartix: a theme palette cannot be empty.');
+    this.current = { ...this.current, palette: palette.map(normalizeHex) };
+    return this;
+  }
+
+  public setTypography(fontFamily: string, sizes: Partial<ThemeObject['fontSize']> = {}): this {
+    this.current = {
+      ...this.current,
+      fontFamily,
+      fontSize: { ...this.current.fontSize, ...sizes },
+    };
+    return this;
+  }
+
+  public preview(): ThemeObject {
+    return structuredClone(this.current);
+  }
+
+  public toCSS(selector = ':root'): string {
+    const theme = this.current;
+    return `${selector}{--chartix-background:${theme.background};--chartix-text:${theme.text};--chartix-muted-text:${theme.mutedText};--chartix-grid:${theme.grid};--chartix-primary:${theme.palette[0]};--chartix-font-family:${theme.fontFamily};--chartix-title-size:${theme.fontSize.title};--chartix-label-size:${theme.fontSize.label};--chartix-tick-size:${theme.fontSize.tick};--chartix-radius:${theme.radius}}`;
+  }
+}
+
+/** Observe the operating-system color preference and emit the matching paired theme. */
+export function observeSystemTheme(
+  pair: { light: ThemeObject; dark: ThemeObject },
+  listener: (theme: ThemeObject, mode: 'light' | 'dark') => void,
+  target: Pick<Window, 'matchMedia'> = window,
+): () => void {
+  const query = target.matchMedia('(prefers-color-scheme: dark)');
+  const emit = (): void =>
+    listener(query.matches ? pair.dark : pair.light, query.matches ? 'dark' : 'light');
+  query.addEventListener('change', emit);
+  emit();
+  return () => query.removeEventListener('change', emit);
+}

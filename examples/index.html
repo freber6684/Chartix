@@ -183,7 +183,12 @@ Chartix.register(BarChart);
             <div class="preview-card">
               <div class="preview-toolbar">
                 <div><span class="preview-dot"></span><strong>Live preview</strong></div>
-                <span id="preview-size">Responsive</span>
+                <div class="preview-breakpoints" aria-label="Responsive preview width">
+                  <button type="button" data-preview-width="375">Phone</button>
+                  <button type="button" data-preview-width="768">Tablet</button>
+                  <button type="button" data-preview-width="0">Fluid</button>
+                  <span id="preview-size">Responsive</span>
+                </div>
               </div>
               <div class="playground-canvas" id="playground-canvas"></div>
             </div>
@@ -282,6 +287,51 @@ Chartix.register(BarChart);
                   <label class="toggle-row"
                     >Fill area<input id="control-fill" type="checkbox" /><span></span
                   ></label>
+                  <label class="toggle-row"
+                    >Accessible patterns<input id="control-patterns" type="checkbox" /><span></span
+                  ></label>
+                </fieldset>
+                <fieldset>
+                  <legend>Motion + annotations</legend>
+                  <label class="range-label"
+                    >Duration <output id="duration-value"></output>
+                    <input
+                      id="control-duration"
+                      type="range"
+                      min="0"
+                      max="2000"
+                      step="50"
+                      value="420"
+                    />
+                  </label>
+                  <label class="range-label"
+                    >Series stagger <output id="stagger-value"></output>
+                    <input
+                      id="control-stagger"
+                      type="range"
+                      min="0"
+                      max="300"
+                      step="10"
+                      value="60"
+                    />
+                  </label>
+                  <label
+                    >Annotation
+                    <select id="control-annotation">
+                      <option value="none">None</option>
+                      <option value="line">Target line</option>
+                      <option value="box">Highlight box</option>
+                      <option value="point">Point</option>
+                      <option value="arrow">Arrow</option>
+                      <option value="image">Image</option>
+                    </select>
+                  </label>
+                  <label
+                    >Image URL<input
+                      id="control-annotation-image"
+                      type="url"
+                      placeholder="https://…/icon.png"
+                  /></label>
                 </fieldset>
                 <fieldset>
                   <legend>Interaction</legend>
@@ -344,6 +394,12 @@ Chartix.register(BarChart);
                     >Adaptive mobile layout<input
                       id="control-adaptive"
                       type="checkbox" /><span></span
+                  ></label>
+                  <label class="toggle-row"
+                    >User resizable<input id="control-resizable" type="checkbox" /><span></span
+                  ></label>
+                  <label class="toggle-row"
+                    >Right-to-left<input id="control-rtl" type="checkbox" /><span></span
                   ></label>
                   <label class="toggle-row"
                     >High contrast<input id="control-high-contrast" type="checkbox" /><span></span

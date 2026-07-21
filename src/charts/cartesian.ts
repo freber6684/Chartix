@@ -492,6 +492,19 @@ export function drawVerticalFrame(
       );
     } else if (annotation.type === 'freeform' && annotation.points?.length) {
       renderer.line(annotation.points, color, annotation.width ?? 2, { interpolation: 'smooth' });
+    } else if (annotation.type === 'image' && annotation.imageUrl) {
+      const x = categoryX(annotation.x);
+      const y = scale.project(annotation.value ?? scale.max);
+      const width = Math.max(1, annotation.imageWidth ?? 48);
+      const height = Math.max(1, annotation.imageHeight ?? 48);
+      renderer.imageAt?.(
+        annotation.imageUrl,
+        x - width / 2,
+        y - height / 2,
+        width,
+        height,
+        annotation.opacity,
+      );
     }
   });
   const step = plot.width / Math.max(1, labels.length);

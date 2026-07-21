@@ -31,6 +31,14 @@ export interface Renderer {
   pattern?(color: string, background: string, kind: 'diagonal' | 'dots' | 'crosshatch'): Paint;
   setShadow?(style?: ShadowStyle): void;
   image?(image: CanvasImageSource, opacity?: number): void;
+  imageAt?(
+    url: string,
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    opacity?: number,
+  ): void;
   line(points: Point[], color: string, width: number, style?: LineStyle): void;
   area(points: Point[], baseline: number, fill: Paint): void;
   areaBetween(upper: Point[], lower: Point[], fill: string): void;
@@ -76,6 +84,7 @@ export class CanvasRenderer implements Renderer {
   public width = 0;
   public height = 0;
   private readonly context: CanvasRenderingContext2D;
+  private readonly images = new Map<string, HTMLImageElement>();
 
   /** Create a renderer for a canvas element. */
   public constructor(private readonly canvas: HTMLCanvasElement) {
@@ -168,6 +177,33 @@ export class CanvasRenderer implements Renderer {
     this.context.save();
     this.context.globalAlpha = Math.max(0, Math.min(1, opacity));
     this.context.drawImage(image, 0, 0, this.width, this.height);
+    this.context.restore();
+  }
+
+  /** Draw a cached URL image at a chart coordinate; the first draw completes asynchronously. */
+  public imageAt(
+    url: string,
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    opacity = 1,
+  ): void {
+    let image = this.images.get(url);
+    if (!image) {
+      image = new Image();
+      image.crossOrigin = 'anonymous';
+      image.src = url;
+      this.images.set(url, image);
+      image.addEventListener('load', () => this.imageAt(url, x, y, width, height, opacity), {
+        once: true,
+      });
+      return;
+    }
+    if (!image.complete || image.naturalWidth === 0) return;
+    this.context.save();
+    this.context.globalAlpha = Math.max(0, Math.min(1, opacity));
+    this.context.drawImage(image, x, y, width, height);
     this.context.restore();
   }
 

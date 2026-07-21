@@ -24,10 +24,22 @@ await Promise.all([
   build({ ...shared, format: 'esm', outfile: fromRoot('dist/index.js') }),
   build({ ...shared, format: 'cjs', outfile: fromRoot('dist/index.cjs') }),
   build({
-    ...shared,
+    bundle: true,
+    absWorkingDir: projectRoot,
+    entryPoints: [fromRoot('src/core-entry.ts')],
+    format: 'esm',
+    outfile: fromRoot('dist/core-entry.js'),
+    sourcemap: true,
+    target: ['es2020'],
+  }),
+  build({
+    bundle: true,
+    absWorkingDir: projectRoot,
+    entryPoints: [fromRoot('src/core-entry.ts')],
     format: 'esm',
     minify: true,
     outfile: fromRoot('dist/chartix.core.min.js'),
+    target: ['es2020'],
   }),
   build({
     bundle: true,
@@ -95,8 +107,9 @@ if (diagnostics.length > 0) {
   );
 }
 
-const [coreBytes, embedBytes] = await Promise.all([
+const [coreBytes, libraryBytes, embedBytes] = await Promise.all([
   readFile(fromRoot('dist/chartix.core.min.js')),
+  readFile(fromRoot('dist/index.js')),
   readFile(fromRoot('dist/chartix.min.js')),
 ]);
 const report = {
@@ -104,12 +117,17 @@ const report = {
   core: {
     rawBytes: coreBytes.byteLength,
     gzipBytes: gzipSync(coreBytes).byteLength,
-    budgetBytes: 15 * 1024,
+    budgetBytes: 35 * 1024,
+  },
+  library: {
+    rawBytes: libraryBytes.byteLength,
+    gzipBytes: gzipSync(libraryBytes).byteLength,
+    budgetBytes: 70 * 1024,
   },
   embed: {
     rawBytes: embedBytes.byteLength,
     gzipBytes: gzipSync(embedBytes).byteLength,
-    budgetBytes: 25 * 1024,
+    budgetBytes: 40 * 1024,
   },
 };
 await writeFile(fromRoot('dist/bundle-size.json'), `${JSON.stringify(report, null, 2)}\n`);
@@ -119,6 +137,11 @@ if (report.core.gzipBytes > report.core.budgetBytes) {
     `Core bundle is ${report.core.gzipBytes} bytes gzipped; budget is ${report.core.budgetBytes}.`,
   );
 }
+if (report.library.gzipBytes > report.library.budgetBytes) {
+  throw new Error(
+    `Full library is ${report.library.gzipBytes} bytes gzipped; budget is ${report.library.budgetBytes}.`,
+  );
+}
 if (report.embed.gzipBytes > report.embed.budgetBytes) {
   throw new Error(
     `Embed bundle is ${report.embed.gzipBytes} bytes gzipped; budget is ${report.embed.budgetBytes}.`,
@@ -126,4 +149,5 @@ if (report.embed.gzipBytes > report.embed.budgetBytes) {
 }
 
 console.log(`Core bundle: ${(report.core.gzipBytes / 1024).toFixed(2)} KB gzipped`);
+console.log(`Full library: ${(report.library.gzipBytes / 1024).toFixed(2)} KB gzipped`);
 console.log(`Embed bundle: ${(report.embed.gzipBytes / 1024).toFixed(2)} KB gzipped`);

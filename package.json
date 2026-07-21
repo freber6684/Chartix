@@ -15,6 +15,10 @@
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
     },
+    "./core": {
+      "types": "./dist/core-entry.d.ts",
+      "import": "./dist/core-entry.js"
+    },
     "./embed": {
       "types": "./dist/embed/autoload.d.ts",
       "import": "./dist/embed/autoload.js"

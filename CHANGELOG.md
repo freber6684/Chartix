@@ -71,6 +71,10 @@ All notable Chartix changes are documented here. The project follows semantic ve
   automatic accessibility textures, and immutable small-multiple configuration generation.
 - Statistical control limits, extrema, change-point and goal analytics, deeper risk validation,
   auditable transformation lineage, deployment inspection, compatibility reports, and a live overlay.
+- Per-series staggering, resampled path morphing, visual theme design, and OS-aware theme switching.
+- URL image annotations and immutable annotation editing with snap, collision, and responsive tools.
+- Bundled WebGL point and OffscreenCanvas worker adapters plus tolerant pixel-snapshot regression.
+- Responsive embed previews, opt-in export/label/zoom/crosshair plugins, and a DOM no-code builder.
 
 ## 0.1.0-alpha.2 - 2026-07-21
 

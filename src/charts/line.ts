@@ -6,7 +6,7 @@ import { decimateLTTB, decimateMinMax } from '../utils/decimation.js';
 export const LineChart: ChartModule = {
   id: 'line',
   render(context) {
-    const { data, options, plot, progress, renderer, theme } = context;
+    const { data, options, plot, renderer, theme } = context;
     const visibleValues = numericValues(
       data.datasets.flatMap((dataset, index) =>
         context.hiddenDatasets.has(index)
@@ -22,6 +22,7 @@ export const LineChart: ChartModule = {
 
     data.datasets.forEach((dataset, datasetIndex) => {
       if (context.hiddenDatasets.has(datasetIndex)) return;
+      const datasetProgress = context.seriesProgress?.(datasetIndex) ?? context.progress;
       const color =
         dataset.color ?? theme.palette[datasetIndex % theme.palette.length] ?? theme.text;
       const borderColor = dataset.borderColor ?? color;
@@ -44,7 +45,7 @@ export const LineChart: ChartModule = {
             ? decimateLTTB(dataset.values as number[], requestedSamples)
             : decimateMinMax(dataset.values as number[], requestedSamples)
           : dataset.values.flatMap((value, index) => (value === null ? [] : [index]));
-      const visibleLength = Math.max(1, Math.ceil(indexes.length * progress));
+      const visibleLength = Math.max(1, Math.ceil(indexes.length * datasetProgress));
       const visibleIndexes = indexes.slice(0, visibleLength);
       const points = visibleIndexes.map((index) => ({
         x: data.labels.length > 1 ? plot.left + step * index : plot.left + plot.width / 2,

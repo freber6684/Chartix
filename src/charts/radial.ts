@@ -2,7 +2,7 @@ import { font, formatTick } from './cartesian.js';
 import type { ChartModule, ChartRenderContext } from './types.js';
 
 function renderRadial(context: ChartRenderContext, defaultInnerRadius: number): void {
-  const { data, options, plot, progress, renderer, theme } = context;
+  const { data, options, plot, renderer, theme } = context;
   const center = { x: plot.left + plot.width / 2, y: plot.top + plot.height / 2 };
   const outerRadius = Math.max(1, Math.min(plot.width, plot.height) * 0.38);
   const ratio = Math.min(0.9, Math.max(0, options.innerRadius ?? defaultInnerRadius));
@@ -15,6 +15,7 @@ function renderRadial(context: ChartRenderContext, defaultInnerRadius: number): 
   const lastOutsideY = { left: Number.NEGATIVE_INFINITY, right: Number.NEGATIVE_INFINITY };
 
   visibleDatasets.forEach(({ dataset, datasetIndex }, ringIndex) => {
+    const datasetProgress = context.seriesProgress?.(datasetIndex) ?? context.progress;
     const values = dataset.values.map((value) => Math.max(0, value ?? 0));
     const total = values.reduce((sum, value) => sum + value, 0);
     if (total <= 0) return;
@@ -22,7 +23,7 @@ function renderRadial(context: ChartRenderContext, defaultInnerRadius: number): 
     const ringOuter = baseInnerRadius + (ringIndex + 1) * ringWidth;
     let angle = ((options.startAngle ?? -90) * Math.PI) / 180;
     values.forEach((value, index) => {
-      const sweep = (value / total) * Math.PI * 2 * progress;
+      const sweep = (value / total) * Math.PI * 2 * datasetProgress;
       const end = angle + sweep;
       const middle = angle + sweep / 2;
       const color =

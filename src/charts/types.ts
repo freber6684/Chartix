@@ -20,6 +20,8 @@ export interface ChartRenderContext {
   theme: ThemeObject;
   plot: PlotArea;
   progress: number;
+  /** Progress adjusted for the configured per-series stagger. */
+  seriesProgress?(index: number): number;
   interactions: InteractionRegistry;
   hiddenDatasets: ReadonlySet<number>;
   activeRegion?: HitRegion;

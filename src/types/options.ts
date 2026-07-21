@@ -86,6 +86,8 @@ export interface AnimationOptions {
   delay?: number;
   /** Restart entrance playback until cancelled. */
   loop?: boolean;
+  /** Delay each series or mark by this many milliseconds. */
+  stagger?: number;
   /** Runtime-only callback invoked when playback starts. */
   onStart?: () => void;
   /** Runtime-only callback invoked when playback completes. */
@@ -200,7 +202,16 @@ export interface LegendOptions {
 /** A horizontal reference line or highlighted numeric range. */
 export interface AnnotationOptions {
   /** Annotation shape. */
-  type: 'line' | 'vertical-line' | 'band' | 'box' | 'point' | 'callout' | 'arrow' | 'freeform';
+  type:
+    | 'line'
+    | 'vertical-line'
+    | 'band'
+    | 'box'
+    | 'point'
+    | 'callout'
+    | 'arrow'
+    | 'freeform'
+    | 'image';
   /** Value used by a line annotation. */
   value?: number;
   /** Lower value used by a band annotation. */
@@ -221,6 +232,14 @@ export interface AnnotationOptions {
   y2?: number;
   /** Renderer-space points used by freeform annotations. */
   points?: Array<{ x: number; y: number }>;
+  /** URL used by an image annotation. */
+  imageUrl?: string;
+  /** Image width in renderer pixels. */
+  imageWidth?: number;
+  /** Image height in renderer pixels. */
+  imageHeight?: number;
+  /** Image opacity from zero to one. */
+  opacity?: number;
 }
 
 /** Large line-series sampling behavior. */

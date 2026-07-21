@@ -272,3 +272,22 @@ snapshots and timestamps.
 
 `inspectChart` combines visual/a11y integrity, performance planning, and a runtime compatibility
 matrix. `createPerformanceOverlay(canvas)` adds a removable live duration/mark-count/backend panel.
+
+## Completion platform APIs
+
+Animation accepts `stagger` in milliseconds. `staggerProgress` exposes the same scheduling for
+custom modules, while `morphPath` resamples unequal point arrays before interpolation. The built-in
+bar, line, radial, scatter, and combo renderers apply per-series stagger automatically.
+
+`ThemeDesigner` changes palette, typography, and semantic colors and can emit CSS variables;
+`observeSystemTheme` follows `prefers-color-scheme` with a removable listener. `AnnotationEditor`
+adds, updates, removes, snaps, separates, and responsively repositions annotations. The `image`
+annotation type draws a cached `imageUrl` at its data coordinate with configurable size/opacity.
+
+`WebGLPointRenderer` renders normalized high-volume point clouds; `OffscreenWorkerAdapter` transfers
+a canvas to an application worker and sends typed render payloads. `comparePixelSnapshot` and
+`hashPixelSnapshot` support tolerant browser screenshot baselines.
+
+`createEmbedPreview` mounts phone/tablet/desktop iframe controls. `NoCodeBuilder` mounts synchronized
+chart-type, theme, and title controls and emits immutable JSON plus iframe embed code. Register the
+optional `dataLabelsPlugin`, `zoomPlugin`, `crosshairPlugin`, and `exportPlugin` only when needed.

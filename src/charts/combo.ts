@@ -11,7 +11,7 @@ import type { ChartModule } from './types.js';
 export const ComboChart: ChartModule = {
   id: 'combo',
   render(context) {
-    const { data, options, plot, progress, renderer, theme } = context;
+    const { data, options, plot, renderer, theme } = context;
     const primaryValues = numericValues(
       data.datasets.flatMap((dataset) => (dataset.yAxisId === 'y1' ? [] : dataset.values)),
     );
@@ -52,6 +52,7 @@ export const ComboChart: ChartModule = {
 
     data.datasets.forEach((dataset, datasetIndex) => {
       if (context.hiddenDatasets.has(datasetIndex)) return;
+      const datasetProgress = context.seriesProgress?.(datasetIndex) ?? context.progress;
       const kind = dataset.type ?? 'line';
       const scale = dataset.yAxisId === 'y1' ? y1Scale : yScale;
       const color =
@@ -62,7 +63,7 @@ export const ComboChart: ChartModule = {
         dataset.values.forEach((value, valueIndex) => {
           if (value === null) return;
           const target = scale.project(value);
-          const animated = baseline + (target - baseline) * progress;
+          const animated = baseline + (target - baseline) * datasetProgress;
           const x =
             plot.left +
             valueIndex * categoryWidth +
@@ -86,7 +87,7 @@ export const ComboChart: ChartModule = {
         });
         return;
       }
-      const count = Math.max(1, Math.ceil(dataset.values.length * progress));
+      const count = Math.max(1, Math.ceil(dataset.values.length * datasetProgress));
       const entries = dataset.values
         .slice(0, count)
         .flatMap((value, valueIndex) => (value === null ? [] : [{ value, valueIndex }]));

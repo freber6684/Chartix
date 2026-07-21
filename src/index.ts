@@ -172,6 +172,8 @@ export {
   themeFromCSSVariables,
   themeFromDesignTokens,
   ThemeLibrary,
+  ThemeDesigner,
+  observeSystemTheme,
   type BrandAudit,
   type VersionedTheme,
 } from './design-system/index.js';
@@ -262,7 +264,12 @@ export {
 export { specializedCharts } from './charts/specialized.js';
 export * from './charts/specialized.js';
 export { VisualEditor, type VisualSelection } from './authoring/visual-editor.js';
-export { interpolateChartData, interpolateColor } from './core/transitions.js';
+export {
+  interpolateChartData,
+  interpolateColor,
+  morphPath,
+  staggerProgress,
+} from './core/transitions.js';
 export { createSmallMultiples, type FacetChart } from './intelligence/facets.js';
 export {
   controlLimits,
@@ -282,6 +289,20 @@ export {
   type CompatibilityReport,
 } from './intelligence/inspector.js';
 export { TransformPipeline, type TransformRecord } from './data/pipeline.js';
+export { AnnotationEditor, type AnnotationBounds } from './authoring/annotation-editor.js';
+export { createEmbedPreview, type EmbedPreview } from './authoring/embed-preview.js';
+export { NoCodeBuilder, type BuilderSnapshot } from './authoring/no-code-builder.js';
+export { crosshairPlugin, dataLabelsPlugin, exportPlugin, zoomPlugin } from './plugins/optional.js';
+export {
+  OffscreenWorkerAdapter,
+  WebGLPointRenderer,
+  type AcceleratedPoint,
+} from './performance/renderers.js';
+export {
+  comparePixelSnapshot,
+  hashPixelSnapshot,
+  type PixelComparison,
+} from './testing/pixel-snapshot.js';
 export {
   assessPublicationQuality,
   repairChartContrast,

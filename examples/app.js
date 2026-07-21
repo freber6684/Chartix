@@ -421,6 +421,11 @@ const controls = {
   reverseAxis: document.querySelector('#control-reverse-axis'),
   stacked: document.querySelector('#control-stacked'),
   fill: document.querySelector('#control-fill'),
+  patterns: document.querySelector('#control-patterns'),
+  duration: document.querySelector('#control-duration'),
+  stagger: document.querySelector('#control-stagger'),
+  annotation: document.querySelector('#control-annotation'),
+  annotationImage: document.querySelector('#control-annotation-image'),
   tooltips: document.querySelector('#control-tooltips'),
   pinTooltip: document.querySelector('#control-pin-tooltip'),
   crosshair: document.querySelector('#control-crosshair'),
@@ -430,6 +435,8 @@ const controls = {
   htmlLegend: document.querySelector('#control-html-legend'),
   selection: document.querySelector('#control-selection'),
   adaptive: document.querySelector('#control-adaptive'),
+  resizable: document.querySelector('#control-resizable'),
+  rtl: document.querySelector('#control-rtl'),
   highContrast: document.querySelector('#control-high-contrast'),
   dyslexia: document.querySelector('#control-dyslexia'),
   dataTable: document.querySelector('#control-data-table'),
@@ -509,6 +516,11 @@ function resetControls() {
   controls.reverseAxis.checked = Boolean(chart.options.scales?.y?.reverse);
   controls.stacked.checked = Boolean(chart.options.stacked);
   controls.fill.checked = Boolean(chart.options.fill);
+  controls.patterns.checked = false;
+  controls.duration.value = '420';
+  controls.stagger.value = '60';
+  controls.annotation.value = chart.type === 'line' ? 'line' : 'none';
+  controls.annotationImage.value = '';
   controls.labels.checked = Boolean(chart.options.dataLabels?.show);
   controls.position.value = chart.options.dataLabels?.position ?? 'outside';
   controls.tooltips.checked = true;
@@ -520,6 +532,8 @@ function resetControls() {
   controls.htmlLegend.checked = false;
   controls.selection.value = 'off';
   controls.adaptive.checked = true;
+  controls.resizable.checked = false;
+  controls.rtl.checked = false;
   controls.highContrast.checked = false;
   controls.dyslexia.checked = false;
   controls.dataTable.checked = true;
@@ -577,7 +591,14 @@ function currentConfig() {
   };
   config.options.stacked = controls.stacked.checked;
   config.options.fill = controls.fill.checked;
+  config.options.animation = {
+    duration: Number(controls.duration.value),
+    stagger: Number(controls.stagger.value),
+    easing: 'easeOutCubic',
+  };
   config.options.responsiveMode = controls.adaptive.checked ? 'adaptive' : 'fixed';
+  config.options.resizable = controls.resizable.checked;
+  config.options.direction = controls.rtl.checked ? 'rtl' : 'ltr';
   config.options.showDataTable = controls.dataTable.checked;
   config.options.accessibility = {
     autoSummary: true,
@@ -585,6 +606,7 @@ function currentConfig() {
     explorationMode: true,
     highContrast: controls.highContrast.checked,
     dyslexiaFriendly: controls.dyslexia.checked,
+    automaticPatterns: controls.patterns.checked,
   };
   config.options.scales = {
     ...config.options.scales,
@@ -612,11 +634,34 @@ function currentConfig() {
       },
     };
   }
-  if (state.selected.type === 'line') {
+  const annotationType = controls.annotation.value;
+  if (annotationType === 'line')
     config.options.annotations = [
       { type: 'line', value: 300, label: 'Target', color: controls.accent.value, width: 1.5 },
     ];
-  }
+  else if (annotationType === 'box')
+    config.options.annotations = [
+      { type: 'box', x: 1, x2: 3, from: 100, to: 260, color: '#0f9f8f44' },
+    ];
+  else if (annotationType === 'point')
+    config.options.annotations = [
+      { type: 'point', x: 2, value: 200, label: 'Review', color: controls.accent.value },
+    ];
+  else if (annotationType === 'arrow')
+    config.options.annotations = [
+      { type: 'arrow', x: 1, value: 150, x2: 3, y2: 275, color: controls.accent.value },
+    ];
+  else if (annotationType === 'image' && controls.annotationImage.value)
+    config.options.annotations = [
+      {
+        type: 'image',
+        x: 2,
+        value: 220,
+        imageUrl: controls.annotationImage.value,
+        imageWidth: 48,
+        imageHeight: 48,
+      },
+    ];
   return config;
 }
 
@@ -709,6 +754,8 @@ function updateOutputs() {
   document.querySelector('#label-size-value').textContent = `${controls.labelSize.value}px`;
   document.querySelector('#angle-value').textContent = `${controls.angle.value}°`;
   document.querySelector('#border-width-value').textContent = `${controls.borderWidth.value}px`;
+  document.querySelector('#duration-value').textContent = `${controls.duration.value}ms`;
+  document.querySelector('#stagger-value').textContent = `${controls.stagger.value}ms`;
 }
 
 themes.forEach((theme) =>
@@ -732,6 +779,14 @@ document.addEventListener('click', (event) => {
   }
   const tab = event.target.closest('[data-tab]');
   if (tab) switchTab(tab.dataset.tab);
+  const preview = event.target.closest('[data-preview-width]');
+  if (preview) {
+    const width = Number(preview.dataset.previewWidth);
+    const host = document.querySelector('#playground-canvas');
+    host.style.maxWidth = width ? `${width}px` : '';
+    document.querySelector('#preview-size').textContent = width ? `${width}px` : 'Responsive';
+    state.playground?.resize();
+  }
 });
 
 document.querySelector('#back-to-gallery').addEventListener('click', closeDetail);

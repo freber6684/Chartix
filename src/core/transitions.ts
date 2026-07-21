@@ -64,3 +64,40 @@ export function interpolateChartData(
     }),
   };
 }
+
+/** Convert global animation progress into a clamped per-series staggered progress value. */
+export function staggerProgress(
+  progress: number,
+  index: number,
+  count: number,
+  staggerRatio = 0.12,
+): number {
+  const delay = Math.max(0, index) * Math.max(0, staggerRatio);
+  const span = Math.max(0.001, 1 - Math.max(0, count - 1) * Math.max(0, staggerRatio));
+  return Math.max(0, Math.min(1, (progress - delay) / span));
+}
+
+/** Morph paths with different point counts by resampling both paths at stable normalized positions. */
+export function morphPath(
+  from: ReadonlyArray<{ x: number; y: number }>,
+  to: ReadonlyArray<{ x: number; y: number }>,
+  progress: number,
+): Array<{ x: number; y: number }> {
+  if (!from.length) return to.map((point) => ({ ...point }));
+  if (!to.length) return [];
+  const count = Math.max(from.length, to.length);
+  const sample = (points: ReadonlyArray<{ x: number; y: number }>, position: number) => {
+    const scaled = position * Math.max(0, points.length - 1);
+    const left = Math.floor(scaled);
+    const right = Math.min(points.length - 1, Math.ceil(scaled));
+    const a = points[left]!;
+    const b = points[right]!;
+    return { x: mix(a.x, b.x, scaled - left), y: mix(a.y, b.y, scaled - left) };
+  };
+  return Array.from({ length: count }, (_, index) => {
+    const position = count === 1 ? 0 : index / (count - 1);
+    const left = sample(from, position);
+    const right = sample(to, position);
+    return { x: mix(left.x, right.x, progress), y: mix(left.y, right.y, progress) };
+  });
+}

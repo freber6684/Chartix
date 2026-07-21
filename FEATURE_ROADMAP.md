@@ -37,10 +37,10 @@ delivered in stable releases so partially implemented features never appear prod
 - [x] Per-mark colors/sizes/shapes, borders, accessible patterns/textures, shadows/glows, and CSS
       variable design tokens.
 - [x] Line curves, steps, dashes, point symbols, stacked marks, and mixed series.
-- [ ] Data update/enter/exit transitions and pause/resume/seek/delay/loop controls are complete;
-      series staggering and motion-path morphing remain.
-- [ ] CSS/Figma token import, brand palettes, approved-color locks, theme pairing, and versioned
-      presets are complete; visual theme designer and automatic OS switching remain.
+- [x] Data update/enter/exit transitions, pause/resume/seek/delay/loop controls, series staggering,
+      and resampled motion-path morphing.
+- [x] CSS/Figma token import, brand palettes, approved-color locks, theme pairing, versioned
+      presets, visual theme design, and automatic OS switching.
 
 ## Data, transformation, and performance
 
@@ -49,18 +49,16 @@ delivered in stable releases so partially implemented features never appear prod
 - [x] Sort, filter, stack, aggregate, normalize, group, bin, window, and pivot transforms.
 - [x] Null gaps, date parsing, locale, currency, percentage, number, and unit formatting.
 - [x] Bounded streaming buffers, immediate updates, and cleanup-safe WebSocket/SSE adapters.
-- [ ] Width-aware sampling, animation limits, telemetry, backend/cost planning, viewport
-      virtualization, progressive batching, OffscreenCanvas detection, and spatial indexing are
-      complete; bundled WebGL/worker render adapters remain.
+- [x] Width-aware sampling, animation limits, telemetry, backend/cost planning, viewport
+      virtualization, progressive batching, spatial indexing, and bundled WebGL/worker adapters.
 
 ## Annotations and analytics
 
 - [x] Horizontal reference lines and highlighted numeric bands.
-- [ ] Vertical lines, boxes, points, callouts, arrows, and freeform drawing are complete; image
-      annotations remain.
+- [x] Vertical lines, boxes, points, callouts, arrows, freeform drawing, and URL image annotations.
 - [x] Trend lines, regression, confidence intervals, forecasts, moving averages, and control limits.
 - [x] Outlier/anomaly, peak/valley, change-point, and goal-tracking analytics.
-- [ ] Annotation editor with snapping, collision avoidance, and responsive repositioning.
+- [x] Annotation editor with snapping, collision avoidance, and responsive repositioning.
 
 ## Accessibility, internationalization, and trust
 
@@ -76,13 +74,11 @@ delivered in stable releases so partially implemented features never appear prod
 
 - [x] ESM, CJS, browser, auto-embed, strict TypeScript, and custom chart-module contracts.
 - [x] PNG, JPEG, SVG, PDF, CSV, portable HTML/iframe, clipboard, and print workflows.
-- [ ] Saved chart URLs, shareable local presets, and snapshots are complete; responsive embed
-      preview controls remain.
+- [x] Saved chart URLs, shareable local presets, snapshots, and responsive embed preview controls.
 - [x] Dependency-free React, Vue, Svelte, Web Component, and portable server-HTML adapters.
 - [x] Stable drawing lifecycle and dedicated chart, scale, interaction, transform, annotation,
       theme, tooltip, and export extension registries.
-- [ ] Developer inspector, performance overlay, command-level regression, and compatibility matrix
-      are complete; pixel-level browser snapshots remain.
+- [x] Developer inspector, performance overlay, command/pixel regression, and compatibility matrix.
 - [x] Deterministic renderer-command regression suite for all 45 MVP chart/theme combinations.
 
 ## Chart catalog

@@ -38,7 +38,7 @@ function stackDomain(context: ChartRenderContext): number[] {
 }
 
 function renderVertical(context: ChartRenderContext): void {
-  const { data, options, plot, progress, renderer, theme } = context;
+  const { data, options, plot, renderer, theme } = context;
   const allValues = options.stacked
     ? stackDomain(context)
     : numericValues(data.datasets.flatMap((dataset) => dataset.values));
@@ -53,6 +53,7 @@ function renderVertical(context: ChartRenderContext): void {
   data.datasets.forEach((dataset, datasetIndex) => {
     if (context.hiddenDatasets.has(datasetIndex)) return;
     const color = dataset.color ?? theme.palette[datasetIndex % theme.palette.length] ?? theme.text;
+    const datasetProgress = context.seriesProgress?.(datasetIndex) ?? context.progress;
     dataset.values.forEach((rawValue, valueIndex) => {
       if (rawValue === null) return;
       const valueColor = dataset.colors?.[valueIndex] ?? color;
@@ -67,8 +68,8 @@ function renderVertical(context: ChartRenderContext): void {
         if (value >= 0) positiveOffsets[valueIndex] = endValue;
         else negativeOffsets[valueIndex] = endValue;
       }
-      const animatedStart = startValue * progress;
-      const animatedEnd = endValue * progress;
+      const animatedStart = startValue * datasetProgress;
+      const animatedEnd = endValue * datasetProgress;
       const startY = options.stacked ? scale.project(animatedStart) : baseline;
       const targetY = scale.project(animatedEnd);
       const x =
@@ -141,7 +142,7 @@ function renderVertical(context: ChartRenderContext): void {
 }
 
 function renderHorizontal(context: ChartRenderContext): void {
-  const { data, options, plot, progress, renderer, theme } = context;
+  const { data, options, plot, renderer, theme } = context;
   const allValues = options.stacked
     ? stackDomain(context)
     : numericValues(data.datasets.flatMap((dataset) => dataset.values));
@@ -213,6 +214,7 @@ function renderHorizontal(context: ChartRenderContext): void {
   data.datasets.forEach((dataset, datasetIndex) => {
     if (context.hiddenDatasets.has(datasetIndex)) return;
     const color = dataset.color ?? theme.palette[datasetIndex % theme.palette.length] ?? theme.text;
+    const datasetProgress = context.seriesProgress?.(datasetIndex) ?? context.progress;
     dataset.values.forEach((rawValue, valueIndex) => {
       if (rawValue === null) return;
       const valueColor = dataset.colors?.[valueIndex] ?? color;
@@ -227,8 +229,8 @@ function renderHorizontal(context: ChartRenderContext): void {
         if (value >= 0) positiveOffsets[valueIndex] = endValue;
         else negativeOffsets[valueIndex] = endValue;
       }
-      const startX = options.stacked ? scale.project(startValue * progress) : baseline;
-      const targetX = scale.project(endValue * progress);
+      const startX = options.stacked ? scale.project(startValue * datasetProgress) : baseline;
+      const targetX = scale.project(endValue * datasetProgress);
       const x = Math.min(startX, targetX);
       const y =
         plot.top +

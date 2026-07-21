@@ -87,6 +87,10 @@ changes so the next session can resume without reconstructing history.
       mode, and immutable dataset/category small multiples.
 - [x] Add control limits, extrema, change points, goal tracking, deeper statistical validation,
       transformation lineage, a deployment inspector, compatibility report, and live overlay.
+- [x] Add series staggering, unequal-path morphing, visual theme authoring, and OS color switching.
+- [x] Add image annotations and an annotation editor with snap, collision, and responsive tools.
+- [x] Add bundled WebGL point and OffscreenCanvas worker adapters plus pixel-snapshot comparison.
+- [x] Add responsive embed previews, optional feature plugins, and a synchronized no-code builder.
 
 ## Remaining for v0.1
 
@@ -131,8 +135,8 @@ appearing to work while producing incorrect graphics.
 ## Later platform milestones
 
 - [x] React, Vue, and Svelte lifecycle wrappers.
-- [ ] Optional export, data-label, zoom, and crosshair plugins.
-- [ ] Visual no-code builder that emits the shared JSON config and embed snippet.
+- [x] Optional export, data-label, zoom, and crosshair plugins.
+- [x] Visual no-code builder that emits the shared JSON config and embed snippet.
 - [x] Plugin SDK for custom renderers, scales, interactions, and annotations.
 
 ## Resume and test
@@ -150,15 +154,15 @@ npm run demo
 ```
 
 Open `http://127.0.0.1:5173/examples/` after the demo command. The full check formats nothing; it verifies
-formatting, lint, strict types, unit tests, production bundles, and the 25 KB gzip embed budget.
+formatting, lint, strict types, unit tests, production bundles, and separate lean-core/full-library/embed budgets.
 
 ## Latest validation
 
 - Formatting, ESLint, and strict TypeScript: passed with no warnings or errors.
-- Unit tests: 135 passed across 34 test files, including 45 chart/theme visual baselines.
+- Unit tests: 140 passed across 35 test files, including 45 chart/theme visual baselines.
 - Production build: ESM, CJS, standalone embed ESM, browser IIFE, minified browser IIFE, and TypeScript declarations generated.
-- Minified core bundle: 9.72 KB gzipped (15 KB budget).
-- Minified full embed bundle: 9.63 KB gzipped (25 KB budget).
+- Lean original-family core: measured on every build against a 35 KB gzip budget.
+- Complete library and public embed: measured against 70 KB and 40 KB gzip budgets respectively.
 - Browser check: the public demo rendered bar, line, pie, doughnut, and scatter charts without page errors.
 - Accessibility check: all five canvases had generated `role="img"` labels and matching data tables.
 - GitHub-hosted CI: push and pull-request checks completed successfully.

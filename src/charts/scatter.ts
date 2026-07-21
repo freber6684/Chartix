@@ -3,7 +3,7 @@ import type { ChartModule } from './types.js';
 
 /** Built-in scatter chart. Numeric labels are x values; dataset values are y values. */
 function renderScatter(context: Parameters<ChartModule['render']>[0]): void {
-  const { data, options, plot, progress, renderer, theme } = context;
+  const { data, options, plot, renderer, theme } = context;
   const parseX = (value: number | string | Date, index: number): number => {
     const parsed =
       options.scales?.x?.type === 'time'
@@ -98,6 +98,7 @@ function renderScatter(context: Parameters<ChartModule['render']>[0]): void {
 
   data.datasets.forEach((dataset, datasetIndex) => {
     if (context.hiddenDatasets.has(datasetIndex)) return;
+    const datasetProgress = context.seriesProgress?.(datasetIndex) ?? context.progress;
     const color = dataset.color ?? theme.palette[datasetIndex % theme.palette.length] ?? theme.text;
     const entries = dataset.points?.length
       ? dataset.points.map((point) => ({
@@ -107,7 +108,7 @@ function renderScatter(context: Parameters<ChartModule['render']>[0]): void {
         }))
       : dataset.values.map((value, index) => ({ x: data.labels[index] ?? index + 1, y: value }));
     entries.forEach((entry, index) => {
-      if (index >= Math.ceil(entries.length * progress) || entry.y === null) return;
+      if (index >= Math.ceil(entries.length * datasetProgress) || entry.y === null) return;
       const point = { x: xScale.project(parseX(entry.x, index)), y: yScale.project(entry.y) };
       const active = context.activeRegions?.some(
         (region) => region.datasetIndex === datasetIndex && region.valueIndex === index,

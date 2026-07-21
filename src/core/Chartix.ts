@@ -27,7 +27,7 @@ import { summarizeChart } from '../intelligence/advisor.js';
 import { createSonificationPlan, dataToAccessibleText } from './sonification.js';
 import type { ChartPlugin, PluginContext } from './Plugin.js';
 import { registerScale, unregisterScale, type ScaleFactory } from './Scale.js';
-import { interpolateChartData } from './transitions.js';
+import { interpolateChartData, staggerProgress } from './transitions.js';
 
 const validOptionKeys = new Set<keyof ChartOptions>([
   'animation',
@@ -772,6 +772,13 @@ export class Chartix {
       theme,
       plot,
       progress: this.transitionFrom ? 1 : progress,
+      seriesProgress: (index) => {
+        if (this.transitionFrom) return 1;
+        const animation = drawOptions.animation;
+        const duration = animation === false ? 1 : Math.max(1, animation?.duration ?? 420);
+        const stagger = animation === false ? 0 : Math.max(0, animation?.stagger ?? 0);
+        return staggerProgress(progress, index, renderData.datasets.length, stagger / duration);
+      },
       interactions,
       hiddenDatasets: this.hiddenDatasets,
       ...(this.activeRegion ? { activeRegion: this.activeRegion } : {}),
