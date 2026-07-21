@@ -67,6 +67,8 @@ changes so the next session can resume without reconstructing history.
       group/bin/window/pivot transforms.
 - [x] Add accessible pattern fills, radial gradients, shadows/glows, background images, rounded
       doughnut segments, HTML legends, and automatic outside-label collision avoidance.
+- [x] Add accessible SVG, printable PDF, clipboard, print, and iframe exports plus dedicated
+      transform/annotation/theme/tooltip/export registries.
 
 ## Remaining for v0.1
 
@@ -135,7 +137,7 @@ formatting, lint, strict types, unit tests, production bundles, and the 25 KB gz
 ## Latest validation
 
 - Formatting, ESLint, and strict TypeScript: passed with no warnings or errors.
-- Unit tests: 108 passed across 22 test files, including 45 chart/theme visual baselines.
+- Unit tests: 110 passed across 23 test files, including 45 chart/theme visual baselines.
 - Production build: ESM, CJS, standalone embed ESM, browser IIFE, minified browser IIFE, and TypeScript declarations generated.
 - Minified core bundle: 9.72 KB gzipped (15 KB budget).
 - Minified full embed bundle: 9.63 KB gzipped (25 KB budget).

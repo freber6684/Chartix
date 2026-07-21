@@ -78,12 +78,12 @@ delivered in stable releases so partially implemented features never appear prod
 ## Export, sharing, and developer platform
 
 - [x] ESM, CJS, browser, auto-embed, strict TypeScript, and custom chart-module contracts.
-- [ ] PNG/JPEG/CSV/portable HTML export is complete; SVG/PDF, clipboard, and print layouts remain.
+- [x] PNG, JPEG, SVG, PDF, CSV, portable HTML/iframe, clipboard, and print workflows.
 - [ ] Saved chart URLs, shareable local presets, and snapshots are complete; responsive embed
       preview controls remain.
 - [x] Dependency-free React, Vue, Svelte, Web Component, and portable server-HTML adapters.
-- [ ] Stable drawing lifecycle, custom chart modules, scales, and interactions are complete;
-      dedicated transform, annotation, and theme plugin registries remain.
+- [x] Stable drawing lifecycle and dedicated chart, scale, interaction, transform, annotation,
+      theme, tooltip, and export extension registries.
 - [ ] Developer inspector, performance overlay, pixel-level browser regression, and compatibility matrix.
 - [x] Deterministic renderer-command regression suite for all 45 MVP chart/theme combinations.
 

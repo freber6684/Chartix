@@ -208,3 +208,10 @@ Datasets accept `pattern: 'diagonal' | 'dots' | 'crosshatch'` and a `shadow` obj
 support `radialGradient` and `radialCornerRadius`; outside labels automatically separate to prevent
 overlap. `backgroundImage` and `backgroundImageOpacity` place an image below chart marks. Set
 `legend.html` to create an accessible, interactive DOM legend beside the canvas.
+
+## Complete export and extension registries
+
+`chartConfigToSVG`, `chartConfigToPDF`, and `chartConfigToIframe` provide portable static and embed
+outputs. Chart instances expose `toSVG`, `toPDF`, `toIframe`, `copyToClipboard`, `print`, and the
+expanded `download` formats. Dedicated typed registries are exported for transforms, annotations,
+themes, tooltips, and exporters, alongside the chart/scale/interaction/plugin APIs.

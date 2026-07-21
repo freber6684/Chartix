@@ -73,7 +73,13 @@ export {
   type TabularData,
 } from './data/connectors.js';
 /** CSV and portable HTML export helpers usable without constructing a chart. */
-export { chartConfigToHTML, chartDataToCSV } from './utils/export.js';
+export {
+  chartConfigToHTML,
+  chartConfigToIframe,
+  chartConfigToPDF,
+  chartConfigToSVG,
+  chartDataToCSV,
+} from './utils/export.js';
 /** Interaction hit-region types for custom chart modules. */
 export {
   registerInteractionMode,
@@ -85,6 +91,19 @@ export {
 } from './core/interactions.js';
 /** Plugin SDK lifecycle types. */
 export type { ChartPlugin, PluginContext } from './core/Plugin.js';
+export {
+  annotationExtensions,
+  exportExtensions,
+  ExtensionRegistry,
+  themeExtensions,
+  tooltipExtensions,
+  transformExtensions,
+  type AnnotationExtension,
+  type ExportExtension,
+  type ThemeExtension,
+  type TooltipExtension,
+  type TransformExtension,
+} from './core/ExtensionRegistry.js';
 /** Optional framework adapters with no bundled framework dependencies. */
 export { createReactChartix } from './adapters/react.js';
 export { createVueChartix } from './adapters/vue.js';

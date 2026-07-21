@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { chartConfigToHTML, chartDataToCSV } from '../src/utils/export.js';
+import {
+  chartConfigToHTML,
+  chartConfigToIframe,
+  chartConfigToPDF,
+  chartConfigToSVG,
+  chartDataToCSV,
+} from '../src/utils/export.js';
 
 const data = {
   labels: ['A', 'B, quoted'],
@@ -20,5 +26,14 @@ describe('portable exports', () => {
     expect(html).toContain('data-chartix');
     expect(html).toContain('./chartix.js');
     expect(html).toContain('<title>Portable</title>');
+  });
+
+  it('creates accessible SVG, PDF, and iframe fallbacks', () => {
+    const config = { type: 'bar', data, options: { title: 'Export' } };
+    expect(chartConfigToSVG(config)).toContain('<svg');
+    expect(chartConfigToSVG(config)).toContain('role="img"');
+    expect(new TextDecoder().decode(chartConfigToPDF(config))).toMatch(/^%PDF-1\.4/);
+    expect(chartConfigToIframe(config)).toContain('<iframe');
+    expect(chartConfigToIframe(config)).toContain('srcdoc=');
   });
 });

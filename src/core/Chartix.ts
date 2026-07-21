@@ -15,7 +15,13 @@ import type { ChartModule, PlotArea } from '../charts/types.js';
 import type { ChartConfig, ChartData, ChartOptions, PerformanceStats } from '../types/options.js';
 import { cloneData, normalizeConfig } from '../utils/options.js';
 import { applyDataTransforms } from '../utils/transforms.js';
-import { chartConfigToHTML, chartDataToCSV } from '../utils/export.js';
+import {
+  chartConfigToHTML,
+  chartConfigToIframe,
+  chartConfigToPDF,
+  chartConfigToSVG,
+  chartDataToCSV,
+} from '../utils/export.js';
 import { adaptChartConfig } from '../intelligence/responsive.js';
 import { summarizeChart } from '../intelligence/advisor.js';
 import { createSonificationPlan, dataToAccessibleText } from './sonification.js';
@@ -398,21 +404,80 @@ export class Chartix {
     return chartConfigToHTML(this.config, bundleUrl);
   }
 
-  /** Download an image, CSV dataset, or self-contained HTML package. */
-  public download(format: 'png' | 'jpeg' | 'csv' | 'html', filename = 'chartix'): void {
+  /** Export an accessible, dependency-free SVG fallback. */
+  public toSVG(): string {
     this.assertActive();
-    const content =
-      format === 'csv'
-        ? this.toCSV()
-        : format === 'html'
-          ? this.toHTML()
-          : this.toDataURL(format === 'jpeg' ? 'image/jpeg' : 'image/png');
-    const href =
-      format === 'csv' || format === 'html'
-        ? URL.createObjectURL(
-            new Blob([content], { type: format === 'csv' ? 'text/csv' : 'text/html' }),
-          )
-        : content;
+    return chartConfigToSVG(this.config, this.renderer.width, this.renderer.height);
+  }
+
+  /** Export a printable PDF data summary. */
+  public toPDF(): Uint8Array {
+    this.assertActive();
+    return chartConfigToPDF(this.config);
+  }
+
+  /** Export a sandboxed iframe snippet containing the complete chart. */
+  public toIframe(bundleUrl?: string): string {
+    this.assertActive();
+    return chartConfigToIframe(this.config, bundleUrl);
+  }
+
+  /** Copy an image, SVG, CSV, HTML, or iframe snippet to the system clipboard. */
+  public async copyToClipboard(
+    format: 'png' | 'svg' | 'csv' | 'html' | 'iframe' = 'png',
+  ): Promise<void> {
+    this.assertActive();
+    if (!navigator.clipboard) throw new Error('Chartix: Clipboard API is unavailable.');
+    if (format === 'png' && typeof ClipboardItem !== 'undefined') {
+      const blob = await new Promise<Blob>((resolve, reject) =>
+        this.canvas.toBlob(
+          (value) => (value ? resolve(value) : reject(new Error('Chartix: image export failed.'))),
+          'image/png',
+        ),
+      );
+      await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+      return;
+    }
+    const text =
+      format === 'svg'
+        ? this.toSVG()
+        : format === 'csv'
+          ? this.toCSV()
+          : format === 'iframe'
+            ? this.toIframe()
+            : this.toHTML();
+    await navigator.clipboard.writeText(text);
+  }
+
+  /** Invoke the browser's print workflow with a chart-specific CSS hook. */
+  public print(): void {
+    this.assertActive();
+    this.canvas.classList.add('chartix-print-target');
+    globalThis.print?.();
+    this.canvas.classList.remove('chartix-print-target');
+  }
+
+  /** Download an image, CSV dataset, or self-contained HTML package. */
+  public download(
+    format: 'png' | 'jpeg' | 'svg' | 'pdf' | 'csv' | 'html',
+    filename = 'chartix',
+  ): void {
+    this.assertActive();
+    let href: string;
+    if (format === 'pdf') {
+      const bytes = this.toPDF();
+      const copy = new Uint8Array(bytes.byteLength);
+      copy.set(bytes);
+      href = URL.createObjectURL(new Blob([copy.buffer], { type: 'application/pdf' }));
+    } else if (format === 'csv' || format === 'html' || format === 'svg') {
+      const content =
+        format === 'csv' ? this.toCSV() : format === 'html' ? this.toHTML() : this.toSVG();
+      const type =
+        format === 'csv' ? 'text/csv' : format === 'html' ? 'text/html' : 'image/svg+xml';
+      href = URL.createObjectURL(new Blob([content], { type }));
+    } else {
+      href = this.toDataURL(format === 'jpeg' ? 'image/jpeg' : 'image/png');
+    }
     const anchor = document.createElement('a');
     anchor.href = href;
     anchor.download = `${filename}.${format === 'jpeg' ? 'jpg' : format}`;

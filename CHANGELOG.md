@@ -46,6 +46,8 @@ All notable Chartix changes are documented here. The project follows semantic ve
   moving-window, cumulative-window, and pivot transforms.
 - Accessible pattern fills, radial gradients, shadows/glows, background images, rounded doughnut
   segments, generated HTML legends, and automatic radial-label collision avoidance.
+- Accessible SVG, printable PDF, iframe, clipboard, and print exports plus dedicated transform,
+  annotation, theme, tooltip, and export extension registries.
 
 ## 0.1.0-alpha.2 - 2026-07-21
 
