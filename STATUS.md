@@ -1,6 +1,6 @@
 # Chartix project status
 
-Last updated: 2026-07-20
+Last updated: 2026-07-21
 
 Latest testable version: `0.1.0-alpha.1`
 
@@ -22,6 +22,8 @@ changes so the next session can resume without reconstructing history.
 - [x] Add simple `data-*`, full JSON embed parsing, auto-scan, and `MutationObserver` support.
 - [x] Add unit tests for scales, options, easing, and embed parsing.
 - [x] Add a local browser demo and public-facing README/Quick Start/Quick Embed documentation.
+- [x] Add GitHub Actions CI for formatting, linting, strict types, tests, and production builds.
+- [x] Add a GitHub Pages workflow that publishes the verified demo and browser bundle.
 
 ## Remaining for v0.1
 
@@ -42,6 +44,12 @@ changes so the next session can resume without reconstructing history.
 - [ ] Radar, stacked, mixed, and bubble chart modules after the v0.1 quality gate.
 
 ## Resume and test
+
+The GitHub-hosted demo is configured for:
+
+`https://freber6684.github.io/Chartix/`
+
+GitHub Actions is the canonical test environment. Local testing remains available when needed:
 
 ```bash
 npm install

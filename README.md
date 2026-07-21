@@ -7,6 +7,15 @@ rendering, animations, and declarative `data-*` embeds.
 
 > Chartix is under active development. Use the pinned alpha version while the v0.1 API settles.
 
+## Live Demo
+
+The latest validated demo is published entirely through GitHub:
+
+**[Open the Chartix GitHub Pages demo](https://freber6684.github.io/Chartix/)**
+
+GitHub Actions runs formatting, linting, strict TypeScript checks, unit tests, and production builds
+for every pull request and relevant push. A separate Pages workflow publishes the verified build.
+
 ## Quick Start
 
 ```bash
@@ -72,6 +81,9 @@ npm run demo
 
 The demo is served at `http://127.0.0.1:5173/examples/`. See [STATUS.md](STATUS.md) for the completed work,
 remaining milestones, and exact resume instructions.
+
+Local development is optional. The same complete quality gate runs automatically in GitHub Actions,
+and the generated browser demo is hosted through GitHub Pages.
 
 ## Accessibility
 

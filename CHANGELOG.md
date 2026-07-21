@@ -14,3 +14,4 @@ All notable Chartix changes are documented here. The project follows semantic ve
 - Accessible canvas labels and visually hidden data tables.
 - Declarative auto-embed bundle supporting flat attributes and JSON configuration.
 - Unit tests, a browser demo, and a persistent project status checklist.
+- GitHub Actions CI and automated GitHub Pages demo deployment.
