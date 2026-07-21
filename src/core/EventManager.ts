@@ -5,7 +5,7 @@ export type GestureMode = 'box' | 'brush' | 'lasso' | 'pan';
 
 interface EventManagerCallbacks {
   regions: () => readonly HitRegion[];
-  mode: () => 'nearest' | 'dataset' | 'index' | 'intersect';
+  mode: () => 'nearest' | 'dataset' | 'index' | 'intersect' | (string & {});
   gestureMode: (event: PointerEvent) => GestureMode | undefined;
   onActive: (regions: HitRegion[]) => void;
   onActivate: (region: HitRegion) => void;

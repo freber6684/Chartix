@@ -10,8 +10,11 @@ export {
   createPercentageScale,
   createRadialScale,
   createTimeScale,
+  registerScale,
+  unregisterScale,
   type ContinuousScaleOptions,
   type LinearScale,
+  type ScaleFactory,
 } from './core/Scale.js';
 /** Built-in themes and custom-theme resolver. */
 export { darkTheme, lightTheme, resolveTheme, themes } from './core/theme.js';
@@ -60,4 +63,18 @@ export { applyDataTransforms } from './utils/transforms.js';
 /** CSV and portable HTML export helpers usable without constructing a chart. */
 export { chartConfigToHTML, chartDataToCSV } from './utils/export.js';
 /** Interaction hit-region types for custom chart modules. */
-export type { Bounds, HitRegion, InteractionRegistry } from './core/interactions.js';
+export {
+  registerInteractionMode,
+  unregisterInteractionMode,
+  type Bounds,
+  type HitRegion,
+  type InteractionModeResolver,
+  type InteractionRegistry,
+} from './core/interactions.js';
+/** Plugin SDK lifecycle types. */
+export type { ChartPlugin, PluginContext } from './core/Plugin.js';
+/** Optional framework adapters with no bundled framework dependencies. */
+export { createReactChartix } from './adapters/react.js';
+export { createVueChartix } from './adapters/vue.js';
+export { chartix as svelteChartix } from './adapters/svelte.js';
+export { defineChartixElement } from './adapters/web-component.js';

@@ -47,6 +47,8 @@ changes so the next session can resume without reconstructing history.
 - [x] Add immutable sort, filter, aggregation, and normalization transforms.
 - [x] Add LTTB and canvas-width-aware sampling, automatic animation limits, and render telemetry.
 - [x] Add bounded streaming append plus PNG, JPEG, CSV, and portable HTML downloads.
+- [x] Add stable plugin lifecycle hooks plus custom chart, scale, and interaction registries.
+- [x] Add dependency-free React, Vue, Svelte, Web Component, and server-HTML adapters.
 
 ## Remaining for v0.1
 
@@ -115,7 +117,7 @@ formatting, lint, strict types, unit tests, production bundles, and the 25 KB gz
 ## Latest validation
 
 - Formatting, ESLint, and strict TypeScript: passed with no warnings or errors.
-- Unit tests: 79 passed across 13 test files, including 45 chart/theme visual baselines.
+- Unit tests: 82 passed across 14 test files, including 45 chart/theme visual baselines.
 - Production build: ESM, CJS, standalone embed ESM, browser IIFE, minified browser IIFE, and TypeScript declarations generated.
 - Minified core bundle: 9.72 KB gzipped (15 KB budget).
 - Minified full embed bundle: 9.63 KB gzipped (25 KB budget).

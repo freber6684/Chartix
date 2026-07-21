@@ -26,6 +26,8 @@ All notable Chartix changes are documented here. The project follows semantic ve
 - LTTB/min-max automatic sampling, bounded streaming append, expensive-animation safeguards, and
   completed-render performance statistics.
 - PNG, JPEG, CSV, and portable HTML exports with live download buttons in every playground.
+- Stable plugin lifecycle hooks, drawing layers, and custom chart/scale/interaction registries.
+- Optional React, Vue, Svelte, Web Component, and server-HTML adapters without framework dependencies.
 
 ## 0.1.0-alpha.2 - 2026-07-21
 

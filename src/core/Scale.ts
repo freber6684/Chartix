@@ -15,6 +15,32 @@ export interface ContinuousScaleOptions {
   reverse?: boolean;
 }
 
+/** Factory contract for custom continuous scales. */
+export type ScaleFactory = (
+  values: number[],
+  outputStart: number,
+  outputEnd: number,
+  options: ContinuousScaleOptions,
+) => LinearScale;
+
+const customScales = new Map<string, ScaleFactory>();
+
+/** Register a custom continuous scale by JSON-safe name. */
+export function registerScale(name: string, factory: ScaleFactory): void {
+  if (!name) throw new Error('Chartix: custom scales require a name.');
+  customScales.set(name, factory);
+}
+
+/** Remove a custom scale registration. */
+export function unregisterScale(name: string): boolean {
+  return customScales.delete(name);
+}
+
+/** Resolve a custom scale factory for the Cartesian layout engine. */
+export function resolveCustomScale(name: string): ScaleFactory | undefined {
+  return customScales.get(name);
+}
+
 function niceNumber(value: number, round: boolean): number {
   const exponent = Math.floor(Math.log10(Math.max(value, Number.EPSILON)));
   const fraction = value / 10 ** exponent;

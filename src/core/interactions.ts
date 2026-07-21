@@ -30,6 +30,26 @@ export interface InteractionRegistry {
   add(region: HitRegion): void;
 }
 
+/** Runtime custom interaction-mode resolver. */
+export type InteractionModeResolver = (
+  regions: readonly HitRegion[],
+  x: number,
+  y: number,
+) => HitRegion[];
+
+const customModes = new Map<string, InteractionModeResolver>();
+
+/** Register a named interaction mode usable from chart options. */
+export function registerInteractionMode(name: string, resolver: InteractionModeResolver): void {
+  if (!name) throw new Error('Chartix: interaction modes require a name.');
+  customModes.set(name, resolver);
+}
+
+/** Remove a custom interaction mode. */
+export function unregisterInteractionMode(name: string): boolean {
+  return customModes.delete(name);
+}
+
 function angleBetween(angle: number, start: number, end: number): boolean {
   const full = Math.PI * 2;
   const normalized = ((angle % full) + full) % full;
@@ -94,8 +114,10 @@ export function findHitRegions(
   regions: readonly HitRegion[],
   x: number,
   y: number,
-  mode: 'nearest' | 'dataset' | 'index' | 'intersect',
+  mode: 'nearest' | 'dataset' | 'index' | 'intersect' | (string & {}),
 ): HitRegion[] {
+  const custom = customModes.get(mode);
+  if (custom) return custom(regions, x, y);
   const primary = findHitRegion(regions, x, y, mode === 'intersect');
   if (!primary) return [];
   if (primary.kind === 'legend' || mode === 'nearest' || mode === 'intersect') return [primary];

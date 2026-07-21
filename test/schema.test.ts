@@ -30,6 +30,7 @@ describe('embed JSON Schema', () => {
         'legend',
         'padding',
         'performance',
+        'plugins',
         'responsive',
         'resizable',
         'scales',

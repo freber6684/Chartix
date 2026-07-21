@@ -49,7 +49,7 @@ export interface AxisOptions {
   /** Include zero in the numeric domain. */
   beginAtZero?: boolean;
   /** Scale transformation. */
-  type?: 'linear' | 'logarithmic' | 'time' | 'percentage' | 'category';
+  type?: 'linear' | 'logarithmic' | 'time' | 'percentage' | 'category' | (string & {});
   /** Explicit lower domain bound. */
   min?: number;
   /** Explicit upper domain bound. */
@@ -101,7 +101,7 @@ export interface InteractionOptions {
   /** Require the pointer to intersect a mark instead of selecting the nearest mark. */
   intersect?: boolean;
   /** How marks are grouped for hover and keyboard tooltips. */
-  mode?: 'nearest' | 'dataset' | 'index' | 'intersect';
+  mode?: 'nearest' | 'dataset' | 'index' | 'intersect' | (string & {});
 }
 
 /** Floating value-card behavior. */
@@ -292,6 +292,8 @@ export interface ChartOptions {
   padding?: number;
   /** Automatic performance behavior and render telemetry. */
   performance?: PerformanceOptions;
+  /** Registered plugin IDs enabled for this chart; omitted enables all global plugins. */
+  plugins?: string[];
   /** Resize the chart with its container. */
   responsive?: boolean;
   /** Let a user drag-resize the chart container in supporting browsers. */

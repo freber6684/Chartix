@@ -70,8 +70,9 @@ delivered in stable releases so partially implemented features never appear prod
 - [x] ESM, CJS, browser, auto-embed, strict TypeScript, and custom chart-module contracts.
 - [ ] PNG/JPEG/CSV/portable HTML export is complete; SVG/PDF, clipboard, and print layouts remain.
 - [ ] Saved playground URLs, shareable presets, responsive embed previews, and snapshots.
-- [ ] React, Vue, Svelte, Web Component, and server-rendering wrappers.
-- [ ] Plugin SDK for renderers, scales, interactions, transforms, annotations, and themes.
+- [x] Dependency-free React, Vue, Svelte, Web Component, and portable server-HTML adapters.
+- [ ] Stable drawing lifecycle, custom chart modules, scales, and interactions are complete;
+      dedicated transform, annotation, and theme plugin registries remain.
 - [ ] Developer inspector, performance overlay, pixel-level browser regression, and compatibility matrix.
 - [x] Deterministic renderer-command regression suite for all 45 MVP chart/theme combinations.
 

@@ -3,6 +3,7 @@ import {
   createLogScale,
   createPercentageScale,
   createTimeScale,
+  resolveCustomScale,
   type LinearScale,
 } from '../core/Scale.js';
 import type { Renderer } from '../core/Renderer.js';
@@ -58,8 +59,10 @@ export function createAxisScale(
     ...(axis.max !== undefined ? { max: axis.max } : {}),
     ...(axis.reverse !== undefined ? { reverse: axis.reverse } : {}),
   };
-  const base =
-    axis.type === 'logarithmic'
+  const custom = axis.type ? resolveCustomScale(axis.type) : undefined;
+  const base = custom
+    ? custom(values, outputStart, outputEnd, options)
+    : axis.type === 'logarithmic'
       ? createLogScale(values, outputStart, outputEnd, options)
       : axis.type === 'time'
         ? createTimeScale(values, outputStart, outputEnd, options)

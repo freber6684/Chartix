@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { findHitRegion, findHitRegions, type HitRegion } from '../src/core/interactions.js';
+import {
+  findHitRegion,
+  findHitRegions,
+  registerInteractionMode,
+  unregisterInteractionMode,
+  type HitRegion,
+} from '../src/core/interactions.js';
 
 const regions: HitRegion[] = [
   {
@@ -51,5 +57,11 @@ describe('interaction hit testing', () => {
     expect(findHitRegions(grouped, 15, 15, 'dataset')).toHaveLength(2);
     expect(findHitRegions(grouped, 200, 200, 'intersect')).toEqual([]);
     expect(findHitRegions(grouped, 200, 200, 'nearest')).toHaveLength(1);
+  });
+
+  it('supports named custom interaction modes', () => {
+    registerInteractionMode('all-test', (available) => [...available]);
+    expect(findHitRegions(regions, 0, 0, 'all-test')).toHaveLength(2);
+    expect(unregisterInteractionMode('all-test')).toBe(true);
   });
 });

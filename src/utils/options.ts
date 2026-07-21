@@ -76,6 +76,7 @@ export function normalizeConfig(config: ChartConfig): ChartConfig & { options: C
       ...(config.options?.transforms
         ? { transforms: config.options.transforms.map((transform) => ({ ...transform })) }
         : {}),
+      ...(config.options?.plugins ? { plugins: [...config.options.plugins] } : {}),
       ...(config.options?.xLabels ? { xLabels: { ...config.options.xLabels } } : {}),
       ...(config.options?.yLabels ? { yLabels: { ...config.options.yLabels } } : {}),
       ...(config.options?.zoom ? { zoom: { ...config.options.zoom } } : {}),

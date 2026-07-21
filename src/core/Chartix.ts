@@ -3,6 +3,11 @@ import { CanvasRenderer, type Point } from './Renderer.js';
 import { EventManager, type GestureMode } from './EventManager.js';
 import { Tooltip } from './Tooltip.js';
 import type { HitRegion } from './interactions.js';
+import {
+  registerInteractionMode,
+  unregisterInteractionMode,
+  type InteractionModeResolver,
+} from './interactions.js';
 import { describeChart, updateDataTable } from './accessibility.js';
 import { resolveTheme } from './theme.js';
 import { createPlotArea } from '../charts/cartesian.js';
@@ -17,6 +22,8 @@ import type {
 import { cloneData, normalizeConfig } from '../utils/options.js';
 import { applyDataTransforms } from '../utils/transforms.js';
 import { chartConfigToHTML, chartDataToCSV } from '../utils/export.js';
+import type { ChartPlugin, PluginContext } from './Plugin.js';
+import { registerScale, unregisterScale, type ScaleFactory } from './Scale.js';
 
 const validOptionKeys = new Set<keyof ChartOptions>([
   'animation',
@@ -39,6 +46,7 @@ const validOptionKeys = new Set<keyof ChartOptions>([
   'legend',
   'padding',
   'performance',
+  'plugins',
   'responsive',
   'resizable',
   'scales',
@@ -90,6 +98,7 @@ function validateConfig(config: ChartConfig): void {
 /** Main Chartix instance, responsible for chart lifecycle and rendering. */
 export class Chartix {
   private static readonly modules = new Map<string, ChartModule>();
+  private static readonly plugins = new Map<string, ChartPlugin>();
   private readonly renderer: CanvasRenderer;
   private config: ChartConfig & { options: ChartOptions };
   private resizeObserver?: ResizeObserver;
@@ -127,6 +136,39 @@ export class Chartix {
     });
   }
 
+  /** Register one or more global lifecycle plugins by stable ID. */
+  public static registerPlugin(...plugins: ChartPlugin[]): void {
+    plugins.forEach((plugin) => {
+      if (!plugin.id) throw new Error('Chartix: plugins require an id.');
+      Chartix.plugins.set(plugin.id, plugin);
+    });
+  }
+
+  /** Remove a registered lifecycle plugin. */
+  public static unregisterPlugin(id: string): boolean {
+    return Chartix.plugins.delete(id);
+  }
+
+  /** Register a custom continuous scale used by `scales.*.type`. */
+  public static registerScale(name: string, factory: ScaleFactory): void {
+    registerScale(name, factory);
+  }
+
+  /** Remove a custom scale factory. */
+  public static unregisterScale(name: string): boolean {
+    return unregisterScale(name);
+  }
+
+  /** Register a custom pointer interaction mode. */
+  public static registerInteractionMode(name: string, resolver: InteractionModeResolver): void {
+    registerInteractionMode(name, resolver);
+  }
+
+  /** Remove a custom pointer interaction mode. */
+  public static unregisterInteractionMode(name: string): boolean {
+    return unregisterInteractionMode(name);
+  }
+
   /** Create and render a chart on a canvas. */
   public constructor(
     private readonly canvas: HTMLCanvasElement,
@@ -142,6 +184,7 @@ export class Chartix {
       data: applyDataTransforms(this.config.data, this.config.options.transforms),
     };
     this.renderer = new CanvasRenderer(canvas);
+    this.runPlugins('beforeInit');
     this.tooltip = new Tooltip(canvas);
     this.resetZoomButton = this.createResetZoomButton();
     this.eventManager = new EventManager(canvas, {
@@ -165,6 +208,7 @@ export class Chartix {
       this.resizeObserver = new ResizeObserver(() => this.resize());
       this.resizeObserver.observe(canvas.parentElement ?? canvas);
     }
+    this.runPlugins('afterInit');
   }
 
   /** Update labels or datasets and animate the new values. */
@@ -293,6 +337,7 @@ export class Chartix {
   /** Stop observers and animations and remove generated accessibility markup. */
   public destroy(): void {
     if (this.destroyed) return;
+    this.runPlugins('beforeDestroy');
     this.cancelAnimation?.();
     this.resizeObserver?.disconnect();
     this.eventManager.destroy();
@@ -303,6 +348,7 @@ export class Chartix {
     this.canvas.removeAttribute('aria-label');
     this.canvas.removeAttribute('tabindex');
     this.destroyed = true;
+    this.runPlugins('afterDestroy');
   }
 
   private render(animateRender = true): void {
@@ -336,6 +382,7 @@ export class Chartix {
         tick: typography?.tickSize ?? baseTheme.fontSize.tick,
       },
     };
+    this.runPlugins('beforeRender', { theme, progress });
     this.renderer.clear(theme.background);
     this.regions = [];
     const interactions = {
@@ -353,6 +400,7 @@ export class Chartix {
       this.hiddenDatasets,
     );
     this.lastPlot = plot;
+    this.runPlugins('beforeDatasets', { theme, plot, progress });
     module.render({
       renderer: this.renderer,
       data: renderData,
@@ -365,6 +413,7 @@ export class Chartix {
       ...(this.activeRegion ? { activeRegion: this.activeRegion } : {}),
       ...(this.activeRegions.length ? { activeRegions: this.activeRegions } : {}),
     });
+    this.runPlugins('afterDatasets', { theme, plot, progress });
     const active = this.activeRegion;
     if (this.config.options.crosshair?.enabled && active && active.kind !== 'legend') {
       const color = this.config.options.crosshair.color ?? theme.mutedText;
@@ -402,6 +451,12 @@ export class Chartix {
       this.canvas.dispatchEvent(
         new CustomEvent('chartix:render', { detail: this.performanceStats }),
       );
+      this.runPlugins('afterRender', {
+        theme,
+        plot,
+        progress,
+        performance: this.performanceStats,
+      });
     }
   }
 
@@ -663,6 +718,19 @@ export class Chartix {
       parent.style.minWidth = '240px';
       parent.style.minHeight = '180px';
     }
+  }
+
+  private runPlugins(
+    hook: keyof Omit<ChartPlugin, 'id'>,
+    additions: Partial<PluginContext> = {},
+  ): void {
+    const enabled = this.config.options.plugins;
+    Chartix.plugins.forEach((plugin) => {
+      if (enabled && !enabled.includes(plugin.id)) return;
+      const callback = plugin[hook];
+      if (typeof callback !== 'function') return;
+      callback({ canvas: this.canvas, config: this.config, renderer: this.renderer, ...additions });
+    });
   }
 }
 

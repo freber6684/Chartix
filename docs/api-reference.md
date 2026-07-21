@@ -129,3 +129,10 @@ and source complexity. Expensive animation is automatically disabled above 5,000
 The canonical schema is available in the package as `dist/embed/chartix.schema.json` and on the
 public demo at `/Chartix/dist/embed/chartix.schema.json`. It rejects unknown config properties and
 can power IDE completion, form generation, saved-config validation, and no-code tools.
+
+## Extension platform
+
+`Chartix.registerPlugin()` installs lifecycle hooks around initialization, rendering, dataset
+drawing, and destruction. `options.plugins` can select plugin IDs per chart. Custom continuous
+scales and hit-testing modes use `Chartix.registerScale()` and `Chartix.registerInteractionMode()`.
+All registries have matching unregister methods. See [plugins and frameworks](plugins-and-frameworks.md).

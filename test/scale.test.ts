@@ -5,6 +5,9 @@ import {
   createLogScale,
   createPercentageScale,
   createTimeScale,
+  registerScale,
+  resolveCustomScale,
+  unregisterScale,
 } from '../src/core/Scale.js';
 
 describe('createLinearScale', () => {
@@ -37,5 +40,16 @@ describe('advanced scales', () => {
     const band = createBandScale(['A', 'B'], 0, 100);
     expect(band.bandwidth).toBe(50);
     expect(band.project('B')).toBe(75);
+  });
+
+  it('registers custom scale factories by name', () => {
+    registerScale('constant-test', (_values, outputStart) => ({
+      min: 0,
+      max: 1,
+      ticks: [0, 1],
+      project: () => outputStart,
+    }));
+    expect(resolveCustomScale('constant-test')?.([1], 42, 100, {})?.project(1)).toBe(42);
+    expect(unregisterScale('constant-test')).toBe(true);
   });
 });
