@@ -45,6 +45,8 @@ export type {
   InteractionOptions,
   LabelOptions,
   LegendOptions,
+  PerformanceOptions,
+  PerformanceStats,
   ScaleOptions,
   SelectionOptions,
   ThemeName,
@@ -55,5 +57,7 @@ export type {
 } from './types/options.js';
 /** Declarative data preparation utility. */
 export { applyDataTransforms } from './utils/transforms.js';
+/** CSV and portable HTML export helpers usable without constructing a chart. */
+export { chartConfigToHTML, chartDataToCSV } from './utils/export.js';
 /** Interaction hit-region types for custom chart modules. */
 export type { Bounds, HitRegion, InteractionRegistry } from './core/interactions.js';

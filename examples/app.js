@@ -515,6 +515,12 @@ document.querySelector('#copy-code').addEventListener('click', async () => {
     status.textContent = 'Select the code and copy it manually.';
   }
 });
+document.querySelectorAll('[data-export]').forEach((button) =>
+  button.addEventListener('click', () => {
+    state.playground?.download(button.dataset.export, `chartix-${state.selected.id}`);
+    document.querySelector('#copy-status').textContent = `${button.textContent} export created.`;
+  }),
+);
 window.addEventListener('hashchange', () => {
   const match = location.hash.match(/^#chart\/(.+)$/);
   if (match) openChart(match[1], false);

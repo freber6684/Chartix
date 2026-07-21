@@ -157,7 +157,28 @@ export interface DecimationOptions {
   /** Number of source points that triggers sampling. */
   threshold?: number;
   /** Approximate maximum number of rendered points. */
-  samples?: number;
+  samples?: number | 'auto';
+  /** Sampling algorithm. */
+  algorithm?: 'min-max' | 'lttb' | 'auto';
+}
+
+/** Automatic performance safeguards and measurements. */
+export interface PerformanceOptions {
+  /** Automatically reduce expensive animation and sampling work. */
+  autoOptimize?: boolean;
+  /** Disable animation above this total point count. */
+  animationThreshold?: number;
+  /** Runtime callback fired after a completed render. */
+  onRender?: (stats: PerformanceStats) => void;
+}
+
+/** Last measured render characteristics. */
+export interface PerformanceStats {
+  durationMs: number;
+  sourcePoints: number;
+  renderedMarks: number;
+  renderer: 'canvas';
+  animationDisabled: boolean;
 }
 
 /** Wheel, drag-pan, and box-zoom behavior. */
@@ -269,6 +290,8 @@ export interface ChartOptions {
   legend?: LegendOptions;
   /** Internal chart padding in CSS pixels. */
   padding?: number;
+  /** Automatic performance behavior and render telemetry. */
+  performance?: PerformanceOptions;
   /** Resize the chart with its container. */
   responsive?: boolean;
   /** Let a user drag-resize the chart container in supporting browsers. */

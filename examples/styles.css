@@ -770,6 +770,13 @@ a {
   white-space: pre-wrap;
   word-break: break-word;
 }
+
+.export-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 0 20px 18px;
+}
 .copy-status {
   min-height: 28px;
   margin: 12px 18px;

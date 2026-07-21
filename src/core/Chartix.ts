@@ -7,9 +7,16 @@ import { describeChart, updateDataTable } from './accessibility.js';
 import { resolveTheme } from './theme.js';
 import { createPlotArea } from '../charts/cartesian.js';
 import type { ChartModule, PlotArea } from '../charts/types.js';
-import type { AnimationOptions, ChartConfig, ChartData, ChartOptions } from '../types/options.js';
+import type {
+  AnimationOptions,
+  ChartConfig,
+  ChartData,
+  ChartOptions,
+  PerformanceStats,
+} from '../types/options.js';
 import { cloneData, normalizeConfig } from '../utils/options.js';
 import { applyDataTransforms } from '../utils/transforms.js';
+import { chartConfigToHTML, chartDataToCSV } from '../utils/export.js';
 
 const validOptionKeys = new Set<keyof ChartOptions>([
   'animation',
@@ -31,6 +38,7 @@ const validOptionKeys = new Set<keyof ChartOptions>([
   'interaction',
   'legend',
   'padding',
+  'performance',
   'responsive',
   'resizable',
   'scales',
@@ -100,6 +108,14 @@ export class Chartix {
   private gestureMode: GestureMode | undefined;
   private readonly resetZoomButton: HTMLButtonElement | undefined;
   private destroyed = false;
+  private animateNextRender = true;
+  private performanceStats: PerformanceStats = {
+    durationMs: 0,
+    sourcePoints: 0,
+    renderedMarks: 0,
+    renderer: 'canvas',
+    animationDisabled: false,
+  };
 
   /** Register one or more tree-shakeable chart modules. */
   public static register(...modules: ChartModule[]): void {
@@ -152,7 +168,7 @@ export class Chartix {
   }
 
   /** Update labels or datasets and animate the new values. */
-  public update(data: Partial<ChartData>): void {
+  public update(data: Partial<ChartData>, options: { animate?: boolean } = {}): void {
     this.assertActive();
     const nextData: ChartData = {
       labels: data.labels ? [...data.labels] : [...this.config.data.labels],
@@ -166,7 +182,69 @@ export class Chartix {
       data: applyDataTransforms(nextData, this.config.options.transforms),
     };
     this.applyAccessibility();
-    this.render();
+    this.render(options.animate !== false);
+  }
+
+  /** Append one aligned category to a bounded streaming buffer. */
+  public append(label: string, values: Array<number | null>, maxPoints = 1_000): void {
+    this.assertActive();
+    if (values.length !== this.config.data.datasets.length) {
+      throw new Error('Chartix: append requires one value for every dataset.');
+    }
+    const labels = [...this.config.data.labels, label].slice(-Math.max(1, maxPoints));
+    const datasets = this.config.data.datasets.map((dataset, index) => ({
+      ...dataset,
+      values: [...dataset.values, values[index] ?? null].slice(-Math.max(1, maxPoints)),
+    }));
+    this.config = { ...this.config, data: { labels, datasets } };
+    this.viewport = undefined;
+    this.applyAccessibility();
+    this.render(false);
+  }
+
+  /** Return the last completed render measurement. */
+  public getPerformanceStats(): Readonly<PerformanceStats> {
+    return { ...this.performanceStats };
+  }
+
+  /** Serialize the canvas to a PNG or JPEG data URL. */
+  public toDataURL(type: 'image/png' | 'image/jpeg' = 'image/png', quality = 0.92): string {
+    this.assertActive();
+    return this.canvas.toDataURL(type, quality);
+  }
+
+  /** Export the current aligned data as RFC 4180-compatible CSV. */
+  public toCSV(): string {
+    this.assertActive();
+    return chartDataToCSV(this.config.data);
+  }
+
+  /** Generate a portable, offline-ready HTML chart package. */
+  public toHTML(bundleUrl = 'https://freber6684.github.io/Chartix/dist/chartix.min.js'): string {
+    this.assertActive();
+    return chartConfigToHTML(this.config, bundleUrl);
+  }
+
+  /** Download an image, CSV dataset, or self-contained HTML package. */
+  public download(format: 'png' | 'jpeg' | 'csv' | 'html', filename = 'chartix'): void {
+    this.assertActive();
+    const content =
+      format === 'csv'
+        ? this.toCSV()
+        : format === 'html'
+          ? this.toHTML()
+          : this.toDataURL(format === 'jpeg' ? 'image/jpeg' : 'image/png');
+    const href =
+      format === 'csv' || format === 'html'
+        ? URL.createObjectURL(
+            new Blob([content], { type: format === 'csv' ? 'text/csv' : 'text/html' }),
+          )
+        : content;
+    const anchor = document.createElement('a');
+    anchor.href = href;
+    anchor.download = `${filename}.${format === 'jpeg' ? 'jpg' : format}`;
+    anchor.click();
+    if (href.startsWith('blob:')) URL.revokeObjectURL(href);
   }
 
   /** Return to the previous dataset after a drill-down. */
@@ -227,8 +305,9 @@ export class Chartix {
     this.destroyed = true;
   }
 
-  private render(): void {
+  private render(animateRender = true): void {
     this.cancelAnimation?.();
+    this.animateNextRender = animateRender;
     const animation = this.resolveAnimation();
     if (!animation) {
       this.draw(1);
@@ -239,6 +318,7 @@ export class Chartix {
 
   private draw(progress: number): void {
     if (this.destroyed) return;
+    const startedAt = performance.now();
     const module = Chartix.modules.get(this.config.type);
     if (!module) throw new Error(`Chartix: chart type "${this.config.type}" is not registered.`);
     const baseTheme = resolveTheme(this.config.theme);
@@ -307,13 +387,37 @@ export class Chartix {
       );
     }
     this.drawGestureOverlay(theme.mutedText);
+    if (progress >= 1) {
+      this.performanceStats = {
+        durationMs: Math.max(0, performance.now() - startedAt),
+        sourcePoints: this.config.data.datasets.reduce(
+          (sum, dataset) => sum + dataset.values.length,
+          0,
+        ),
+        renderedMarks: this.regions.filter((region) => region.kind !== 'legend').length,
+        renderer: 'canvas',
+        animationDisabled: !this.animateNextRender || this.resolveAnimation() === null,
+      };
+      this.config.options.performance?.onRender?.({ ...this.performanceStats });
+      this.canvas.dispatchEvent(
+        new CustomEvent('chartix:render', { detail: this.performanceStats }),
+      );
+    }
   }
 
   private resolveAnimation(): Required<AnimationOptions> | null {
     const options = this.config.options.animation;
     const reduceMotion =
       typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (options === false || reduceMotion) return null;
+    const sourcePoints = this.config.data.datasets.reduce(
+      (sum, dataset) => sum + dataset.values.length,
+      0,
+    );
+    const performance = this.config.options.performance;
+    const tooExpensive =
+      performance?.autoOptimize !== false &&
+      sourcePoints > (performance?.animationThreshold ?? 5_000);
+    if (!this.animateNextRender || options === false || reduceMotion || tooExpensive) return null;
     return {
       duration: Math.max(1, options?.duration ?? 420),
       easing: options?.easing ?? 'easeOutCubic',

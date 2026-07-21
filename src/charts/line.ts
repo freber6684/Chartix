@@ -1,6 +1,6 @@
 import { drawVerticalFrame, font, formatTick, numericValues } from './cartesian.js';
 import type { ChartModule } from './types.js';
-import { decimateMinMax } from '../utils/decimation.js';
+import { decimateLTTB, decimateMinMax } from '../utils/decimation.js';
 
 /** Built-in line chart module with optional area fill. */
 export const LineChart: ChartModule = {
@@ -24,10 +24,22 @@ export const LineChart: ChartModule = {
         dataset.color ?? theme.palette[datasetIndex % theme.palette.length] ?? theme.text;
       const decimation = options.decimation;
       const threshold = decimation?.threshold ?? 1000;
+      const requestedSamples =
+        decimation?.samples === 'auto' || decimation?.samples === undefined
+          ? Math.max(50, Math.floor(plot.width * 1.5))
+          : decimation.samples;
+      const algorithm =
+        decimation?.algorithm === 'auto' || !decimation?.algorithm
+          ? dataset.values.length > 10_000
+            ? 'lttb'
+            : 'min-max'
+          : decimation.algorithm;
       const hasGaps = dataset.values.some((value) => value === null);
       const indexes =
         !hasGaps && decimation?.enabled !== false && dataset.values.length > threshold
-          ? decimateMinMax(dataset.values as number[], decimation?.samples ?? 500)
+          ? algorithm === 'lttb'
+            ? decimateLTTB(dataset.values as number[], requestedSamples)
+            : decimateMinMax(dataset.values as number[], requestedSamples)
           : dataset.values.flatMap((value, index) => (value === null ? [] : [index]));
       const visibleLength = Math.max(1, Math.ceil(indexes.length * progress));
       const visibleIndexes = indexes.slice(0, visibleLength);

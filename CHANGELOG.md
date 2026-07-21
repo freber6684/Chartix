@@ -23,6 +23,9 @@ All notable Chartix changes are documented here. The project follows semantic ve
 - Stacked and 100%-stacked bars, mixed per-dataset combo charts, bubble points, null gaps, and
   object-form Cartesian data.
 - Immutable sort, filter, aggregate, and normalize transformation pipelines.
+- LTTB/min-max automatic sampling, bounded streaming append, expensive-animation safeguards, and
+  completed-render performance statistics.
+- PNG, JPEG, CSV, and portable HTML exports with live download buttons in every playground.
 
 ## 0.1.0-alpha.2 - 2026-07-21
 

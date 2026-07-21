@@ -45,8 +45,9 @@ delivered in stable releases so partially implemented features never appear prod
 - [ ] CSV/TSV/JSON/Google Sheets connectors and schema/type inference.
 - [ ] Sort, filter, stack, aggregate, and normalize are complete; group, bin, window, and pivot remain.
 - [ ] Null gaps, date parsing, locale, currency, percentage, and number formatting are complete; units remain.
-- [ ] Streaming/ring-buffer data, WebSocket/SSE adapters, and incremental rendering.
-- [ ] WebGL renderer, OffscreenCanvas workers, virtualization, spatial indexes, and profiling tools.
+- [ ] Bounded streaming buffers and immediate incremental updates are complete; WebSocket/SSE adapters remain.
+- [ ] Width-aware min/max/LTTB sampling, auto animation limits, and render telemetry are complete;
+      WebGL, workers, virtualization, and spatial indexes remain.
 
 ## Annotations and analytics
 
@@ -67,7 +68,7 @@ delivered in stable releases so partially implemented features never appear prod
 ## Export, sharing, and developer platform
 
 - [x] ESM, CJS, browser, auto-embed, strict TypeScript, and custom chart-module contracts.
-- [ ] PNG/JPEG/SVG/PDF export, clipboard copy, CSV export, and print layouts.
+- [ ] PNG/JPEG/CSV/portable HTML export is complete; SVG/PDF, clipboard, and print layouts remain.
 - [ ] Saved playground URLs, shareable presets, responsive embed previews, and snapshots.
 - [ ] React, Vue, Svelte, Web Component, and server-rendering wrappers.
 - [ ] Plugin SDK for renderers, scales, interactions, transforms, annotations, and themes.

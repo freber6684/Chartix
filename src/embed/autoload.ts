@@ -2,6 +2,8 @@ import { BarChart } from '../charts/bar.js';
 import { LineChart } from '../charts/line.js';
 import { DoughnutChart, PieChart } from '../charts/radial.js';
 import { ScatterChart } from '../charts/scatter.js';
+import { BubbleChart } from '../charts/scatter.js';
+import { ComboChart } from '../charts/combo.js';
 import { Chartix } from '../core/Chartix.js';
 import type { ChartConfig, ChartDataset, ChartOptions, ThemeName } from '../types/options.js';
 
@@ -104,7 +106,15 @@ export function scanEmbeds(root: ParentNode = document): void {
 
 /** Start initial scanning and observe charts inserted later by site builders or SPAs. */
 export function startAutoEmbed(): void {
-  Chartix.register(BarChart, LineChart, PieChart, DoughnutChart, ScatterChart);
+  Chartix.register(
+    BarChart,
+    LineChart,
+    PieChart,
+    DoughnutChart,
+    ScatterChart,
+    BubbleChart,
+    ComboChart,
+  );
   scanEmbeds();
   if (observer || typeof MutationObserver === 'undefined') return;
   observer = new MutationObserver((records) => {

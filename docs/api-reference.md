@@ -39,6 +39,7 @@ gaps. Scatter and bubble datasets may additionally use `points: [{x, y, r?}]`. D
 | `interaction`          | enabled                       | Pointer hit-testing, keyboard navigation, and intersection behavior.  |
 | `legend`               | interactive                   | Legend series-toggle behavior.                                        |
 | `padding`              | `24`                          | Internal CSS-pixel spacing.                                           |
+| `performance`          | auto optimized                | Animation threshold and completed-render telemetry.                   |
 | `responsive`           | `true`                        | Follow container changes using `ResizeObserver`.                      |
 | `resizable`            | `false`                       | Add a native user drag-resize handle to the container.                |
 | `scales`               | linear/category               | Configure x, y, and y1 scale types, domains, ticks, titles and grids. |
@@ -105,18 +106,23 @@ A line annotation uses `{ type: 'line', value, label?, color?, width? }`. A rang
 `{ type: 'band', from, to, color? }`; use an alpha color such as `#38bdf822` for a translucent band.
 
 Line datasets longer than `decimation.threshold` are reduced to approximately
-`decimation.samples` while retaining endpoints and local high/low values. Disable it only when each
-source point must be painted.
+`decimation.samples` using min/max or LTTB. Set samples/algorithm to `auto` to adapt to canvas width
+and source complexity. Expensive animation is automatically disabled above 5,000 points by default.
+`chart.getPerformanceStats()` reports duration, source points, painted marks, and renderer.
 
 ## Lifecycle
 
 - `Chartix.register(...modules)` registers tree-shakeable renderers.
 - `new Chartix(canvas, config)` validates and renders a chart.
 - `chart.update({ labels?, datasets? })` immutably updates data and re-renders.
+- `chart.update(data, { animate: false })` performs an immediate update.
+- `chart.append(label, values, maxPoints?)` adds a streaming point to a bounded buffer.
 - `chart.resize()` measures and redraws.
 - `chart.destroy()` removes observers, events, tooltips, and generated accessibility markup.
 - `chart.resetZoom()` restores the complete viewport.
 - `chart.drillUp()` restores the previous drill-down level.
+- `chart.toDataURL()`, `toCSV()`, and `toHTML()` return portable exports.
+- `chart.download('png' | 'jpeg' | 'csv' | 'html', filename?)` starts a browser download.
 
 ## JSON Schema
 

@@ -173,7 +173,8 @@
           "properties": {
             "enabled": { "type": "boolean" },
             "threshold": { "type": "integer", "minimum": 2 },
-            "samples": { "type": "integer", "minimum": 4 }
+            "samples": { "oneOf": [{ "type": "integer", "minimum": 4 }, { "const": "auto" }] },
+            "algorithm": { "enum": ["min-max", "lttb", "auto"] }
           }
         },
         "fill": { "type": "boolean" },
@@ -206,6 +207,14 @@
           "additionalProperties": { "$ref": "#/$defs/data" }
         },
         "padding": { "type": "number", "minimum": 0 },
+        "performance": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "autoOptimize": { "type": "boolean" },
+            "animationThreshold": { "type": "integer", "minimum": 0 }
+          }
+        },
         "responsive": { "type": "boolean" },
         "resizable": { "type": "boolean" },
         "scales": {
