@@ -38,6 +38,8 @@ All notable Chartix changes are documented here. The project follows semantic ve
   regression, moving averages, anomaly detection, linear forecasts, and data-quality reports.
 - Editable values with immutable undo/redo histories and change events, plus animation delay, loop,
   lifecycle callbacks, pause, resume, and seek controls.
+- URL-safe chart sharing, local preset storage, chart forking and version comparison, portable
+  comments/approvals, and guided story presentation playback.
 
 ## 0.1.0-alpha.2 - 2026-07-21
 

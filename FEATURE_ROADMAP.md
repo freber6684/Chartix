@@ -75,7 +75,8 @@ delivered in stable releases so partially implemented features never appear prod
 
 - [x] ESM, CJS, browser, auto-embed, strict TypeScript, and custom chart-module contracts.
 - [ ] PNG/JPEG/CSV/portable HTML export is complete; SVG/PDF, clipboard, and print layouts remain.
-- [ ] Saved playground URLs, shareable presets, responsive embed previews, and snapshots.
+- [ ] Saved chart URLs, shareable local presets, and snapshots are complete; responsive embed
+      preview controls remain.
 - [x] Dependency-free React, Vue, Svelte, Web Component, and portable server-HTML adapters.
 - [ ] Stable drawing lifecycle, custom chart modules, scales, and interactions are complete;
       dedicated transform, annotation, and theme plugin registries remain.
@@ -96,11 +97,11 @@ playground example before being marked complete.
 - [ ] Quality review covers distortion, clutter, accessibility, contrast, and common statistical risk;
       deeper statistical validation remains.
 - [x] Constraint-based responsive composition changes layout without changing source data.
-- [ ] Collaborative annotations, comments, approvals, and version comparison.
+- [x] Portable comments, approvals, forking, and deterministic version comparison.
 - [ ] Reproducible data lineage embedded with exports and shared links.
 - [ ] Privacy-aware local analytics and redaction before sharing/export.
 - [ ] Natural-language editing that emits deterministic, reviewable JSON patches.
-- [ ] Dashboard story mode with guided scenes, highlights, and presentation playback.
+- [x] Dashboard story mode with guided scenes, highlights, and presentation playback.
 - [ ] Test-data generator and edge-case simulator for every chart configuration.
 
 ## Delivery order

@@ -172,3 +172,14 @@ configuration.
 The dependency-free analytics exports are `linearTrend`, `movingAverage`, `detectAnomalies`,
 `forecastLinear`, `assessDataQuality`, and `derivedDataset`. They run locally, never mutate caller
 data, and return ordinary arrays/objects that can be reviewed before being added to a chart.
+
+## Sharing, review, and story mode
+
+`encodeChartConfig`, `decodeChartConfig`, `createShareURL`, and `chartFromShareURL` make complete
+charts portable without a backend. `PresetStore` optionally persists named configurations in any
+browser-compatible `Storage` implementation. `forkChart` and `compareChartVersions` support
+remixing and deterministic reviews, while `ChartReview` manages targeted comments and approvals.
+
+`StoryPlayer` presents a `ChartStory` as timed or manually navigated scenes. Each scene owns a full
+chart configuration, optional narration, focus marks, and duration; applications can subscribe to
+scene changes to render presenter controls in any framework.

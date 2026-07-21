@@ -109,3 +109,26 @@ export {
   dataToAccessibleText,
   type SonificationNote,
 } from './core/sonification.js';
+/** Portable sharing, presets, collaboration, versioning, and story presentation. */
+export {
+  chartFromShareURL,
+  createShareURL,
+  decodeChartConfig,
+  encodeChartConfig,
+  PresetStore,
+  type ChartPreset,
+} from './authoring/share.js';
+export {
+  ChartReview,
+  compareChartVersions,
+  forkChart,
+  type ConfigDifference,
+  type ReviewComment,
+  type ReviewStatus,
+} from './authoring/collaboration.js';
+export {
+  StoryPlayer,
+  type ChartStory,
+  type StoryListener,
+  type StoryScene,
+} from './authoring/story.js';
