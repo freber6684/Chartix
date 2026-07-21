@@ -134,6 +134,17 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "accessibility": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "autoSummary": { "type": "boolean" },
+            "highContrast": { "type": "boolean" },
+            "dyslexiaFriendly": { "type": "boolean" },
+            "keyboardHelp": { "type": "boolean" },
+            "explorationMode": { "type": "boolean" }
+          }
+        },
         "annotations": {
           "type": "array",
           "items": {

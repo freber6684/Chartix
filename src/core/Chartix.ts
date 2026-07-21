@@ -23,11 +23,14 @@ import { cloneData, normalizeConfig } from '../utils/options.js';
 import { applyDataTransforms } from '../utils/transforms.js';
 import { chartConfigToHTML, chartDataToCSV } from '../utils/export.js';
 import { adaptChartConfig } from '../intelligence/responsive.js';
+import { summarizeChart } from '../intelligence/advisor.js';
+import { createSonificationPlan, dataToAccessibleText } from './sonification.js';
 import type { ChartPlugin, PluginContext } from './Plugin.js';
 import { registerScale, unregisterScale, type ScaleFactory } from './Scale.js';
 
 const validOptionKeys = new Set<keyof ChartOptions>([
   'animation',
+  'accessibility',
   'annotations',
   'ariaLabel',
   'backgroundColor',
@@ -125,6 +128,8 @@ export class Chartix {
   private gesturePoints: readonly Point[] = [];
   private gestureMode: GestureMode | undefined;
   private readonly resetZoomButton: HTMLButtonElement | undefined;
+  private accessibilityHelp?: HTMLElement;
+  private explorationLive?: HTMLElement;
   private destroyed = false;
   private animateNextRender = true;
   private performanceStats: PerformanceStats = {
@@ -260,6 +265,35 @@ export class Chartix {
     return { ...this.performanceStats };
   }
 
+  /** Return a row-oriented representation suitable for Braille displays and screen readers. */
+  public toAccessibleText(): string {
+    this.assertActive();
+    return dataToAccessibleText(this.config.data);
+  }
+
+  /** Sonify values locally with Web Audio; call from a user gesture. */
+  public sonify(
+    options: { duration?: number; minFrequency?: number; maxFrequency?: number } = {},
+  ): () => void {
+    this.assertActive();
+    if (typeof AudioContext === 'undefined')
+      throw new Error('Chartix: Web Audio is unavailable in this browser.');
+    const audio = new AudioContext();
+    const notes = createSonificationPlan(this.config.data, options);
+    notes.forEach((note) => {
+      const oscillator = audio.createOscillator();
+      const gain = audio.createGain();
+      oscillator.frequency.value = note.frequency;
+      gain.gain.setValueAtTime(0.0001, audio.currentTime + note.time);
+      gain.gain.exponentialRampToValueAtTime(0.12, audio.currentTime + note.time + 0.01);
+      gain.gain.exponentialRampToValueAtTime(0.0001, audio.currentTime + note.time + note.duration);
+      oscillator.connect(gain).connect(audio.destination);
+      oscillator.start(audio.currentTime + note.time);
+      oscillator.stop(audio.currentTime + note.time + note.duration);
+    });
+    return () => void audio.close();
+  }
+
   /** Serialize the canvas to a PNG or JPEG data URL. */
   public toDataURL(type: 'image/png' | 'image/jpeg' = 'image/png', quality = 0.92): string {
     this.assertActive();
@@ -353,8 +387,11 @@ export class Chartix {
     this.tooltip.destroy();
     this.resetZoomButton?.remove();
     this.dataTable?.remove();
+    this.accessibilityHelp?.remove();
+    this.explorationLive?.remove();
     this.canvas.removeAttribute('role');
     this.canvas.removeAttribute('aria-label');
+    this.canvas.removeAttribute('aria-describedby');
     this.canvas.removeAttribute('tabindex');
     this.destroyed = true;
     this.runPlugins('afterDestroy');
@@ -394,6 +431,16 @@ export class Chartix {
         tick: typography?.tickSize ?? baseTheme.fontSize.tick,
       },
     };
+    if (drawOptions.accessibility?.highContrast) {
+      theme.background = '#ffffff';
+      theme.text = '#000000';
+      theme.mutedText = '#1f2937';
+      theme.grid = '#6b7280';
+      theme.palette = ['#005a9c', '#a60f2d', '#006b3c', '#6b21a8', '#9a4d00'];
+    }
+    if (drawOptions.accessibility?.dyslexiaFriendly) {
+      theme.fontFamily = 'Atkinson Hyperlegible, Verdana, Arial, sans-serif';
+    }
     this.runPlugins('beforeRender', { theme, progress });
     this.renderer.clear(theme.background);
     this.regions = [];
@@ -495,7 +542,10 @@ export class Chartix {
     this.canvas.setAttribute('role', 'img');
     this.canvas.setAttribute(
       'aria-label',
-      this.config.options.ariaLabel ?? describeChart(this.config.type, this.config.data),
+      this.config.options.ariaLabel ??
+        (this.config.options.accessibility?.autoSummary
+          ? summarizeChart(this.config)
+          : describeChart(this.config.type, this.config.data)),
     );
     if (
       this.config.options.interaction?.enabled !== false &&
@@ -509,6 +559,28 @@ export class Chartix {
     this.dataTable = this.config.options.showDataTable
       ? (updateDataTable(this.canvas, this.config.data) ?? undefined)
       : undefined;
+    this.accessibilityHelp?.remove();
+    this.explorationLive?.remove();
+    const parent = this.canvas.parentElement;
+    if (parent && this.config.options.accessibility?.keyboardHelp) {
+      const help = document.createElement('p');
+      help.id = `chartix-help-${Math.random().toString(36).slice(2)}`;
+      help.textContent =
+        'Use arrow keys to explore marks, Enter to activate, plus or minus to zoom, zero to reset, and Escape to clear focus.';
+      help.style.cssText =
+        'position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)';
+      parent.append(help);
+      this.canvas.setAttribute('aria-describedby', help.id);
+      this.accessibilityHelp = help;
+    }
+    if (parent && this.config.options.accessibility?.explorationMode) {
+      const live = document.createElement('p');
+      live.setAttribute('aria-live', 'polite');
+      live.style.cssText =
+        'position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)';
+      parent.append(live);
+      this.explorationLive = live;
+    }
   }
 
   private assertActive(): void {
@@ -519,6 +591,11 @@ export class Chartix {
     if (this.config.options.interaction?.enabled === false) return;
     this.activeRegions = regions;
     this.activeRegion = regions[0];
+    if (this.explorationLive) {
+      this.explorationLive.textContent = this.activeRegion
+        ? `${this.activeRegion.label}, ${this.activeRegion.datasetLabel}: ${this.activeRegion.value}`
+        : '';
+    }
     if (
       this.activeRegion &&
       this.activeRegion.kind !== 'legend' &&

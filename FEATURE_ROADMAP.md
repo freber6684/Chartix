@@ -60,8 +60,10 @@ delivered in stable releases so partially implemented features never appear prod
 ## Accessibility, internationalization, and trust
 
 - [x] Generated canvas descriptions, focusable charts, reduced motion, and hidden data tables.
-- [ ] Screen-reader summaries, sonification, high-contrast/pattern modes, and focus-region narration.
-- [ ] WCAG automated audits, color-blind simulation, contrast repair, and keyboard help overlay.
+- [ ] Screen-reader summaries, sonification, high contrast, Braille text, and focus narration are
+      complete; automatic pattern mode remains.
+- [ ] Accessibility audits, color-vision simulation, contrast warnings, and keyboard help are
+      complete; automatic contrast repair remains.
 - [ ] Locale-aware dates/numbers are complete; RTL scripts, vertical text, and translation hooks remain.
 - [ ] Misleading-chart, accessibility, contrast, color-vision, and performance audits are complete;
       provenance, transformation history, and uncertainty display remain.

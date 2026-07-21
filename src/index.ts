@@ -35,6 +35,7 @@ export { parseEmbedConfig, renderEmbed, scanEmbeds, startAutoEmbed } from './emb
 /** Public configuration types. */
 export type {
   AnimationOptions,
+  AccessibilityOptions,
   AnnotationOptions,
   AxisOptions,
   ChartConfig,
@@ -89,3 +90,9 @@ export {
 } from './intelligence/advisor.js';
 export { adaptChartConfig } from './intelligence/responsive.js';
 export { simulateColorVision, type ColorVisionMode } from './intelligence/color-vision.js';
+/** Accessible text and deterministic sonification planning helpers. */
+export {
+  createSonificationPlan,
+  dataToAccessibleText,
+  type SonificationNote,
+} from './core/sonification.js';

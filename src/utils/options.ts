@@ -65,6 +65,9 @@ export function normalizeConfig(config: ChartConfig): ChartConfig & { options: C
       ...(config.options?.annotations
         ? { annotations: config.options.annotations.map((annotation) => ({ ...annotation })) }
         : {}),
+      ...(config.options?.accessibility
+        ? { accessibility: { ...config.options.accessibility } }
+        : {}),
       ...(config.options?.crosshair ? { crosshair: { ...config.options.crosshair } } : {}),
       ...(config.options?.dataLabels ? { dataLabels: { ...config.options.dataLabels } } : {}),
       ...(config.options?.drilldown

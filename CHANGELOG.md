@@ -32,6 +32,8 @@ All notable Chartix changes are documented here. The project follows semantic ve
   audits, color-vision simulation, and semantic responsive adaptation.
 - Smooth/step/dashed lines, point symbols, per-value styling, concentric radial datasets, slice
   gaps/explosions, connector labels, multiline text, subtitles, notes, sources, and watermarks.
+- Accessibility Studio options for rich summaries, live focus narration, keyboard help, high
+  contrast, dyslexia-friendly typography, Braille text, and local sonification.
 
 ## 0.1.0-alpha.2 - 2026-07-21
 

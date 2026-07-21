@@ -144,6 +144,13 @@ All registries have matching unregister methods. See [plugins and frameworks](pl
 provide local-only advice, integrity/accessibility checks, summaries, simulation, and adaptive
 layout. See [chart intelligence](chart-intelligence.md).
 
+## Accessibility studio
+
+`options.accessibility` enables richer automatic summaries, high-contrast palettes,
+dyslexia-friendly typography, keyboard help, and live focused-mark narration. `chart.sonify()`
+plays a local Web Audio representation from a user gesture. `chart.toAccessibleText()` returns a
+tab-separated representation suitable for screen readers and refreshable Braille displays.
+
 ## Advanced appearance
 
 Datasets support per-value `colors`, `pointSizes`, and `pointShapes`, plus line `lineStyle`,

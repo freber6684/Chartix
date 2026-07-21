@@ -13,6 +13,7 @@ describe('embed JSON Schema', () => {
     expect(options.additionalProperties).toBe(false);
     expect(Object.keys(options.properties).sort()).toEqual(
       [
+        'accessibility',
         'annotations',
         'ariaLabel',
         'animation',

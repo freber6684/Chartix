@@ -193,6 +193,20 @@ export interface PerformanceStats {
   animationDisabled: boolean;
 }
 
+/** Accessibility-studio behavior beyond the default table and keyboard support. */
+export interface AccessibilityOptions {
+  /** Use the richer range/direction summary for the canvas label. */
+  autoSummary?: boolean;
+  /** Increase contrast and use a color-vision-safe palette. */
+  highContrast?: boolean;
+  /** Use a more open, dyslexia-friendly system font stack. */
+  dyslexiaFriendly?: boolean;
+  /** Attach concise keyboard instructions to the canvas. */
+  keyboardHelp?: boolean;
+  /** Announce focused marks through an ARIA live region. */
+  explorationMode?: boolean;
+}
+
 /** Wheel, drag-pan, and box-zoom behavior. */
 export interface ZoomOptions {
   /** Enable viewport zoom controls. */
@@ -264,6 +278,8 @@ export interface LabelOptions {
 
 /** Runtime options shared by built-in charts. */
 export interface ChartOptions {
+  /** Accessibility studio controls. */
+  accessibility?: AccessibilityOptions;
   /** Reference lines and highlighted numeric ranges. */
   annotations?: AnnotationOptions[];
   /** Accessible label applied to the canvas. */
