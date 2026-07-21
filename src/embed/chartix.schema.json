@@ -348,6 +348,42 @@
                   "type": { "const": "normalize" },
                   "mode": { "enum": ["percent", "max"] }
                 }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["type", "groups"],
+                "properties": {
+                  "type": { "const": "group" },
+                  "groups": { "type": "object", "additionalProperties": { "type": "string" } },
+                  "operation": { "enum": ["sum", "average", "min", "max"] }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["type", "size"],
+                "properties": {
+                  "type": { "const": "bin" },
+                  "datasetIndex": { "type": "integer", "minimum": 0 },
+                  "size": { "type": "number", "exclusiveMinimum": 0 }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["type", "operation"],
+                "properties": {
+                  "type": { "const": "window" },
+                  "operation": { "enum": ["moving-average", "cumulative-sum"] },
+                  "size": { "type": "integer", "minimum": 1 }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["type"],
+                "properties": { "type": { "const": "pivot" } }
               }
             ]
           }

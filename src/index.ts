@@ -61,6 +61,17 @@ export type {
 } from './types/options.js';
 /** Declarative data preparation utility. */
 export { applyDataTransforms } from './utils/transforms.js';
+/** CSV, TSV, JSON, schema inference, remote loading, and table-to-chart connectors. */
+export {
+  loadTabular,
+  parseCSV,
+  parseDelimited,
+  parseJSON,
+  parseTSV,
+  tableToChartData,
+  type InferredType,
+  type TabularData,
+} from './data/connectors.js';
 /** CSV and portable HTML export helpers usable without constructing a chart. */
 export { chartConfigToHTML, chartDataToCSV } from './utils/export.js';
 /** Interaction hit-region types for custom chart modules. */

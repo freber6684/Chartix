@@ -91,6 +91,70 @@ export function applyDataTransforms(
         })),
       };
     }
+    if (transform.type === 'group') {
+      const groups = [...new Set(current.labels.map((label) => transform.groups[label] ?? label))];
+      return {
+        labels: groups,
+        datasets: current.datasets.map((dataset) => ({
+          ...dataset,
+          values: groups.map((group) =>
+            aggregate(
+              dataset.values.filter(
+                (_, index) =>
+                  (transform.groups[current.labels[index] ?? ''] ?? current.labels[index]) ===
+                  group,
+              ),
+              transform.operation ?? 'sum',
+            ),
+          ),
+        })),
+      };
+    }
+    if (transform.type === 'bin') {
+      const dataset = current.datasets[transform.datasetIndex ?? 0];
+      const values = dataset?.values.filter((value): value is number => value !== null) ?? [];
+      if (!values.length) return cloneData(current);
+      const size = Math.max(Number.EPSILON, transform.size);
+      const minimum = Math.floor(Math.min(...values) / size) * size;
+      const maximum = Math.ceil(Math.max(...values) / size) * size;
+      const binCount = Math.max(1, Math.ceil((maximum - minimum) / size));
+      const counts = Array.from({ length: binCount }, () => 0);
+      values.forEach((value) => {
+        const index = Math.min(binCount - 1, Math.floor((value - minimum) / size));
+        counts[index] = (counts[index] ?? 0) + 1;
+      });
+      return {
+        labels: counts.map(
+          (_, index) => `${minimum + index * size}–${minimum + (index + 1) * size}`,
+        ),
+        datasets: [{ label: `${dataset?.label ?? 'Values'} frequency`, values: counts }],
+      };
+    }
+    if (transform.type === 'window') {
+      const size = Math.max(1, Math.floor(transform.size ?? 3));
+      return {
+        labels: [...current.labels],
+        datasets: current.datasets.map((dataset) => ({
+          ...dataset,
+          values: dataset.values.map((_, index) => {
+            if (transform.operation === 'cumulative-sum') {
+              return aggregate(dataset.values.slice(0, index + 1), 'sum');
+            }
+            if (index + 1 < size) return null;
+            return aggregate(dataset.values.slice(index + 1 - size, index + 1), 'average');
+          }),
+        })),
+      };
+    }
+    if (transform.type === 'pivot') {
+      return {
+        labels: current.datasets.map((dataset) => dataset.label),
+        datasets: current.labels.map((label, valueIndex) => ({
+          label,
+          values: current.datasets.map((dataset) => dataset.values[valueIndex] ?? null),
+        })),
+      };
+    }
     const totals = current.labels.map((_, valueIndex) =>
       current.datasets.reduce((sum, dataset) => sum + Math.abs(dataset.values[valueIndex] ?? 0), 0),
     );

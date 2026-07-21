@@ -42,6 +42,8 @@ All notable Chartix changes are documented here. The project follows semantic ve
   comments/approvals, and guided story presentation playback.
 - CSS/Figma design-token import, generated and locked brand palettes, theme pairing/versioning,
   brand audits, privacy redaction, and SHA-256 portable-manifest fingerprints.
+- CSV/TSV/JSON and remote data connectors with type inference/table mapping, plus group, bin,
+  moving-window, cumulative-window, and pivot transforms.
 
 ## 0.1.0-alpha.2 - 2026-07-21
 

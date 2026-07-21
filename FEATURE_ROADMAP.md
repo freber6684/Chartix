@@ -44,8 +44,9 @@ delivered in stable releases so partially implemented features never appear prod
 ## Data, transformation, and performance
 
 - [x] Immutable JSON data/config and automatic min/max line decimation above 1,000 points.
-- [ ] CSV/TSV/JSON/Google Sheets connectors and schema/type inference.
-- [ ] Sort, filter, stack, aggregate, and normalize are complete; group, bin, window, and pivot remain.
+- [ ] CSV/TSV/JSON/remote-fetch connectors and schema/type inference are complete; authenticated
+      Google Sheets convenience integration remains.
+- [x] Sort, filter, stack, aggregate, normalize, group, bin, window, and pivot transforms.
 - [ ] Null gaps, date parsing, locale, currency, percentage, and number formatting are complete; units remain.
 - [ ] Bounded streaming buffers and immediate incremental updates are complete; WebSocket/SSE adapters remain.
 - [ ] Width-aware min/max/LTTB sampling, auto animation limits, and render telemetry are complete;

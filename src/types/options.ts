@@ -260,6 +260,14 @@ export type DataTransform =
   | { type: 'sort'; by?: 'label' | 'value'; datasetIndex?: number; direction?: 'asc' | 'desc' }
   | { type: 'filter'; datasetIndex?: number; min?: number; max?: number; labels?: string[] }
   | { type: 'aggregate'; operation: 'sum' | 'average' | 'min' | 'max'; groupSize: number }
+  | {
+      type: 'group';
+      groups: Record<string, string>;
+      operation?: 'sum' | 'average' | 'min' | 'max';
+    }
+  | { type: 'bin'; datasetIndex?: number; size: number }
+  | { type: 'window'; operation: 'moving-average' | 'cumulative-sum'; size?: number }
+  | { type: 'pivot' }
   | { type: 'normalize'; mode?: 'percent' | 'max' };
 
 /** Built-in color themes shipped with Chartix. */

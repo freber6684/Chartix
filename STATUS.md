@@ -63,6 +63,8 @@ changes so the next session can resume without reconstructing history.
       review approvals, and guided story/presenter playback.
 - [x] Add CSS/Figma design-token import, generated/locked brand palettes, paired and versioned
       themes, brand audits, privacy redaction, and SHA-256 portable-package manifests.
+- [x] Add CSV/TSV/JSON parsing, remote fetch connectors, schema/type inference, table mapping, and
+      group/bin/window/pivot transforms.
 
 ## Remaining for v0.1
 
@@ -131,7 +133,7 @@ formatting, lint, strict types, unit tests, production bundles, and the 25 KB gz
 ## Latest validation
 
 - Formatting, ESLint, and strict TypeScript: passed with no warnings or errors.
-- Unit tests: 104 passed across 20 test files, including 45 chart/theme visual baselines.
+- Unit tests: 107 passed across 21 test files, including 45 chart/theme visual baselines.
 - Production build: ESM, CJS, standalone embed ESM, browser IIFE, minified browser IIFE, and TypeScript declarations generated.
 - Minified core bundle: 9.72 KB gzipped (15 KB budget).
 - Minified full embed bundle: 9.63 KB gzipped (25 KB budget).

@@ -194,3 +194,10 @@ themes, while `auditBrandCompliance` checks chart colors against an approved org
 `fingerprintChart` generates a reproducible SHA-256 data/config digest, and
 `createPortableManifest` packages that fingerprint with normalized config, accessibility text,
 documentation, and creation metadata.
+
+## Data connectors and advanced transforms
+
+`parseCSV`, `parseTSV`, `parseJSON`, and `parseDelimited` return inferred `TabularData`.
+`tableToChartData` maps label and numeric columns into Chartix data, while `loadTabular` accepts an
+injectable `fetch` implementation for remote sources. Transform pipelines additionally support
+`group`, numeric `bin`, moving-average/cumulative `window`, and dataset/category `pivot` steps.
