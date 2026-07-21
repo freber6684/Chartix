@@ -23,10 +23,11 @@ export function drawHeader(
 ): number {
   let y = padding;
   if (options.title) {
+    const titleFont = options.typography?.fontFamily ?? theme.fontFamily;
     renderer.text(options.title, padding, y, {
       baseline: 'top',
       color: theme.text,
-      font: font(650, theme.fontSize.title, theme.fontFamily),
+      font: font(650, theme.fontSize.title, titleFont),
     });
     y += 30;
   }
@@ -57,7 +58,8 @@ export function createPlotArea(
   const left = padding + 44;
   const top = Math.max(padding + 10, headerBottom + 10);
   const right = renderer.width - padding;
-  const bottom = renderer.height - padding - 24;
+  const xRotation = Math.abs(options.xLabels?.rotation ?? 0);
+  const bottom = renderer.height - padding - 24 - Math.min(34, xRotation * 0.35);
   return {
     left,
     top,
@@ -93,21 +95,42 @@ export function drawVerticalFrame(
         theme.grid,
         1,
       );
-    renderer.text(formatTick(tick), plot.left - 10, y, {
+    const labels = options.yLabels;
+    if (labels?.show === false) return;
+    renderer.text(formatTick(tick), plot.left - 10 - (labels?.offset ?? 0), y, {
       align: 'right',
       baseline: 'middle',
-      color: theme.mutedText,
-      font: font(450, theme.fontSize.tick, theme.fontFamily),
+      color: labels?.color ?? theme.mutedText,
+      backgroundColor: labels?.backgroundColor,
+      rotation: labels?.rotation,
+      font: font(
+        labels?.fontWeight ?? 450,
+        labels?.fontSize ?? theme.fontSize.tick,
+        labels?.fontFamily ?? theme.fontFamily,
+      ),
     });
   });
   const step = plot.width / Math.max(1, labels.length);
   labels.forEach((label, index) => {
-    renderer.text(label, plot.left + step * (index + 0.5), plot.bottom + 16, {
-      align: 'center',
-      baseline: 'middle',
-      color: theme.mutedText,
-      font: font(450, theme.fontSize.tick, theme.fontFamily),
-    });
+    const labelOptions = options.xLabels;
+    if (labelOptions?.show === false) return;
+    renderer.text(
+      label,
+      plot.left + step * (index + 0.5),
+      plot.bottom + 16 + (labelOptions?.offset ?? 0),
+      {
+        align: 'center',
+        baseline: 'middle',
+        color: labelOptions?.color ?? theme.mutedText,
+        backgroundColor: labelOptions?.backgroundColor,
+        rotation: labelOptions?.rotation,
+        font: font(
+          labelOptions?.fontWeight ?? 450,
+          labelOptions?.fontSize ?? theme.fontSize.tick,
+          labelOptions?.fontFamily ?? theme.fontFamily,
+        ),
+      },
+    );
   });
   return scale;
 }

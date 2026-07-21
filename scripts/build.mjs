@@ -1,50 +1,59 @@
 import { gzipSync } from 'node:zlib';
 import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { build } from 'esbuild';
 import ts from 'typescript';
 
-await rm('dist', { recursive: true, force: true });
-await mkdir('dist', { recursive: true });
+const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+const fromRoot = (...parts) => resolve(projectRoot, ...parts);
+
+await rm(fromRoot('dist'), { recursive: true, force: true });
+await mkdir(fromRoot('dist'), { recursive: true });
 
 const shared = {
   bundle: true,
-  entryPoints: ['src/index.ts'],
+  absWorkingDir: projectRoot,
+  entryPoints: [fromRoot('src/index.ts')],
   logLevel: 'info',
   sourcemap: true,
   target: ['es2020'],
 };
 
 await Promise.all([
-  build({ ...shared, format: 'esm', outfile: 'dist/index.js' }),
-  build({ ...shared, format: 'cjs', outfile: 'dist/index.cjs' }),
+  build({ ...shared, format: 'esm', outfile: fromRoot('dist/index.js') }),
+  build({ ...shared, format: 'cjs', outfile: fromRoot('dist/index.cjs') }),
   build({
     bundle: true,
-    entryPoints: ['src/embed/autoload.ts'],
+    absWorkingDir: projectRoot,
+    entryPoints: [fromRoot('src/embed/autoload.ts')],
     format: 'esm',
-    outfile: 'dist/embed/autoload.js',
+    outfile: fromRoot('dist/embed/autoload.js'),
     sourcemap: true,
     target: ['es2020'],
   }),
   build({
     bundle: true,
-    entryPoints: ['src/browser.ts'],
+    absWorkingDir: projectRoot,
+    entryPoints: [fromRoot('src/browser.ts')],
     format: 'iife',
-    outfile: 'dist/chartix.global.js',
+    outfile: fromRoot('dist/chartix.global.js'),
     sourcemap: true,
     target: ['es2020'],
   }),
   build({
     bundle: true,
-    entryPoints: ['src/browser.ts'],
+    absWorkingDir: projectRoot,
+    entryPoints: [fromRoot('src/browser.ts')],
     format: 'iife',
     minify: true,
-    outfile: 'dist/chartix.min.js',
+    outfile: fromRoot('dist/chartix.min.js'),
     target: ['es2020'],
   }),
 ]);
 
 const parsed = ts.getParsedCommandLineOfConfigFile(
-  'tsconfig.json',
+  fromRoot('tsconfig.json'),
   { emitDeclarationOnly: true },
   {
     ...ts.sys,
@@ -68,14 +77,14 @@ if (diagnostics.length > 0) {
   );
 }
 
-const bundleBytes = await readFile('dist/chartix.min.js');
+const bundleBytes = await readFile(fromRoot('dist/chartix.min.js'));
 const report = {
   generatedAt: new Date().toISOString(),
   rawBytes: bundleBytes.byteLength,
   gzipBytes: gzipSync(bundleBytes).byteLength,
   budgetBytes: 25 * 1024,
 };
-await writeFile('dist/bundle-size.json', `${JSON.stringify(report, null, 2)}\n`);
+await writeFile(fromRoot('dist/bundle-size.json'), `${JSON.stringify(report, null, 2)}\n`);
 
 if (report.gzipBytes > report.budgetBytes) {
   throw new Error(

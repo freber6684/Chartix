@@ -25,6 +25,28 @@ function renderVertical(context: ChartRenderContext): void {
       const height = Math.abs(animatedY - baseline);
       const fill = renderer.gradient(x, y, x, Math.max(y + height, y + 1), color);
       renderer.roundedRect(x, y, Math.max(1, barWidth - 3), height, theme.radius, fill);
+      const labels = options.dataLabels;
+      if (labels?.show) {
+        const inside = labels.position === 'inside' || labels.position === 'center';
+        const labelY =
+          labels.position === 'center'
+            ? y + height / 2
+            : inside
+              ? y + 12 + (labels.offset ?? 0)
+              : y - 8 - (labels.offset ?? 0);
+        renderer.text(formatTick(value), x + Math.max(1, barWidth - 3) / 2, labelY, {
+          align: 'center',
+          baseline: 'middle',
+          color: labels.color ?? (inside ? theme.background : theme.text),
+          backgroundColor: labels.backgroundColor,
+          rotation: labels.rotation,
+          font: font(
+            labels.fontWeight ?? 600,
+            labels.fontSize ?? theme.fontSize.label,
+            labels.fontFamily ?? theme.fontFamily,
+          ),
+        });
+      }
     });
   });
 }
@@ -50,11 +72,19 @@ function renderHorizontal(context: ChartRenderContext): void {
         theme.grid,
         1,
       );
-    renderer.text(formatTick(tick), x, plot.bottom + 16, {
+    const labels = options.xLabels;
+    if (labels?.show === false) return;
+    renderer.text(formatTick(tick), x, plot.bottom + 16 + (labels?.offset ?? 0), {
       align: 'center',
       baseline: 'middle',
-      color: theme.mutedText,
-      font: font(450, theme.fontSize.tick, theme.fontFamily),
+      color: labels?.color ?? theme.mutedText,
+      backgroundColor: labels?.backgroundColor,
+      rotation: labels?.rotation,
+      font: font(
+        labels?.fontWeight ?? 450,
+        labels?.fontSize ?? theme.fontSize.tick,
+        labels?.fontFamily ?? theme.fontFamily,
+      ),
     });
   });
 
@@ -62,12 +92,25 @@ function renderHorizontal(context: ChartRenderContext): void {
   const groupHeight = categoryHeight * 0.64;
   const barHeight = Math.max(2, groupHeight / data.datasets.length);
   data.labels.forEach((label, index) => {
-    renderer.text(label, plot.left - 10, plot.top + categoryHeight * (index + 0.5), {
-      align: 'right',
-      baseline: 'middle',
-      color: theme.mutedText,
-      font: font(450, theme.fontSize.tick, theme.fontFamily),
-    });
+    const labels = options.yLabels;
+    if (labels?.show === false) return;
+    renderer.text(
+      label,
+      plot.left - 10 - (labels?.offset ?? 0),
+      plot.top + categoryHeight * (index + 0.5),
+      {
+        align: 'right',
+        baseline: 'middle',
+        color: labels?.color ?? theme.mutedText,
+        backgroundColor: labels?.backgroundColor,
+        rotation: labels?.rotation,
+        font: font(
+          labels?.fontWeight ?? 450,
+          labels?.fontSize ?? theme.fontSize.tick,
+          labels?.fontFamily ?? theme.fontFamily,
+        ),
+      },
+    );
   });
   data.datasets.forEach((dataset, datasetIndex) => {
     const color = dataset.color ?? theme.palette[datasetIndex % theme.palette.length] ?? theme.text;
@@ -83,6 +126,28 @@ function renderHorizontal(context: ChartRenderContext): void {
       const width = Math.abs(animatedX - baseline);
       const fill = renderer.gradient(x, y, Math.max(x + width, x + 1), y, color);
       renderer.roundedRect(x, y, width, Math.max(1, barHeight - 3), theme.radius, fill);
+      const labels = options.dataLabels;
+      if (labels?.show) {
+        const inside = labels.position === 'inside' || labels.position === 'center';
+        const labelX =
+          labels.position === 'center'
+            ? x + width / 2
+            : inside
+              ? x + width - 8 - (labels.offset ?? 0)
+              : x + width + 8 + (labels.offset ?? 0);
+        renderer.text(formatTick(value), labelX, y + Math.max(1, barHeight - 3) / 2, {
+          align: labels.position === 'center' ? 'center' : inside ? 'right' : 'left',
+          baseline: 'middle',
+          color: labels.color ?? (inside ? theme.background : theme.text),
+          backgroundColor: labels.backgroundColor,
+          rotation: labels.rotation,
+          font: font(
+            labels.fontWeight ?? 600,
+            labels.fontSize ?? theme.fontSize.label,
+            labels.fontFamily ?? theme.fontFamily,
+          ),
+        });
+      }
     });
   });
 }

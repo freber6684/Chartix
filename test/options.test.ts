@@ -19,4 +19,21 @@ describe('normalizeConfig', () => {
     expect(config.data.datasets[0]!.values[0]).toBe(120);
     expect(config.options.scales.y.beginAtZero).toBe(false);
   });
+
+  it('clones visual customization arrays and objects', () => {
+    const config = {
+      type: 'pie',
+      data: { labels: ['A'], datasets: [{ label: 'Share', values: [10] }] },
+      options: {
+        colors: ['#123456'],
+        dataLabels: { show: true, rotation: 15 },
+        typography: { fontFamily: 'Inter' },
+      },
+    };
+    const normalized = normalizeConfig(config);
+    normalized.options.colors![0] = '#ffffff';
+    normalized.options.dataLabels!.rotation = 45;
+    expect(config.options.colors[0]).toBe('#123456');
+    expect(config.options.dataLabels.rotation).toBe(15);
+  });
 });

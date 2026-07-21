@@ -12,6 +12,7 @@ export const defaultOptions: Required<
   horizontal: false,
   padding: 24,
   responsive: true,
+  resizable: false,
   scales: { y: { beginAtZero: true } },
   showDataTable: true,
   showGrid: true,
@@ -42,6 +43,11 @@ export function normalizeConfig(config: ChartConfig): ChartConfig & { options: C
           ...config.options?.scales?.y,
         },
       },
+      ...(config.options?.colors ? { colors: [...config.options.colors] } : {}),
+      ...(config.options?.dataLabels ? { dataLabels: { ...config.options.dataLabels } } : {}),
+      ...(config.options?.typography ? { typography: { ...config.options.typography } } : {}),
+      ...(config.options?.xLabels ? { xLabels: { ...config.options.xLabels } } : {}),
+      ...(config.options?.yLabels ? { yLabels: { ...config.options.yLabels } } : {}),
       animation:
         config.options?.animation === false
           ? false

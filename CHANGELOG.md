@@ -4,6 +4,22 @@ All notable Chartix changes are documented here. The project follows semantic ve
 
 ## Unreleased
 
+## 0.1.0-alpha.2 - 2026-07-21
+
+### Added
+
+- Pie, doughnut, and scatter chart modules in both package and auto-embed builds.
+- Nine built-in themes plus custom palettes and canvas backgrounds.
+- Shared typography, rotated x/y labels, styled data labels, and inside/outside/center placement.
+- Explicit sizing and optional browser drag-resizing.
+- Five-chart public demo, module tests, and customization documentation.
+
+### Changed
+
+- The Canvas renderer now supports ring segments and rotated text with label backgrounds.
+
+## 0.1.0-alpha.1 - 2026-07-20
+
 ### Added
 
 - Strict TypeScript project foundation and esbuild distribution pipeline.

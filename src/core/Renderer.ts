@@ -15,6 +15,15 @@ export interface Renderer {
   line(points: Point[], color: string, width: number): void;
   area(points: Point[], baseline: number, fill: string | CanvasGradient): void;
   circle(point: Point, radius: number, fill: string, stroke?: string): void;
+  ringSegment(
+    point: Point,
+    innerRadius: number,
+    outerRadius: number,
+    startAngle: number,
+    endAngle: number,
+    fill: string,
+    stroke?: string,
+  ): void;
   roundedRect(
     x: number,
     y: number,
@@ -32,6 +41,9 @@ export interface Renderer {
       color: string;
       font: string;
       baseline?: CanvasTextBaseline;
+      backgroundColor?: string | undefined;
+      padding?: number | undefined;
+      rotation?: number | undefined;
     },
   ): void;
   resize(width: number, height: number, pixelRatio?: number): void;
@@ -136,6 +148,33 @@ export class CanvasRenderer implements Renderer {
     }
   }
 
+  /** Draw a pie slice or doughnut ring segment. Angles are in radians. */
+  public ringSegment(
+    point: Point,
+    innerRadius: number,
+    outerRadius: number,
+    startAngle: number,
+    endAngle: number,
+    fill: string,
+    stroke?: string,
+  ): void {
+    this.context.beginPath();
+    this.context.arc(point.x, point.y, outerRadius, startAngle, endAngle);
+    if (innerRadius > 0) {
+      this.context.arc(point.x, point.y, innerRadius, endAngle, startAngle, true);
+    } else {
+      this.context.lineTo(point.x, point.y);
+    }
+    this.context.closePath();
+    this.context.fillStyle = fill;
+    this.context.fill();
+    if (stroke) {
+      this.context.strokeStyle = stroke;
+      this.context.lineWidth = 2;
+      this.context.stroke();
+    }
+  }
+
   /** Draw a single text label. */
   public text(
     value: string,
@@ -146,12 +185,43 @@ export class CanvasRenderer implements Renderer {
       color: string;
       font: string;
       baseline?: CanvasTextBaseline;
+      backgroundColor?: string | undefined;
+      padding?: number | undefined;
+      rotation?: number | undefined;
     },
   ): void {
-    this.context.fillStyle = options.color;
+    this.context.save();
+    this.context.translate(x, y);
+    this.context.rotate(((options.rotation ?? 0) * Math.PI) / 180);
     this.context.font = options.font;
     this.context.textAlign = options.align ?? 'left';
     this.context.textBaseline = options.baseline ?? 'alphabetic';
-    this.context.fillText(value, x, y);
+    if (options.backgroundColor) {
+      const metrics = this.context.measureText(value);
+      const padding = options.padding ?? 4;
+      const height = metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent;
+      const left =
+        this.context.textAlign === 'center'
+          ? -metrics.width / 2
+          : this.context.textAlign === 'right' || this.context.textAlign === 'end'
+            ? -metrics.width
+            : 0;
+      const top =
+        this.context.textBaseline === 'middle'
+          ? -height / 2
+          : this.context.textBaseline === 'top' || this.context.textBaseline === 'hanging'
+            ? 0
+            : -metrics.actualBoundingBoxAscent;
+      this.context.fillStyle = options.backgroundColor;
+      this.context.fillRect(
+        left - padding,
+        top - padding / 2,
+        metrics.width + padding * 2,
+        height + padding,
+      );
+    }
+    this.context.fillStyle = options.color;
+    this.context.fillText(value, 0, 0);
+    this.context.restore();
   }
 }

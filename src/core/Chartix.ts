@@ -10,15 +10,26 @@ import { cloneData, normalizeConfig } from '../utils/options.js';
 const validOptionKeys = new Set<keyof ChartOptions>([
   'animation',
   'ariaLabel',
+  'backgroundColor',
+  'colors',
+  'dataLabels',
   'fill',
+  'height',
   'horizontal',
+  'innerRadius',
   'padding',
   'responsive',
+  'resizable',
   'scales',
   'showDataTable',
   'showGrid',
   'showLegend',
+  'startAngle',
   'title',
+  'typography',
+  'width',
+  'xLabels',
+  'yLabels',
 ]);
 
 function validateConfig(config: ChartConfig): void {
@@ -79,6 +90,7 @@ export class Chartix {
     }
     this.config = normalizeConfig(config);
     this.renderer = new CanvasRenderer(canvas);
+    this.applyContainerSizing();
     this.applyAccessibility();
     this.resize();
     if (this.config.options.responsive && typeof ResizeObserver !== 'undefined') {
@@ -107,8 +119,15 @@ export class Chartix {
     this.assertActive();
     const parentRect = this.canvas.parentElement?.getBoundingClientRect();
     const canvasRect = this.canvas.getBoundingClientRect();
-    const width = Math.round(parentRect?.width || canvasRect.width || this.canvas.width || 640);
-    const height = Math.round(canvasRect.height || this.canvas.height || 400);
+    const width = Math.round(
+      parentRect?.width || this.config.options.width || canvasRect.width || 640,
+    );
+    const height = Math.round(
+      (this.config.options.resizable ? parentRect?.height : 0) ||
+        this.config.options.height ||
+        canvasRect.height ||
+        400,
+    );
     if (this.renderer.width === width && this.renderer.height === height) return;
     const pixelRatio = Math.min(globalThis.devicePixelRatio || 1, 2);
     this.renderer.resize(width, height, pixelRatio);
@@ -140,7 +159,21 @@ export class Chartix {
     if (this.destroyed) return;
     const module = Chartix.modules.get(this.config.type);
     if (!module) throw new Error(`Chartix: chart type "${this.config.type}" is not registered.`);
-    const theme = resolveTheme(this.config.theme);
+    const baseTheme = resolveTheme(this.config.theme);
+    const typography = this.config.options.typography;
+    const theme = {
+      ...baseTheme,
+      background: this.config.options.backgroundColor ?? baseTheme.background,
+      palette: this.config.options.colors
+        ? [...this.config.options.colors]
+        : [...baseTheme.palette],
+      fontFamily: typography?.fontFamily ?? baseTheme.fontFamily,
+      fontSize: {
+        title: typography?.titleSize ?? baseTheme.fontSize.title,
+        label: typography?.labelSize ?? baseTheme.fontSize.label,
+        tick: typography?.tickSize ?? baseTheme.fontSize.tick,
+      },
+    };
     this.renderer.clear(theme.background);
     const plot = createPlotArea(this.renderer, this.config.data, this.config.options, theme);
     module.render({
@@ -178,5 +211,18 @@ export class Chartix {
 
   private assertActive(): void {
     if (this.destroyed) throw new Error('Chartix: this chart has been destroyed.');
+  }
+
+  private applyContainerSizing(): void {
+    const parent = this.canvas.parentElement;
+    if (!parent) return;
+    if (this.config.options.width) parent.style.width = `${this.config.options.width}px`;
+    if (this.config.options.height) parent.style.height = `${this.config.options.height}px`;
+    if (this.config.options.resizable) {
+      parent.style.resize = 'both';
+      parent.style.overflow = 'hidden';
+      parent.style.minWidth = '240px';
+      parent.style.minHeight = '180px';
+    }
   }
 }

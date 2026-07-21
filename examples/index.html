@@ -44,7 +44,6 @@
         gap: 20px;
       }
       .card {
-        overflow: hidden;
         min-width: 0;
         border: 1px solid #e3e8ef;
         border-radius: 18px;
@@ -58,6 +57,12 @@
       [data-chartix] {
         position: relative;
         width: 100%;
+      }
+      .hint {
+        padding: 12px 20px;
+        border-top: 1px solid #e3e8ef;
+        color: #64748b;
+        font-size: 13px;
       }
       @media (max-width: 700px) {
         body {
@@ -78,8 +83,8 @@
       <header>
         <h1>Chartix alpha</h1>
         <p>
-          A testable preview of polished defaults, accessible output, responsive Canvas rendering,
-          and the no-build embed API.
+          Five chart types, nine themes, accessible output, responsive Canvas rendering, and
+          configurable colors, fonts, labels, and sizing.
         </p>
       </header>
       <section class="grid" aria-label="Chart examples">
@@ -99,8 +104,27 @@
           <div
             data-chartix
             data-height="410"
-            data-config='{"type":"line","theme":"dark","data":{"labels":["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],"datasets":[{"label":"Active users","values":[180,248,221,310,365,342,430]},{"label":"New users","values":[96,122,108,158,174,168,210]}]},"options":{"title":"Weekly audience","fill":true,"animation":{"duration":480,"easing":"easeOutCubic"},"showDataTable":true}}'
+            data-config='{"type":"line","theme":"dark","data":{"labels":["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],"datasets":[{"label":"Active users","values":[180,248,221,310,365,342,430]},{"label":"New users","values":[96,122,108,158,174,168,210]}]},"options":{"title":"Weekly audience","fill":true,"animation":{"duration":480,"easing":"easeOutCubic"},"showDataTable":true,"xLabels":{"rotation":-18,"color":"#c4b5fd"}}}'
           ></div>
+        </article>
+        <article class="card">
+          <div
+            data-chartix
+            data-config='{"type":"pie","theme":"sunset","data":{"labels":["Product","Services","Support","Other"],"datasets":[{"label":"Revenue mix","values":[48,27,17,8]}]},"options":{"title":"Revenue mix","height":410,"dataLabels":{"show":true,"position":"outside","fontSize":11,"backgroundColor":"#ffffffcc"},"startAngle":-90}}'
+          ></div>
+        </article>
+        <article class="card">
+          <div
+            data-chartix
+            data-config='{"type":"doughnut","theme":"ocean","data":{"labels":["Organic","Search","Social","Email"],"datasets":[{"label":"Traffic","values":[42,31,18,9]}]},"options":{"title":"Traffic sources","height":410,"innerRadius":0.62,"dataLabels":{"show":true,"position":"inside","fontSize":11},"colors":["#023e8a","#0077b6","#00b4d8","#90e0ef"]}}'
+          ></div>
+        </article>
+        <article class="card">
+          <div
+            data-chartix
+            data-config='{"type":"scatter","theme":"forest","data":{"labels":["12","18","27","35","43","56"],"datasets":[{"label":"Campaign A","values":[24,38,32,57,63,82]},{"label":"Campaign B","values":[18,29,46,48,71,76]}]},"options":{"title":"Spend vs conversions","height":410,"resizable":true,"dataLabels":{"show":true,"position":"outside","fontSize":10,"color":"#1e392a"},"xLabels":{"rotation":-25},"typography":{"fontFamily":"Georgia, serif","titleSize":18}}}'
+          ></div>
+          <p class="hint">Drag the lower-right edge to resize this chart.</p>
         </article>
       </section>
     </main>

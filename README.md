@@ -1,9 +1,9 @@
 # Chartix
 
 Chartix is an early-stage, MIT-licensed charting library focused on refined defaults, a small
-TypeScript-first API, accessible output, and copy-paste embedding. The current alpha includes
-vertical and horizontal bar charts, line/area charts, light and dark themes, responsive canvas
-rendering, animations, and declarative `data-*` embeds.
+TypeScript-first API, accessible output, and copy-paste embedding. The current alpha includes bar,
+line/area, pie, doughnut, and scatter charts; nine themes; responsive and user-resizable Canvas
+rendering; animations; detailed label styling; and declarative `data-*` embeds.
 
 > Chartix is under active development. Use the pinned alpha version while the v0.1 API settles.
 
@@ -23,9 +23,9 @@ npm install chartix
 ```
 
 ```ts
-import { BarChart, Chartix, LineChart } from 'chartix';
+import { BarChart, Chartix, DoughnutChart, LineChart, PieChart, ScatterChart } from 'chartix';
 
-Chartix.register(BarChart, LineChart);
+Chartix.register(BarChart, LineChart, PieChart, DoughnutChart, ScatterChart);
 
 const canvas = document.querySelector<HTMLCanvasElement>('#revenue');
 if (!canvas) throw new Error('Missing chart canvas');
@@ -40,6 +40,11 @@ const chart = new Chartix(canvas, {
   options: {
     title: 'Monthly revenue',
     responsive: true,
+    resizable: true,
+    colors: ['#625bf6', '#0f9f8f'],
+    typography: { fontFamily: 'Inter, sans-serif', titleSize: 18 },
+    xLabels: { rotation: -30, fontSize: 11 },
+    dataLabels: { show: true, position: 'outside', color: '#172033' },
     animation: { duration: 360, easing: 'easeOutCubic' },
   },
 });
@@ -70,6 +75,9 @@ local development, replace the URL with `../dist/chartix.min.js` as shown in `ex
 
 The browser bundle scans on page load and observes charts inserted later. Complex embeds can put
 the same JSON-serializable configuration used by the JavaScript API in `data-config`.
+
+See [chart types](docs/chart-types.md) and the [customization guide](docs/customization.md) for the
+available charts, themes, font controls, label positions, colors, and sizing options.
 
 ## Development
 

@@ -2,7 +2,7 @@
 
 Last updated: 2026-07-21
 
-Latest testable version: `0.1.0-alpha.1`
+Latest testable version: `0.1.0-alpha.2`
 
 Working branch: `agent/initial-v0.1-foundation`
 
@@ -20,6 +20,12 @@ changes so the next session can resume without reconstructing history.
 - [x] Add shared light/dark design tokens, readable numeric scales, and reduced-motion support.
 - [x] Implement grouped vertical and horizontal bar charts with rounded gradient bars.
 - [x] Implement line charts with markers and optional area fills.
+- [x] Implement pie and doughnut charts with configurable holes, angles, slice colors, and labels.
+- [x] Implement scatter charts with multiple datasets and numeric x/y scales.
+- [x] Add nine built-in themes and arbitrary custom palettes/backgrounds.
+- [x] Add shared font family, font size, font weight, text color, label background, rotation, offset,
+      and inside/outside/center data-label controls.
+- [x] Add explicit dimensions, responsive redraws, and optional user drag-resizing.
 - [x] Add `role="img"`, generated labels, and visually hidden data-table fallbacks.
 - [x] Add simple `data-*`, full JSON embed parsing, auto-scan, and `MutationObserver` support.
 - [x] Add unit tests for scales, options, easing, and embed parsing.
@@ -29,8 +35,7 @@ changes so the next session can resume without reconstructing history.
 
 ## Remaining for v0.1
 
-- [ ] Implement pie and doughnut chart modules with accessible summaries and tests.
-- [ ] Implement scatter charts and large-line-dataset downsampling.
+- [ ] Add large-line-dataset downsampling.
 - [ ] Add pointer/keyboard tooltips and interactive legends.
 - [ ] Add visual regression tests for every chart/theme combination.
 - [ ] Capture Chart.js, ApexCharts, and Recharts comparison images in `examples/benchmarks/`.
@@ -38,12 +43,44 @@ changes so the next session can resume without reconstructing history.
 - [ ] Test and document the core and embed gzip budgets across releases.
 - [ ] Publish the first npm prerelease and verify pinned jsDelivr/unpkg URLs.
 
-## Later milestones
+## Requested chart catalog roadmap
+
+The boxes below are deliberately not marked complete until each chart has a real renderer, tests,
+accessible output, documentation, and a visual demo. This prevents placeholder chart names from
+appearing to work while producing incorrect graphics.
+
+### v0.2: common comparisons and combinations
+
+- [ ] Stacked and 100% stacked bar/column charts.
+- [ ] Mixed/combo charts with independent series renderers and dual axes.
+- [ ] Step, spline, stacked-area, and streamgraph charts.
+- [ ] Bubble, lollipop, bullet, waterfall, funnel, and pyramid charts.
+- [ ] Gauge, solid gauge, radial bar, polar area, and radar charts.
+
+### v0.3: statistical, financial, and matrix charts
+
+- [ ] Histogram, box plot, violin, density, range, and error-bar charts.
+- [ ] Heatmap, calendar heatmap, correlation matrix, and contour charts.
+- [ ] Candlestick, OHLC, volume, and financial range charts.
+
+### v0.4: hierarchy, flow, and relationships
+
+- [ ] Treemap, sunburst, circle packing, dendrogram, and icicle charts.
+- [ ] Sankey, alluvial, chord, dependency wheel, and network/force charts.
+- [ ] Parallel coordinates, slope, bump, Marimekko, and mosaic charts.
+
+### v0.5: time, geography, and specialized visuals
+
+- [ ] Timeline, Gantt, calendar, and milestone charts.
+- [ ] Choropleth, symbol, bubble, route/flow, and tile maps.
+- [ ] Word cloud, pictogram, waffle, organization, and 3D surface/scatter charts.
+
+## Later platform milestones
 
 - [ ] React, Vue, and Svelte lifecycle wrappers.
 - [ ] Optional export, data-label, zoom, and crosshair plugins.
 - [ ] Visual no-code builder that emits the shared JSON config and embed snippet.
-- [ ] Radar, stacked, mixed, and bubble chart modules after the v0.1 quality gate.
+- [ ] Plugin SDK for custom renderers, scales, interactions, and annotations.
 
 ## Resume and test
 

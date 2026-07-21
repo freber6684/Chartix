@@ -34,4 +34,14 @@ describe('parseEmbedConfig', () => {
     element.dataset.config = '{bad';
     expect(() => parseEmbedConfig(element)).toThrow('valid JSON');
   });
+
+  it('accepts named themes and safely falls back for unknown flat attributes', () => {
+    const element = document.createElement('div');
+    element.dataset.labels = 'A';
+    element.dataset.values = '1';
+    element.dataset.theme = 'ocean';
+    expect(parseEmbedConfig(element).theme).toBe('ocean');
+    element.dataset.theme = 'missing';
+    expect(parseEmbedConfig(element).theme).toBe('light');
+  });
 });
