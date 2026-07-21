@@ -288,6 +288,50 @@ const catalogExamples = [
 
 charts.push(...catalogExamples);
 
+const advancedExamples = [
+  ['box-plot', 'Box plot', 'Statistical'],
+  ['violin', 'Violin plot', 'Statistical'],
+  ['density', 'Density', 'Statistical'],
+  ['candlestick', 'Candlestick', 'Financial'],
+  ['ohlc', 'OHLC', 'Financial'],
+  ['correlation-matrix', 'Correlation matrix', 'Matrix'],
+  ['treemap', 'Treemap', 'Hierarchy'],
+  ['circle-packing', 'Circle packing', 'Hierarchy'],
+  ['dendrogram', 'Dendrogram', 'Hierarchy'],
+  ['network', 'Network graph', 'Relationships'],
+  ['parallel-coordinates', 'Parallel coordinates', 'Relationships'],
+].map(([type, name, tag], index) => ({
+  id: `advanced-${type}`,
+  name,
+  type,
+  family: ['treemap', 'circle-packing', 'dendrogram', 'network'].includes(type)
+    ? 'radial'
+    : 'cartesian',
+  tag,
+  theme: themes[(index + 3) % themes.length],
+  summary: `${name} with a dedicated renderer and accessible Chartix configuration.`,
+  bestFor: `${tag} analysis where structure, spread, or relationships matter.`,
+  options: {},
+  labels: ['A', 'B', 'C', 'D', 'E'],
+  datasets: [
+    {
+      label: 'Series A',
+      values: [12, 19, 8, 24, 17],
+      ...(type === 'candlestick' || type === 'ohlc'
+        ? {
+            openValues: [10, 16, 10, 20, 15],
+            highValues: [14, 22, 13, 27, 20],
+            lowValues: [8, 14, 7, 18, 13],
+            closeValues: [12, 19, 8, 24, 17],
+          }
+        : {}),
+    },
+    { label: 'Series B', values: [9, 14, 16, 18, 21] },
+  ],
+}));
+
+charts.push(...advancedExamples);
+
 const state = { selected: charts[0], playground: null, tab: 'playground' };
 const controls = {
   theme: document.querySelector('#control-theme'),

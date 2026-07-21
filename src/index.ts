@@ -245,6 +245,20 @@ export {
   VolumeChart,
   WaterfallChart,
 } from './charts/catalog.js';
+export {
+  advancedCharts,
+  BoxPlotChart,
+  CandlestickChart,
+  CirclePackingChart,
+  CorrelationMatrixChart,
+  DendrogramChart,
+  DensityChart,
+  NetworkChart,
+  OHLCChart,
+  ParallelCoordinatesChart,
+  TreemapChart,
+  ViolinPlotChart,
+} from './charts/advanced.js';
 export { VisualEditor, type VisualSelection } from './authoring/visual-editor.js';
 export {
   assessPublicationQuality,

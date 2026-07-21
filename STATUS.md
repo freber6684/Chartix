@@ -79,6 +79,8 @@ changes so the next session can resume without reconstructing history.
 - [x] Add synchronized visual editing commands plus Google Sheets, WebSocket, and SSE connectors.
 - [x] Add 27 registered catalog modules and public gallery examples spanning comparison, trend,
       radial, process, distribution, finance, uncertainty, time, and scheduling families.
+- [x] Add dedicated box, violin, density, candlestick, OHLC, correlation, treemap, circle-packing,
+      dendrogram, network, and parallel-coordinate renderers and gallery examples.
 
 ## Remaining for v0.1
 
@@ -104,15 +106,15 @@ appearing to work while producing incorrect graphics.
 
 ### v0.3: statistical, financial, and matrix charts
 
-- [ ] Histogram, range, and error-bar are complete; box plot, violin, and density remain.
-- [ ] Heatmap is complete; calendar heatmap, correlation matrix, and contour remain.
-- [ ] Stock, volume, and financial range are complete; candlestick and OHLC remain.
+- [x] Histogram, box plot, violin, density, range, and error-bar charts.
+- [ ] Heatmap and correlation matrix are complete; calendar heatmap and contour remain.
+- [x] Candlestick, OHLC, stock, volume, and financial range charts.
 
 ### v0.4: hierarchy, flow, and relationships
 
-- [ ] Treemap, sunburst, circle packing, dendrogram, and icicle charts.
+- [ ] Treemap, circle packing, and dendrogram are complete; sunburst and icicle remain.
 - [ ] Sankey, alluvial, chord, dependency wheel, and network/force charts.
-- [ ] Parallel coordinates, slope, bump, Marimekko, and mosaic charts.
+- [ ] Parallel coordinates and slope are complete; bump, Marimekko, and mosaic remain.
 
 ### v0.5: time, geography, and specialized visuals
 
@@ -147,7 +149,7 @@ formatting, lint, strict types, unit tests, production bundles, and the 25 KB gz
 ## Latest validation
 
 - Formatting, ESLint, and strict TypeScript: passed with no warnings or errors.
-- Unit tests: 126 passed across 29 test files, including 45 chart/theme visual baselines.
+- Unit tests: 127 passed across 30 test files, including 45 chart/theme visual baselines.
 - Production build: ESM, CJS, standalone embed ESM, browser IIFE, minified browser IIFE, and TypeScript declarations generated.
 - Minified core bundle: 9.72 KB gzipped (15 KB budget).
 - Minified full embed bundle: 9.63 KB gzipped (25 KB budget).

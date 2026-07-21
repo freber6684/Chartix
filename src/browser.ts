@@ -5,6 +5,7 @@ import { DoughnutChart, PieChart } from './charts/radial.js';
 import { BubbleChart, ScatterChart } from './charts/scatter.js';
 import { Chartix } from './core/Chartix.js';
 import { catalogCharts } from './charts/catalog.js';
+import { advancedCharts } from './charts/advanced.js';
 import { startAutoEmbed } from './embed/autoload.js';
 
 declare global {
@@ -22,6 +23,7 @@ Chartix.register(
   BubbleChart,
   ComboChart,
   ...catalogCharts,
+  ...advancedCharts,
 );
 window.Chartix = Chartix;
 

@@ -101,7 +101,17 @@ function validateConfig(config: ChartConfig): void {
     if (dataset.values.some((value) => value !== null && !Number.isFinite(value))) {
       throw new Error(`Chartix: dataset "${dataset.label}" contains a non-finite value.`);
     }
-    const alignedSeries = [dataset.lowerValues, dataset.upperValues, dataset.errorValues];
+    const alignedSeries = [
+      dataset.lowerValues,
+      dataset.upperValues,
+      dataset.errorValues,
+      dataset.openValues,
+      dataset.highValues,
+      dataset.lowValues,
+      dataset.closeValues,
+      dataset.startValues,
+      dataset.endValues,
+    ];
     if (alignedSeries.some((values) => values && values.length !== config.data.labels.length)) {
       throw new Error(`Chartix: dataset "${dataset.label}" has an unaligned uncertainty series.`);
     }

@@ -65,6 +65,12 @@
           "type": "array",
           "items": { "type": ["number", "null"], "minimum": 0 }
         },
+        "openValues": { "type": "array", "items": { "type": ["number", "null"] } },
+        "highValues": { "type": "array", "items": { "type": ["number", "null"] } },
+        "lowValues": { "type": "array", "items": { "type": ["number", "null"] } },
+        "closeValues": { "type": "array", "items": { "type": ["number", "null"] } },
+        "startValues": { "type": "array", "items": { "type": ["number", "null"] } },
+        "endValues": { "type": "array", "items": { "type": ["number", "null"] } },
         "estimated": { "type": "array", "items": { "type": "boolean" } },
         "sampleSize": { "type": "integer", "minimum": 1 },
         "source": { "type": "string" },

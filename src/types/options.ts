@@ -52,6 +52,14 @@ export interface ChartDataset {
   upperValues?: Array<number | null>;
   /** Symmetric error magnitude aligned with `values`. */
   errorValues?: Array<number | null>;
+  /** Financial open/high/low/close series aligned with labels. */
+  openValues?: Array<number | null>;
+  highValues?: Array<number | null>;
+  lowValues?: Array<number | null>;
+  closeValues?: Array<number | null>;
+  /** Scheduling start/end coordinates aligned with labels. */
+  startValues?: Array<number | null>;
+  endValues?: Array<number | null>;
   /** Mark values that are estimates rather than observations. */
   estimated?: boolean[];
   /** Optional sample size behind this series. */
