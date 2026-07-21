@@ -226,7 +226,11 @@
             React.createElement(R.YAxis),
             React.createElement(R.Tooltip),
             React.createElement(R.Legend),
-            React.createElement(R.Bar, { dataKey: 'Revenue', fill: '#8884d8' }),
+            React.createElement(R.Bar, {
+              dataKey: 'Revenue',
+              fill: '#8884d8',
+              isAnimationActive: false,
+            }),
           ),
         ),
       );
