@@ -77,6 +77,8 @@ changes so the next session can resume without reconstructing history.
 - [x] Add automatic contrast repair, publication-quality/sample warnings, safe text commands, and
       deterministic edge-case data generation.
 - [x] Add synchronized visual editing commands plus Google Sheets, WebSocket, and SSE connectors.
+- [x] Add 27 registered catalog modules and public gallery examples spanning comparison, trend,
+      radial, process, distribution, finance, uncertainty, time, and scheduling families.
 
 ## Remaining for v0.1
 
@@ -96,15 +98,15 @@ appearing to work while producing incorrect graphics.
 
 - [x] Stacked and 100% stacked bar/column charts.
 - [x] Mixed/combo charts with independent series renderers and dual axes.
-- [ ] Step, spline, stacked-area, and streamgraph charts.
-- [ ] Bubble is complete; lollipop, bullet, waterfall, funnel, and pyramid remain.
-- [ ] Gauge, solid gauge, radial bar, polar area, and radar charts.
+- [ ] Step, spline, and stacked-area are complete; streamgraph remains.
+- [ ] Bubble, lollipop, waterfall, funnel, and pyramid are complete; bullet remains.
+- [ ] Gauge, polar area, and radar are complete; solid gauge and radial bar remain.
 
 ### v0.3: statistical, financial, and matrix charts
 
-- [ ] Histogram, box plot, violin, density, range, and error-bar charts.
-- [ ] Heatmap, calendar heatmap, correlation matrix, and contour charts.
-- [ ] Candlestick, OHLC, volume, and financial range charts.
+- [ ] Histogram, range, and error-bar are complete; box plot, violin, and density remain.
+- [ ] Heatmap is complete; calendar heatmap, correlation matrix, and contour remain.
+- [ ] Stock, volume, and financial range are complete; candlestick and OHLC remain.
 
 ### v0.4: hierarchy, flow, and relationships
 
@@ -114,7 +116,7 @@ appearing to work while producing incorrect graphics.
 
 ### v0.5: time, geography, and specialized visuals
 
-- [ ] Timeline, Gantt, calendar, and milestone charts.
+- [ ] Timeline and Gantt are complete; calendar and milestone remain.
 - [ ] Choropleth, symbol, bubble, route/flow, and tile maps.
 - [ ] Word cloud, pictogram, waffle, organization, and 3D surface/scatter charts.
 
@@ -145,7 +147,7 @@ formatting, lint, strict types, unit tests, production bundles, and the 25 KB gz
 ## Latest validation
 
 - Formatting, ESLint, and strict TypeScript: passed with no warnings or errors.
-- Unit tests: 124 passed across 28 test files, including 45 chart/theme visual baselines.
+- Unit tests: 126 passed across 29 test files, including 45 chart/theme visual baselines.
 - Production build: ESM, CJS, standalone embed ESM, browser IIFE, minified browser IIFE, and TypeScript declarations generated.
 - Minified core bundle: 9.72 KB gzipped (15 KB budget).
 - Minified full embed bundle: 9.63 KB gzipped (25 KB budget).

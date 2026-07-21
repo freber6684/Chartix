@@ -226,6 +226,68 @@ const charts = [
   },
 ];
 
+const catalogExamples = [
+  ['column', 'Column', 'Comparison'],
+  ['horizontal-bar', 'Horizontal bar module', 'Ranking'],
+  ['grouped-bar', 'Grouped bar module', 'Comparison'],
+  ['stacked-bar', 'Stacked bar', 'Composition'],
+  ['area', 'Area module', 'Trend'],
+  ['spline', 'Spline', 'Trend'],
+  ['step', 'Step line', 'Trend'],
+  ['stacked-area', 'Stacked area', 'Composition'],
+  ['lollipop', 'Lollipop', 'Ranking'],
+  ['dot-plot', 'Dot plot', 'Comparison'],
+  ['slope', 'Slope', 'Change'],
+  ['dumbbell', 'Dumbbell', 'Change'],
+  ['waterfall', 'Waterfall', 'Finance'],
+  ['funnel', 'Funnel', 'Process'],
+  ['pyramid', 'Pyramid', 'Hierarchy'],
+  ['gauge', 'Gauge', 'Progress'],
+  ['progress', 'Progress bar', 'Progress'],
+  ['polar-area', 'Polar area', 'Radial'],
+  ['radar', 'Radar', 'Multivariate'],
+  ['heatmap', 'Heatmap', 'Matrix'],
+  ['histogram', 'Histogram', 'Distribution'],
+  ['stock', 'Stock line', 'Financial'],
+  ['volume', 'Volume', 'Financial'],
+  ['range', 'Range', 'Uncertainty'],
+  ['error-bar', 'Error bar', 'Uncertainty'],
+  ['timeline', 'Timeline', 'Time'],
+  ['gantt', 'Gantt', 'Scheduling'],
+].map(([type, name, tag], index) => ({
+  id: `catalog-${type}`,
+  name,
+  type,
+  family: ['gauge', 'polar-area', 'radar'].includes(type) ? 'radial' : 'cartesian',
+  tag,
+  theme: themes[index % themes.length],
+  summary: `A production-ready ${name.toLowerCase()} renderer with themes, accessibility, and interactions.`,
+  bestFor: `${tag} stories that need a focused, reusable ${name.toLowerCase()} view.`,
+  options: {
+    ...(type === 'stacked-bar' ? { stacked: true } : {}),
+    ...(type === 'gantt' ? { horizontal: true } : {}),
+    ...(type === 'range' ? { fill: true } : {}),
+    dataLabels: { show: ['gauge', 'progress', 'funnel', 'pyramid'].includes(type) },
+  },
+  labels: ['Alpha', 'Beta', 'Gamma', 'Delta', 'Epsilon'],
+  datasets:
+    type === 'gauge' || type === 'progress'
+      ? [{ label: 'Completion', values: [72, 0, 0, 0, 0] }]
+      : [
+          {
+            label: 'Current',
+            values: [22, 38, 31, 54, 46],
+            ...(type === 'range'
+              ? { lowerValues: [18, 31, 26, 47, 40], upperValues: [27, 45, 38, 62, 52] }
+              : {}),
+            ...(type === 'error-bar' ? { errorValues: [3, 5, 4, 6, 4] } : {}),
+          },
+          { label: 'Previous', values: [17, 29, 36, 41, 39] },
+        ],
+}));
+
+charts.push(...catalogExamples);
+
 const state = { selected: charts[0], playground: null, tab: 'playground' };
 const controls = {
   theme: document.querySelector('#control-theme'),

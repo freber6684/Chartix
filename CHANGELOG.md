@@ -56,6 +56,9 @@ All notable Chartix changes are documented here. The project follows semantic ve
 - Automatic contrast repair, missing/sample-quality badges, deterministic text-to-config patches,
   generated edge-case data, and synchronized visual editing commands.
 - Google Sheets URL helpers and cleanup-safe WebSocket/Server-Sent Event data connectors.
+- Twenty-seven registered catalog renderers and aliases, including stacked area, spline, step,
+  lollipop, dot, slope, dumbbell, waterfall, funnel, pyramid, gauge, progress, polar area, radar,
+  heatmap, histogram, stock, volume, range, error bar, timeline, and Gantt, each in the gallery.
 
 ## 0.1.0-alpha.2 - 2026-07-21
 

@@ -215,6 +215,36 @@ export {
   type TreemapNode,
 } from './layouts/primitives.js';
 export { linkCharts, type LinkedChartOptions } from './authoring/linking.js';
+export {
+  catalogCharts,
+  AreaChart,
+  ColumnChart,
+  DotPlotChart,
+  DumbbellChart,
+  ErrorBarChart,
+  FunnelChart,
+  GanttChart,
+  GaugeChart,
+  GroupedBarChart,
+  HeatmapChart,
+  HistogramChart,
+  HorizontalBarChart,
+  LollipopChart,
+  PolarAreaChart,
+  ProgressChart,
+  PyramidChart,
+  RadarChart,
+  RangeChart,
+  SlopeChart,
+  SplineChart,
+  StackedAreaChart,
+  StackedBarChart,
+  StepChart,
+  StockChart,
+  TimelineChart,
+  VolumeChart,
+  WaterfallChart,
+} from './charts/catalog.js';
 export { VisualEditor, type VisualSelection } from './authoring/visual-editor.js';
 export {
   assessPublicationQuality,

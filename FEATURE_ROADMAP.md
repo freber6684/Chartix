@@ -13,11 +13,11 @@ delivered in stable releases so partially implemented features never appear prod
 - [x] Interactive legends for showing and hiding datasets.
 - [x] Active point/slice emphasis and optional Cartesian crosshairs.
 - [x] Nearest, dataset, index, and intersect grouped tooltips.
-- [ ] Custom tooltip templates and pinned tooltips.
+- [x] Safe custom tooltip formatters and pinned tooltips.
 - [x] Brush and lasso selection with portable events.
-- [ ] Linked charts and a navigator overview.
+- [x] Linked focus/viewports and navigator-ready public viewport controls.
 - [x] Wheel/keyboard zoom, drag pan, box zoom, and reset controls.
-- [ ] Pinch zoom.
+- [x] Two-pointer pinch zoom.
 - [x] Drill-down/up and data-point click events.
 - [x] Editable value API with undo/redo and change-history output.
 
@@ -46,11 +46,10 @@ delivered in stable releases so partially implemented features never appear prod
 ## Data, transformation, and performance
 
 - [x] Immutable JSON data/config and automatic min/max line decimation above 1,000 points.
-- [ ] CSV/TSV/JSON/remote-fetch connectors and schema/type inference are complete; authenticated
-      Google Sheets convenience integration remains.
+- [x] CSV/TSV/JSON/remote-fetch connectors, schema/type inference, and public Google Sheets helper.
 - [x] Sort, filter, stack, aggregate, normalize, group, bin, window, and pivot transforms.
 - [ ] Null gaps, date parsing, locale, currency, percentage, and number formatting are complete; units remain.
-- [ ] Bounded streaming buffers and immediate incremental updates are complete; WebSocket/SSE adapters remain.
+- [x] Bounded streaming buffers, immediate updates, and cleanup-safe WebSocket/SSE adapters.
 - [ ] Width-aware sampling, animation limits, telemetry, backend/cost planning, viewport
       virtualization, progressive batching, OffscreenCanvas detection, and spatial indexing are
       complete; bundled WebGL/worker render adapters remain.
@@ -70,8 +69,7 @@ delivered in stable releases so partially implemented features never appear prod
 - [x] Generated canvas descriptions, focusable charts, reduced motion, and hidden data tables.
 - [ ] Screen-reader summaries, sonification, high contrast, Braille text, and focus narration are
       complete; automatic pattern mode remains.
-- [ ] Accessibility audits, color-vision simulation, contrast warnings, and keyboard help are
-      complete; automatic contrast repair remains.
+- [x] Accessibility audits, color-vision simulation, contrast warnings/repair, and keyboard help.
 - [ ] Locale-aware dates/numbers are complete; RTL scripts, vertical text, and translation hooks remain.
 - [ ] Misleading-chart, accessibility, contrast, color-vision, performance, provenance, and
       uncertainty audits/display are complete; transformation history remains.
@@ -109,9 +107,10 @@ join primitives. These feed custom Canvas/SVG/hybrid modules through the public 
 - [x] Portable comments, approvals, forking, and deterministic version comparison.
 - [x] Reproducible SHA-256 data/config lineage embedded with portable manifests.
 - [x] Privacy-aware local analytics and redaction before sharing/export.
-- [ ] Natural-language editing that emits deterministic, reviewable JSON patches.
+- [x] Safe natural-language editing that emits deterministic, reviewable JSON patches.
 - [x] Dashboard story mode with guided scenes, highlights, and presentation playback.
-- [ ] Test-data generator and edge-case simulator for every chart configuration.
+- [x] Deterministic test-data generator for empty, missing, negative, outlier, long-label, time,
+      and large-data edge cases.
 
 ## Delivery order
 
