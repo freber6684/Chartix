@@ -6,6 +6,8 @@ Latest testable version: `0.1.0-alpha.1`
 
 Working branch: `agent/initial-v0.1-foundation`
 
+Repository visibility: public
+
 This file is the persistent handoff checklist. Update it in the same commit as meaningful project
 changes so the next session can resume without reconstructing history.
 
@@ -68,3 +70,6 @@ formatting, lint, strict types, unit tests, production bundles, and the 25 KB gz
 - Minified embed bundle: 5.21 KB gzipped (25 KB budget).
 - Browser check: animated and reduced-motion demos rendered two charts with no page errors or framework overlay.
 - Accessibility check: both canvases had `role="img"` and generated labels; two data tables were exposed in the accessibility tree.
+- GitHub-hosted CI: push and pull-request checks completed successfully.
+- GitHub Pages: deployment completed successfully at `https://freber6684.github.io/Chartix/`.
+- Public URL check: both charts rendered with no browser errors, two accessible canvas labels, and two data tables.
