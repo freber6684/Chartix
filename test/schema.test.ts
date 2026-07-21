@@ -32,6 +32,7 @@ describe('embed JSON Schema', () => {
         'horizontal',
         'innerRadius',
         'interaction',
+        'layout',
         'legend',
         'messages',
         'padding',

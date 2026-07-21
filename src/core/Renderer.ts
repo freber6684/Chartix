@@ -72,8 +72,13 @@ export interface Renderer {
       font: string;
       baseline?: CanvasTextBaseline;
       backgroundColor?: string | undefined;
-      padding?: number | undefined;
+      padding?: number | { top?: number; right?: number; bottom?: number; left?: number };
       rotation?: number | undefined;
+      underline?: boolean;
+      effect?: 'none' | 'soft-shadow' | 'outline' | 'emboss' | 'gradient';
+      effectColor?: string;
+      lineHeight?: number;
+      letterSpacing?: number;
     },
   ): void;
   resize(width: number, height: number, pixelRatio?: number): void;
@@ -385,8 +390,13 @@ export class CanvasRenderer implements Renderer {
       font: string;
       baseline?: CanvasTextBaseline;
       backgroundColor?: string | undefined;
-      padding?: number | undefined;
+      padding?: number | { top?: number; right?: number; bottom?: number; left?: number };
       rotation?: number | undefined;
+      underline?: boolean;
+      effect?: 'none' | 'soft-shadow' | 'outline' | 'emboss' | 'gradient';
+      effectColor?: string;
+      lineHeight?: number;
+      letterSpacing?: number;
     },
   ): void {
     this.context.save();
@@ -395,9 +405,22 @@ export class CanvasRenderer implements Renderer {
     this.context.font = options.font;
     this.context.textAlign = options.align ?? 'left';
     this.context.textBaseline = options.baseline ?? 'alphabetic';
+    const spacing =
+      typeof options.padding === 'number'
+        ? {
+            top: options.padding / 2,
+            right: options.padding,
+            bottom: options.padding / 2,
+            left: options.padding,
+          }
+        : {
+            top: options.padding?.top ?? 2,
+            right: options.padding?.right ?? 4,
+            bottom: options.padding?.bottom ?? 2,
+            left: options.padding?.left ?? 4,
+          };
     if (options.backgroundColor) {
       const metrics = this.context.measureText(value);
-      const padding = options.padding ?? 4;
       const height = metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent;
       const left =
         this.context.textAlign === 'center'
@@ -413,19 +436,59 @@ export class CanvasRenderer implements Renderer {
             : -metrics.actualBoundingBoxAscent;
       this.context.fillStyle = options.backgroundColor;
       this.context.fillRect(
-        left - padding,
-        top - padding / 2,
-        metrics.width + padding * 2,
-        height + padding,
+        left - spacing.left,
+        top - spacing.top,
+        metrics.width + spacing.left + spacing.right,
+        height + spacing.top + spacing.bottom,
       );
     }
-    this.context.fillStyle = options.color;
+    if (options.effect === 'soft-shadow') {
+      this.context.shadowColor = options.effectColor ?? '#00000066';
+      this.context.shadowBlur = 6;
+      this.context.shadowOffsetY = 2;
+    }
+    const fill =
+      options.effect === 'gradient'
+        ? this.context.createLinearGradient(0, -20, 0, 8)
+        : options.color;
+    if (typeof fill !== 'string') {
+      fill.addColorStop(0, options.effectColor ?? '#ffffff');
+      fill.addColorStop(1, options.color);
+    }
+    this.context.fillStyle = fill;
     const lines = value.split('\n');
     const lineHeight = Math.max(
       12,
-      Number.parseFloat(this.context.font.match(/\d+(?:\.\d+)?px/)?.[0] ?? '12') * 1.25,
+      options.lineHeight ??
+        Number.parseFloat(this.context.font.match(/\d+(?:\.\d+)?px/)?.[0] ?? '12') * 1.25,
     );
-    lines.forEach((line, index) => this.context.fillText(line, 0, index * lineHeight));
+    lines.forEach((line, index) => {
+      const lineY = index * lineHeight;
+      if (options.effect === 'outline' || options.effect === 'emboss') {
+        this.context.strokeStyle = options.effectColor ?? '#000000';
+        this.context.lineWidth = options.effect === 'emboss' ? 3 : 2;
+        this.context.strokeText(line, 0, lineY);
+      }
+      if (options.letterSpacing && 'letterSpacing' in this.context) {
+        this.context.letterSpacing = `${options.letterSpacing}px`;
+      }
+      this.context.fillText(line, 0, lineY);
+      if (options.underline) {
+        const width = this.context.measureText(line).width;
+        const left =
+          this.context.textAlign === 'center'
+            ? -width / 2
+            : this.context.textAlign === 'right' || this.context.textAlign === 'end'
+              ? -width
+              : 0;
+        this.context.beginPath();
+        this.context.moveTo(left, lineY + 3);
+        this.context.lineTo(left + width, lineY + 3);
+        this.context.strokeStyle = options.color;
+        this.context.lineWidth = 1;
+        this.context.stroke();
+      }
+    });
     this.context.restore();
   }
 }

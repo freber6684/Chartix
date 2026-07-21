@@ -1,4 +1,9 @@
-import { drawVerticalFrame, font, formatTick, numericValues } from './cartesian.js';
+import {
+  dataLabelRendererStyle,
+  drawVerticalFrame,
+  formatTick,
+  numericValues,
+} from './cartesian.js';
 import type { ChartModule } from './types.js';
 import { decimateLTTB, decimateMinMax } from '../utils/decimation.js';
 
@@ -165,14 +170,8 @@ export const LineChart: ChartModule = {
             {
               align: 'center',
               baseline: 'middle',
-              color: labels.color ?? theme.text,
-              backgroundColor: labels.backgroundColor,
               rotation: labels.rotation,
-              font: font(
-                labels.fontWeight ?? 600,
-                labels.fontSize ?? theme.fontSize.label,
-                labels.fontFamily ?? theme.fontFamily,
-              ),
+              ...dataLabelRendererStyle(options, theme, theme.text),
             },
           );
         }

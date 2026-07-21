@@ -91,6 +91,12 @@ changes so the next session can resume without reconstructing history.
 - [x] Add image annotations and an annotation editor with snap, collision, and responsive tools.
 - [x] Add bundled WebGL point and OffscreenCanvas worker adapters plus pixel-snapshot comparison.
 - [x] Add responsive embed previews, optional feature plugins, and a synchronized no-code builder.
+- [x] Make the playground inspector capability-aware so each chart shows only relevant controls.
+- [x] Add independent title, subtitle, axis, data-label, and tooltip typography with an apply-all
+      workflow, 110 on-demand fonts, professional text effects, hyperlinks, and per-side spacing.
+- [x] Add synchronized palette, HEX, and RGB color editing with reusable role-based controls.
+- [x] Add working phone/tablet/fluid preview frames plus drag positioning, plot resizing, and
+      double-click editing for headings and chart values with live generated code.
 
 ## Remaining for v0.1
 
@@ -159,7 +165,7 @@ formatting, lint, strict types, unit tests, production bundles, and separate lea
 ## Latest validation
 
 - Formatting, ESLint, and strict TypeScript: passed with no warnings or errors.
-- Unit tests: 140 passed across 35 test files, including 45 chart/theme visual baselines.
+- Unit tests: 141 passed across 35 test files, including 45 chart/theme visual baselines.
 - Production build: ESM, CJS, standalone embed ESM, browser IIFE, minified browser IIFE, and TypeScript declarations generated.
 - Lean original-family core: measured on every build against a 35 KB gzip budget.
 - Complete library and public embed: measured against 70 KB and 40 KB gzip budgets respectively.

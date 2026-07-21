@@ -1,5 +1,6 @@
 import {
   createAxisScale,
+  dataLabelRendererStyle,
   drawVerticalFrame,
   fitAxisLabel,
   font,
@@ -126,14 +127,8 @@ function renderVertical(context: ChartRenderContext): void {
           {
             align: 'center',
             baseline: 'middle',
-            color: labels.color ?? (inside ? theme.background : theme.text),
-            backgroundColor: labels.backgroundColor,
             rotation: labels.rotation,
-            font: font(
-              labels.fontWeight ?? 600,
-              labels.fontSize ?? theme.fontSize.label,
-              labels.fontFamily ?? theme.fontFamily,
-            ),
+            ...dataLabelRendererStyle(options, theme, inside ? theme.background : theme.text),
           },
         );
       }
@@ -285,14 +280,8 @@ function renderHorizontal(context: ChartRenderContext): void {
           {
             align: labels.position === 'center' ? 'center' : inside ? 'right' : 'left',
             baseline: 'middle',
-            color: labels.color ?? (inside ? theme.background : theme.text),
-            backgroundColor: labels.backgroundColor,
             rotation: labels.rotation,
-            font: font(
-              labels.fontWeight ?? 600,
-              labels.fontSize ?? theme.fontSize.label,
-              labels.fontFamily ?? theme.fontFamily,
-            ),
+            ...dataLabelRendererStyle(options, theme, inside ? theme.background : theme.text),
           },
         );
       }

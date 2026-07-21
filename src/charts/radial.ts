@@ -1,4 +1,4 @@
-import { font, formatTick } from './cartesian.js';
+import { dataLabelRendererStyle, formatTick } from './cartesian.js';
 import type { ChartModule, ChartRenderContext } from './types.js';
 
 function renderRadial(context: ChartRenderContext, defaultInnerRadius: number): void {
@@ -111,13 +111,11 @@ function renderRadial(context: ChartRenderContext, defaultInnerRadius: number): 
         renderer.text(position === 'outside' ? `${label} ${percent}%` : `${percent}%`, x, y, {
           align: position === 'outside' ? (Math.cos(middle) >= 0 ? 'left' : 'right') : 'center',
           baseline: 'middle',
-          color: labels.color ?? (position === 'outside' ? theme.text : theme.background),
-          backgroundColor: labels.backgroundColor,
           rotation: labels.rotation,
-          font: font(
-            labels.fontWeight ?? 600,
-            labels.fontSize ?? theme.fontSize.label,
-            labels.fontFamily ?? theme.fontFamily,
+          ...dataLabelRendererStyle(
+            options,
+            theme,
+            position === 'outside' ? theme.text : theme.background,
           ),
         });
       }

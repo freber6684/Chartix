@@ -125,7 +125,44 @@
         "position": { "enum": ["auto", "inside", "outside", "center"] },
         "offset": { "type": "number" },
         "maxWidth": { "type": "number", "exclusiveMinimum": 0 },
-        "overflow": { "enum": ["wrap", "truncate", "show"] }
+        "overflow": { "enum": ["wrap", "truncate", "show"] },
+        "fontStyle": { "enum": ["normal", "italic"] },
+        "underline": { "type": "boolean" },
+        "href": { "type": "string" },
+        "effect": { "enum": ["none", "soft-shadow", "outline", "emboss", "gradient"] },
+        "effectColor": { "$ref": "#/$defs/color" },
+        "padding": { "$ref": "#/$defs/spacing" },
+        "lineHeight": { "type": "number", "exclusiveMinimum": 0 },
+        "letterSpacing": { "type": "number" }
+      }
+    },
+    "spacing": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "top": { "type": "number" },
+        "right": { "type": "number" },
+        "bottom": { "type": "number" },
+        "left": { "type": "number" }
+      }
+    },
+    "textStyle": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "fontFamily": { "type": "string" },
+        "fontSize": { "type": "number", "exclusiveMinimum": 0 },
+        "fontWeight": { "type": "number", "minimum": 1, "maximum": 1000 },
+        "fontStyle": { "enum": ["normal", "italic"] },
+        "color": { "$ref": "#/$defs/color" },
+        "backgroundColor": { "$ref": "#/$defs/color" },
+        "underline": { "type": "boolean" },
+        "href": { "type": "string" },
+        "effect": { "enum": ["none", "soft-shadow", "outline", "emboss", "gradient"] },
+        "effectColor": { "$ref": "#/$defs/color" },
+        "padding": { "$ref": "#/$defs/spacing" },
+        "lineHeight": { "type": "number", "exclusiveMinimum": 0 },
+        "letterSpacing": { "type": "number" }
       }
     },
     "axisOptions": {
@@ -138,6 +175,7 @@
         "max": { "type": "number" },
         "reverse": { "type": "boolean" },
         "title": { "type": "string" },
+        "titleOffset": { "type": "number" },
         "tickCount": { "type": "integer", "minimum": 2 },
         "format": { "enum": ["auto", "number", "compact", "currency", "percent", "date"] },
         "locale": { "type": "string" },
@@ -310,6 +348,25 @@
           "additionalProperties": { "$ref": "#/$defs/data" }
         },
         "padding": { "type": "number", "minimum": 0 },
+        "layout": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "padding": { "$ref": "#/$defs/spacing" },
+            "title": { "$ref": "#/$defs/position" },
+            "subtitle": { "$ref": "#/$defs/position" },
+            "plot": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "x": { "type": "number" },
+                "y": { "type": "number" },
+                "widthScale": { "type": "number", "exclusiveMinimum": 0 },
+                "heightScale": { "type": "number", "exclusiveMinimum": 0 }
+              }
+            }
+          }
+        },
         "performance": {
           "type": "object",
           "additionalProperties": false,
@@ -365,7 +422,9 @@
             "enabled": { "type": "boolean" },
             "backgroundColor": { "$ref": "#/$defs/color" },
             "color": { "$ref": "#/$defs/color" },
-            "pinOnClick": { "type": "boolean" }
+            "pinOnClick": { "type": "boolean" },
+            "textStyle": { "$ref": "#/$defs/textStyle" },
+            "rowGap": { "type": "number", "minimum": 0 }
           }
         },
         "transforms": {
@@ -460,7 +519,15 @@
             "fontFamily": { "type": "string" },
             "titleSize": { "type": "number", "exclusiveMinimum": 0 },
             "labelSize": { "type": "number", "exclusiveMinimum": 0 },
-            "tickSize": { "type": "number", "exclusiveMinimum": 0 }
+            "tickSize": { "type": "number", "exclusiveMinimum": 0 },
+            "all": { "$ref": "#/$defs/textStyle" },
+            "title": { "$ref": "#/$defs/textStyle" },
+            "subtitle": { "$ref": "#/$defs/textStyle" },
+            "xAxis": { "$ref": "#/$defs/textStyle" },
+            "yAxis": { "$ref": "#/$defs/textStyle" },
+            "xAxisTitle": { "$ref": "#/$defs/textStyle" },
+            "yAxisTitle": { "$ref": "#/$defs/textStyle" },
+            "dataLabel": { "$ref": "#/$defs/textStyle" }
           }
         },
         "width": { "type": "number", "exclusiveMinimum": 0 },
@@ -479,6 +546,11 @@
           }
         }
       }
+    },
+    "position": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": { "x": { "type": "number" }, "y": { "type": "number" } }
     },
     "theme": {
       "type": "object",

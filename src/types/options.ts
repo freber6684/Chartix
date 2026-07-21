@@ -130,6 +130,8 @@ export interface AxisOptions {
   grid?: { color?: string; width?: number; dash?: number };
   /** Draw a lighter tick between each pair of major ticks. */
   minorTicks?: boolean;
+  /** Distance between the axis title and plot in CSS pixels. */
+  titleOffset?: number;
   /** Numeric ranges removed from a linear axis. */
   breaks?: Array<{ from: number; to: number }>;
 }
@@ -168,6 +170,10 @@ export interface TooltipOptions {
   pinOnClick?: boolean;
   /** Format one tooltip row without allowing unsafe HTML injection. */
   formatter?: (context: TooltipContext) => string;
+  /** Independent tooltip typography and spacing. */
+  textStyle?: TextStyleOptions;
+  /** Space between tooltip rows in CSS pixels. */
+  rowGap?: number;
 }
 
 /** Read-only values passed to a custom tooltip formatter. */
@@ -344,6 +350,52 @@ export interface TypographyOptions {
   labelSize?: number;
   /** Axis tick size in CSS pixels. */
   tickSize?: number;
+  all?: TextStyleOptions;
+  title?: TextStyleOptions;
+  subtitle?: TextStyleOptions;
+  xAxis?: TextStyleOptions;
+  yAxis?: TextStyleOptions;
+  xAxisTitle?: TextStyleOptions;
+  yAxisTitle?: TextStyleOptions;
+  dataLabel?: TextStyleOptions;
+}
+
+/** Rich but professional text styling shared by every textual chart role. */
+export interface TextStyleOptions {
+  fontFamily?: string;
+  fontSize?: number;
+  fontWeight?: number;
+  fontStyle?: 'normal' | 'italic';
+  color?: string;
+  backgroundColor?: string;
+  underline?: boolean;
+  href?: string;
+  effect?: 'none' | 'soft-shadow' | 'outline' | 'emboss' | 'gradient';
+  effectColor?: string;
+  padding?: Partial<SpacingOptions>;
+  lineHeight?: number;
+  letterSpacing?: number;
+}
+
+/** Independent box spacing. */
+export interface SpacingOptions {
+  top: number;
+  right: number;
+  bottom: number;
+  left: number;
+}
+
+export interface PositionOptions {
+  x?: number;
+  y?: number;
+}
+
+/** Manual layout controls used by visual editors and responsive compositions. */
+export interface LayoutOptions {
+  padding?: Partial<SpacingOptions>;
+  title?: PositionOptions;
+  subtitle?: PositionOptions;
+  plot?: PositionOptions & { widthScale?: number; heightScale?: number };
 }
 
 /** Styling and placement for a family of chart labels. */
@@ -370,6 +422,14 @@ export interface LabelOptions {
   maxWidth?: number;
   /** Resolve long labels without custom measurement code. */
   overflow?: 'wrap' | 'truncate' | 'show';
+  fontStyle?: 'normal' | 'italic';
+  underline?: boolean;
+  href?: string;
+  effect?: Exclude<TextStyleOptions['effect'], undefined>;
+  effectColor?: string;
+  padding?: Partial<SpacingOptions>;
+  lineHeight?: number;
+  letterSpacing?: number;
 }
 
 /** Runtime options shared by built-in charts. */
@@ -420,6 +480,8 @@ export interface ChartOptions {
   interaction?: InteractionOptions;
   /** Dataset legend behavior. */
   legend?: LegendOptions;
+  /** Independent page-like spacing and manual element positions. */
+  layout?: LayoutOptions;
   /** Internal chart padding in CSS pixels. */
   padding?: number;
   /** Automatic performance behavior and render telemetry. */

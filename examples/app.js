@@ -401,46 +401,413 @@ const specializedExamples = [
 
 charts.push(...specializedExamples);
 
-const state = { selected: charts[0], playground: null, tab: 'playground' };
-const controls = {
-  theme: document.querySelector('#control-theme'),
-  primary: document.querySelector('#control-primary'),
-  accent: document.querySelector('#control-accent'),
-  background: document.querySelector('#control-background'),
-  font: document.querySelector('#control-font'),
-  titleSize: document.querySelector('#control-title-size'),
-  labelSize: document.querySelector('#control-label-size'),
-  labels: document.querySelector('#control-labels'),
-  position: document.querySelector('#control-position'),
-  angle: document.querySelector('#control-angle'),
-  labelColor: document.querySelector('#control-label-color'),
-  labelBackground: document.querySelector('#control-label-background'),
-  lineStyle: document.querySelector('#control-line-style'),
-  borderWidth: document.querySelector('#control-border-width'),
-  yScale: document.querySelector('#control-y-scale'),
-  reverseAxis: document.querySelector('#control-reverse-axis'),
-  stacked: document.querySelector('#control-stacked'),
-  fill: document.querySelector('#control-fill'),
-  patterns: document.querySelector('#control-patterns'),
-  duration: document.querySelector('#control-duration'),
-  stagger: document.querySelector('#control-stagger'),
-  annotation: document.querySelector('#control-annotation'),
-  annotationImage: document.querySelector('#control-annotation-image'),
-  tooltips: document.querySelector('#control-tooltips'),
-  pinTooltip: document.querySelector('#control-pin-tooltip'),
-  crosshair: document.querySelector('#control-crosshair'),
-  interactionMode: document.querySelector('#control-interaction-mode'),
-  legendPosition: document.querySelector('#control-legend-position'),
-  zoom: document.querySelector('#control-zoom'),
-  htmlLegend: document.querySelector('#control-html-legend'),
-  selection: document.querySelector('#control-selection'),
-  adaptive: document.querySelector('#control-adaptive'),
-  resizable: document.querySelector('#control-resizable'),
-  rtl: document.querySelector('#control-rtl'),
-  highContrast: document.querySelector('#control-high-contrast'),
-  dyslexia: document.querySelector('#control-dyslexia'),
-  dataTable: document.querySelector('#control-data-table'),
+const FONT_CATALOG = [
+  'Space Mono',
+  'Inter',
+  'Roboto',
+  'Open Sans',
+  'Lato',
+  'Montserrat',
+  'Poppins',
+  'Nunito',
+  'Raleway',
+  'Ubuntu',
+  'Merriweather',
+  'Playfair Display',
+  'Source Sans 3',
+  'Source Serif 4',
+  'Roboto Slab',
+  'Roboto Condensed',
+  'Oswald',
+  'Noto Sans',
+  'Noto Serif',
+  'PT Sans',
+  'PT Serif',
+  'Work Sans',
+  'DM Sans',
+  'DM Serif Display',
+  'Manrope',
+  'Fira Sans',
+  'Fira Code',
+  'IBM Plex Sans',
+  'IBM Plex Serif',
+  'IBM Plex Mono',
+  'Libre Franklin',
+  'Libre Baskerville',
+  'Archivo',
+  'Barlow',
+  'Barlow Condensed',
+  'Cabin',
+  'Karla',
+  'Rubik',
+  'Mulish',
+  'Quicksand',
+  'Josefin Sans',
+  'Josefin Slab',
+  'Bitter',
+  'Arvo',
+  'Alegreya',
+  'Alegreya Sans',
+  'Crimson Pro',
+  'Cormorant Garamond',
+  'EB Garamond',
+  'Lora',
+  'Spectral',
+  'Vollkorn',
+  'Zilla Slab',
+  'Bree Serif',
+  'Domine',
+  'Cardo',
+  'Newsreader',
+  'Fraunces',
+  'Literata',
+  'Noto Sans Display',
+  'Noto Serif Display',
+  'Lexend',
+  'Atkinson Hyperlegible',
+  'Public Sans',
+  'Red Hat Display',
+  'Red Hat Text',
+  'Plus Jakarta Sans',
+  'Urbanist',
+  'Outfit',
+  'Sora',
+  'Space Grotesk',
+  'Geologica',
+  'Onest',
+  'Epilogue',
+  'Syne',
+  'Unbounded',
+  'Chivo',
+  'Assistant',
+  'Heebo',
+  'Hind',
+  'Titillium Web',
+  'Exo 2',
+  'Rajdhani',
+  'Orbitron',
+  'Audiowide',
+  'Comfortaa',
+  'Varela Round',
+  'M PLUS Rounded 1c',
+  'Inconsolata',
+  'JetBrains Mono',
+  'Source Code Pro',
+  'Roboto Mono',
+  'Noto Sans Mono',
+  'Courier Prime',
+  'Azeret Mono',
+  'Anonymous Pro',
+  'Cutive Mono',
+  'Nanum Gothic Coding',
+  'Cousine',
+  'Spline Sans Mono',
+  'Permanent Marker',
+  'Caveat',
+  'Patrick Hand',
+  'Kalam',
+  'Pacifico',
+  'Lobster',
+  'Dancing Script',
+  'Satisfy',
+  'Great Vibes',
+  'Bebas Neue',
+];
+const TEXT_ROLES = [
+  ['title', 'Title'],
+  ['subtitle', 'Subtitle'],
+  ['xAxis', 'X-axis labels'],
+  ['yAxis', 'Y-axis labels'],
+  ['xAxisTitle', 'X-axis title'],
+  ['yAxisTitle', 'Y-axis title'],
+  ['dataLabel', 'Data labels'],
+  ['tooltip', 'Tooltip'],
+];
+const PALETTE = [
+  '#625bf6',
+  '#0f9f8f',
+  '#172033',
+  '#ffffff',
+  '#111827',
+  '#f43f5e',
+  '#f97316',
+  '#facc15',
+  '#22c55e',
+  '#06b6d4',
+  '#3b82f6',
+  '#a855f7',
+];
+const defaultTextStyle = (role) => ({
+  fontFamily: 'Space Mono',
+  fontSize: role === 'title' ? 18 : role === 'subtitle' ? 12 : 11,
+  fontWeight: role === 'title' ? 700 : 400,
+  fontStyle: 'normal',
+  color: '#172033',
+  backgroundColor: '#ffffff00',
+  underline: false,
+  href: '',
+  effect: 'none',
+  effectColor: '#625bf6',
+  padding: { top: 0, right: 0, bottom: 0, left: 0 },
+  lineHeight: 1.3,
+  letterSpacing: 0,
+});
+const state = {
+  selected: charts[0],
+  playground: null,
+  tab: 'playground',
+  previewWidth: 0,
+  activeRole: 'title',
+  editor: null,
+  activePoint: null,
 };
+
+function chartCapabilities(chart) {
+  const type = chart.type;
+  const radial =
+    chart.family === 'radial' ||
+    [
+      'pie',
+      'doughnut',
+      'gauge',
+      'solid-gauge',
+      'radar',
+      'polar-area',
+      'radial-bar',
+      'sunburst',
+      'chord',
+    ].includes(type);
+  const line = [
+    'line',
+    'area',
+    'spline',
+    'step',
+    'stacked-area',
+    'stock',
+    'range',
+    'error-bar',
+    'realtime',
+    'streamgraph',
+    'bump',
+    'pareto',
+    'combo',
+  ].includes(type);
+  const bar = [
+    'bar',
+    'column',
+    'horizontal-bar',
+    'grouped-bar',
+    'stacked-bar',
+    'waterfall',
+    'histogram',
+    'volume',
+    'gantt',
+    'bullet',
+    'marimekko',
+  ].includes(type);
+  const points = [
+    'scatter',
+    'bubble',
+    'dot-plot',
+    'lollipop',
+    'slope',
+    'dumbbell',
+    'line',
+    'area',
+    'spline',
+    'step',
+    'combo',
+  ].includes(type);
+  return {
+    radial,
+    cartesian: !radial,
+    line,
+    bar,
+    points,
+    doughnut: type === 'doughnut',
+    axes: !radial,
+  };
+}
+
+function freshEditor(chart) {
+  return {
+    theme: chart.theme,
+    primary: '#625bf6',
+    accent: '#0f9f8f',
+    background: themeBackgrounds[chart.theme],
+    title: `${chart.name} example`,
+    subtitle: 'Interactive Chartix visualization',
+    xTitle: chart.options.scales?.x?.title ?? '',
+    yTitle: chart.options.scales?.y?.title ?? '',
+    textStyles: Object.fromEntries(TEXT_ROLES.map(([role]) => [role, defaultTextStyle(role)])),
+    showLabels: Boolean(chart.options.dataLabels?.show),
+    labelPosition: chart.options.dataLabels?.position ?? 'outside',
+    xAngle: 0,
+    yAngle: 0,
+    padding: { top: 24, right: 24, bottom: 24, left: 24 },
+    titleOffset: 12,
+    axisOffset: 12,
+    plotGap: 0,
+    layout: { title: {}, subtitle: {}, plot: { widthScale: 1, heightScale: 1 } },
+    lineStyle: chart.datasets[0]?.lineStyle ?? 'straight',
+    borderWidth: chart.datasets[0]?.borderWidth ?? 2,
+    pointSize: chart.datasets[0]?.pointSizes?.[0] ?? 4,
+    stacked: Boolean(chart.options.stacked),
+    fill: Boolean(chart.options.fill),
+    yScale: chart.options.scales?.y?.type ?? 'linear',
+    reverseAxis: Boolean(chart.options.scales?.y?.reverse),
+    startAngle: chart.options.startAngle ?? -90,
+    innerRadius: chart.options.innerRadius ?? 0.62,
+    radialGap: chart.options.radialGap ?? 1,
+    tooltips: true,
+    pinTooltip: false,
+    crosshair: chart.family === 'cartesian',
+    interactionMode: chart.datasets.length > 1 ? 'index' : 'nearest',
+    legendPosition: 'top',
+    zoom: false,
+    htmlLegend: false,
+    selection: 'off',
+    patterns: false,
+    duration: 420,
+    stagger: 60,
+    annotation: typeSupportsAnnotations(chart) ? 'none' : 'none',
+    annotationImage: '',
+    adaptive: true,
+    resizable: false,
+    rtl: false,
+    highContrast: false,
+    dyslexia: false,
+    dataTable: true,
+  };
+}
+
+function typeSupportsAnnotations(chart) {
+  return chart.family === 'cartesian';
+}
+
+function escapeHTML(value) {
+  return String(value).replace(
+    /[&<>'"]/g,
+    (character) =>
+      ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[character],
+  );
+}
+
+function selectOptions(values, selected) {
+  return values
+    .map(
+      (value) =>
+        `<option value="${escapeHTML(Array.isArray(value) ? value[0] : value)}" ${String(Array.isArray(value) ? value[0] : value) === String(selected) ? 'selected' : ''}>${escapeHTML(Array.isArray(value) ? value[1] : value)}</option>`,
+    )
+    .join('');
+}
+
+function toggleControl(label, key, checked) {
+  return `<label class="toggle-row">${label}<input type="checkbox" data-setting="${key}" ${checked ? 'checked' : ''}><span></span></label>`;
+}
+
+function rangeControl(label, key, value, min, max, step = 1, suffix = '') {
+  return `<label class="range-label">${label}<output>${value}${suffix}</output><input type="range" data-setting="${key}" min="${min}" max="${max}" step="${step}" value="${value}"></label>`;
+}
+
+function colorEditor(label, key, value) {
+  const hex = colorToHex(value);
+  const rgb = hexToRgb(hex);
+  return `<div class="color-editor" data-color-key="${key}"><div class="color-heading"><span>${label}</span><span class="color-chip" style="background:${hex}"></span></div><div class="color-main"><input type="color" value="${hex}" data-color-part="picker"><input class="code-input" value="${hex}" data-color-part="hex" aria-label="${label} hex"></div><div class="rgb-row"><label>R<input type="number" min="0" max="255" value="${rgb.r}" data-color-part="r"></label><label>G<input type="number" min="0" max="255" value="${rgb.g}" data-color-part="g"></label><label>B<input type="number" min="0" max="255" value="${rgb.b}" data-color-part="b"></label></div><div class="palette-row">${PALETTE.map((color) => `<button type="button" data-palette="${color}" title="${color}" style="background:${color}"></button>`).join('')}</div><small>${hex.toUpperCase()} · rgb(${rgb.r}, ${rgb.g}, ${rgb.b})</small></div>`;
+}
+
+function colorToHex(value) {
+  if (/^#[0-9a-f]{8}$/i.test(value)) return value.slice(0, 7).toLowerCase();
+  if (/^#[0-9a-f]{6}$/i.test(value)) return value.toLowerCase();
+  if (/^#[0-9a-f]{3}$/i.test(value))
+    return `#${value
+      .slice(1)
+      .split('')
+      .map((c) => c + c)
+      .join('')}`.toLowerCase();
+  const parts = String(value).match(/\d+/g);
+  if (!parts || parts.length < 3) return '#000000';
+  return `#${parts
+    .slice(0, 3)
+    .map((n) =>
+      Math.max(0, Math.min(255, Number(n)))
+        .toString(16)
+        .padStart(2, '0'),
+    )
+    .join('')}`;
+}
+function hexToRgb(value) {
+  const hex = colorToHex(value).slice(1);
+  return {
+    r: parseInt(hex.slice(0, 2), 16),
+    g: parseInt(hex.slice(2, 4), 16),
+    b: parseInt(hex.slice(4, 6), 16),
+  };
+}
+
+function renderControls() {
+  const editor = state.editor;
+  const style = editor.textStyles[state.activeRole];
+  const caps = chartCapabilities(state.selected);
+  const axes = caps.axes
+    ? `<fieldset><legend>Axes + labels</legend>${toggleControl('Show data labels', 'showLabels', editor.showLabels)}<label>Data-label position<select data-setting="labelPosition">${selectOptions(
+        [
+          ['outside', 'Outside'],
+          ['inside', 'Inside'],
+          ['center', 'Center'],
+        ],
+        editor.labelPosition,
+      )}</select></label>${rangeControl('X label angle', 'xAngle', editor.xAngle, -90, 90, 1, '°')}${rangeControl('Y label angle', 'yAngle', editor.yAngle, -90, 90, 1, '°')}<label>X-axis title<input type="text" data-setting="xTitle" value="${escapeHTML(editor.xTitle)}"></label><label>Y-axis title<input type="text" data-setting="yTitle" value="${escapeHTML(editor.yTitle)}"></label><label>Y scale<select data-setting="yScale">${selectOptions(
+        [
+          ['linear', 'Linear'],
+          ['logarithmic', 'Logarithmic'],
+          ['percentage', 'Percentage'],
+        ],
+        editor.yScale,
+      )}</select></label>${toggleControl('Reverse Y axis', 'reverseAxis', editor.reverseAxis)}</fieldset>`
+    : '';
+  const line = caps.line
+    ? `<fieldset><legend>Line + area</legend><label>Line style<select data-setting="lineStyle">${selectOptions(
+        [
+          ['straight', 'Straight'],
+          ['smooth', 'Smooth'],
+          ['step-after', 'Step'],
+        ],
+        editor.lineStyle,
+      )}</select></label>${rangeControl('Line width', 'borderWidth', editor.borderWidth, 1, 10)}${toggleControl('Fill area', 'fill', editor.fill)}</fieldset>`
+    : '';
+  const bar = caps.bar
+    ? `<fieldset><legend>Bars</legend>${toggleControl('Stack datasets', 'stacked', editor.stacked)}${rangeControl('Mark width', 'borderWidth', editor.borderWidth, 1, 10)}</fieldset>`
+    : '';
+  const points = caps.points
+    ? `<fieldset><legend>Markers</legend>${rangeControl('Marker size', 'pointSize', editor.pointSize, 1, 20)}</fieldset>`
+    : '';
+  const radial = caps.radial
+    ? `<fieldset><legend>Radial chart</legend>${rangeControl('Start angle', 'startAngle', editor.startAngle, -180, 180, 1, '°')}${rangeControl('Slice gap', 'radialGap', editor.radialGap, 0, 12, 0.5, '°')}${caps.doughnut ? rangeControl('Inner radius', 'innerRadius', editor.innerRadius, 0.1, 0.9, 0.01) : ''}</fieldset>`
+    : '';
+  document.querySelector('#chart-controls').innerHTML =
+    `<div class="control-tabs"><button type="button" class="is-active" data-control-jump="design">Design</button><button type="button" data-control-jump="text">Text</button><button type="button" data-control-jump="layout">Layout</button><button type="button" data-control-jump="chart">Chart</button></div><fieldset id="control-design"><legend>Design system</legend><label>Theme<select data-setting="theme">${selectOptions(themes, editor.theme)}</select></label>${colorEditor('Primary', 'primary', editor.primary)}${colorEditor('Accent', 'accent', editor.accent)}${colorEditor('Canvas background', 'background', editor.background)}</fieldset><fieldset id="control-text"><legend>Text studio</legend><label>Editing<select data-role>${selectOptions(TEXT_ROLES, state.activeRole)}</select></label><div class="text-preview" style="font-family:${style.fontFamily};font-size:${style.fontSize}px;font-weight:${style.fontWeight};font-style:${style.fontStyle};color:${style.color};background:${style.backgroundColor};text-decoration:${style.underline ? 'underline' : 'none'}">Chartix typography</div><label>Font family<select data-text-setting="fontFamily" class="font-select">${selectOptions(
+      FONT_CATALOG.map((font) => [font, font]),
+      style.fontFamily,
+    )}</select><small>${FONT_CATALOG.length} professional fonts · selected font loads on demand</small></label>${rangeControl('Font size', 'text.fontSize', style.fontSize, 8, 72, 1, 'px')}<div class="button-group"><button type="button" data-text-toggle="fontWeight" class="${style.fontWeight >= 700 ? 'is-active' : ''}"><strong>B</strong></button><button type="button" data-text-toggle="fontStyle" class="${style.fontStyle === 'italic' ? 'is-active' : ''}"><em>I</em></button><button type="button" data-text-toggle="underline" class="${style.underline ? 'is-active' : ''}"><u>U</u></button></div><label>Text effect<select data-text-setting="effect">${selectOptions(
+      [
+        ['none', 'None'],
+        ['soft-shadow', 'Soft shadow'],
+        ['outline', 'Outline'],
+        ['emboss', 'Emboss'],
+        ['gradient', 'Gradient'],
+      ],
+      style.effect,
+    )}</select></label>${colorEditor('Font color', 'text.color', style.color)}${colorEditor('Text background', 'text.backgroundColor', style.backgroundColor)}${colorEditor('Effect color', 'text.effectColor', style.effectColor)}<label>Hyperlink<input type="url" data-text-setting="href" value="${escapeHTML(style.href)}" placeholder="https://example.com"></label>${rangeControl('Line height', 'text.lineHeight', style.lineHeight, 0.8, 3, 0.1)}${rangeControl('Letter spacing', 'text.letterSpacing', style.letterSpacing, -2, 12, 0.5, 'px')}<div class="spacing-grid"><span>Text padding</span>${['top', 'right', 'bottom', 'left'].map((side) => `<label>${side}<input type="number" min="0" max="80" data-text-padding="${side}" value="${style.padding[side]}"></label>`).join('')}</div><button class="apply-all-button" type="button" data-apply-all>Apply this text style to all</button></fieldset><fieldset id="control-layout"><legend>Content + spacing</legend><label>Title<input type="text" data-setting="title" value="${escapeHTML(editor.title)}"><small>Double-click it in the preview to edit there.</small></label><label>Subtitle<input type="text" data-setting="subtitle" value="${escapeHTML(editor.subtitle)}"></label><div class="spacing-grid"><span>Chart padding</span>${['top', 'right', 'bottom', 'left'].map((side) => `<label>${side}<input type="number" min="0" max="120" data-padding="${side}" value="${editor.padding[side]}"></label>`).join('')}</div>${rangeControl('Title spacing', 'titleOffset', editor.titleOffset, 0, 80)}${rangeControl('Axis-title spacing', 'axisOffset', editor.axisOffset, 0, 80)}${rangeControl('Plot spacing', 'plotGap', editor.plotGap, -40, 100)}<button class="copy-button" type="button" data-reset-layout>Reset dragged positions</button><p class="panel-intro">Drag the title, subtitle, or plot in the preview. Use the corner handle to resize the plot.</p></fieldset><div id="control-chart">${axes}${line}${bar}${points}${radial}</div><fieldset><legend>Interaction + access</legend>${toggleControl('Tooltips', 'tooltips', editor.tooltips)}${toggleControl('Pin tooltip on click', 'pinTooltip', editor.pinTooltip)}${caps.cartesian ? toggleControl('Crosshair', 'crosshair', editor.crosshair) : ''}<label>Tooltip mode<select data-setting="interactionMode">${selectOptions(
+      [
+        ['nearest', 'Nearest'],
+        ['index', 'Same index'],
+        ['dataset', 'Dataset'],
+        ['intersect', 'Intersect'],
+      ],
+      editor.interactionMode,
+    )}</select></label><label>Legend position<select data-setting="legendPosition">${selectOptions(['top', 'bottom', 'left', 'right', 'inside'], editor.legendPosition)}</select></label>${caps.cartesian ? toggleControl('Zoom + pan', 'zoom', editor.zoom) : ''}${toggleControl('HTML legend', 'htmlLegend', editor.htmlLegend)}${toggleControl('Accessible patterns', 'patterns', editor.patterns)}${toggleControl('Screen-reader table', 'dataTable', editor.dataTable)}</fieldset>`;
+}
 
 function deepClone(value) {
   return JSON.parse(JSON.stringify(value));
@@ -499,132 +866,110 @@ function renderDetailNavigation() {
 }
 
 function resetControls() {
-  const chart = state.selected;
-  controls.theme.value = chart.theme;
-  controls.primary.value = chart.family === 'radial' ? '#625bf6' : '#625bf6';
-  controls.accent.value = '#0f9f8f';
-  controls.background.value = themeBackgrounds[chart.theme];
-  controls.font.value = "'Space Mono', monospace";
-  controls.titleSize.value = '17';
-  controls.labelSize.value = '11';
-  controls.angle.value = '0';
-  controls.labelColor.value = '#172033';
-  controls.labelBackground.value = '#ffffff';
-  controls.lineStyle.value = chart.datasets[0]?.lineStyle ?? 'straight';
-  controls.borderWidth.value = String(chart.datasets[0]?.borderWidth ?? 2);
-  controls.yScale.value = chart.options.scales?.y?.type ?? 'linear';
-  controls.reverseAxis.checked = Boolean(chart.options.scales?.y?.reverse);
-  controls.stacked.checked = Boolean(chart.options.stacked);
-  controls.fill.checked = Boolean(chart.options.fill);
-  controls.patterns.checked = false;
-  controls.duration.value = '420';
-  controls.stagger.value = '60';
-  controls.annotation.value = chart.type === 'line' ? 'line' : 'none';
-  controls.annotationImage.value = '';
-  controls.labels.checked = Boolean(chart.options.dataLabels?.show);
-  controls.position.value = chart.options.dataLabels?.position ?? 'outside';
-  controls.tooltips.checked = true;
-  controls.pinTooltip.checked = false;
-  controls.crosshair.checked = chart.family === 'cartesian';
-  controls.interactionMode.value = chart.datasets.length > 1 ? 'index' : 'nearest';
-  controls.legendPosition.value = 'top';
-  controls.zoom.checked = false;
-  controls.htmlLegend.checked = false;
-  controls.selection.value = 'off';
-  controls.adaptive.checked = true;
-  controls.resizable.checked = false;
-  controls.rtl.checked = false;
-  controls.highContrast.checked = false;
-  controls.dyslexia.checked = false;
-  controls.dataTable.checked = true;
-  updateOutputs();
+  state.editor = freshEditor(state.selected);
+  state.activeRole = 'title';
+  state.previewWidth = 0;
+  renderControls();
+  applyPreviewWidth(0);
   renderPlayground();
 }
 
 function currentConfig() {
   const config = baseConfig(state.selected);
-  config.theme = controls.theme.value;
-  config.options.backgroundColor = controls.background.value;
-  config.options.colors = [
-    controls.primary.value,
-    controls.accent.value,
-    '#e78a2f',
-    '#d94f70',
-    '#3b82d0',
-  ];
-  config.options.typography = {
-    fontFamily: controls.font.value,
-    titleSize: Number(controls.titleSize.value),
-    labelSize: Number(controls.labelSize.value),
-    tickSize: Number(controls.labelSize.value),
-  };
-  config.options.xLabels = {
-    rotation: Number(controls.angle.value),
-    fontSize: Number(controls.labelSize.value),
-  };
+  const editor = state.editor;
+  config.theme = editor.theme;
+  config.options.backgroundColor = editor.background;
+  config.options.colors = [editor.primary, editor.accent, '#e78a2f', '#d94f70', '#3b82d0'];
+  const textStyles = deepClone(editor.textStyles);
+  const tooltipStyle = textStyles.tooltip;
+  delete textStyles.tooltip;
+  config.options.title = editor.title;
+  config.options.subtitle = editor.subtitle;
+  config.options.typography = textStyles;
+  config.options.xLabels = { ...textStyles.xAxis, rotation: Number(editor.xAngle) };
+  config.options.yLabels = { ...textStyles.yAxis, rotation: Number(editor.yAngle) };
   config.options.dataLabels = {
-    show: controls.labels.checked,
-    position: controls.position.value,
-    fontSize: Number(controls.labelSize.value),
-    fontFamily: controls.font.value,
-    color: controls.labelColor.value,
-    backgroundColor: controls.labelBackground.value,
+    ...textStyles.dataLabel,
+    show: editor.showLabels,
+    position: editor.labelPosition,
   };
   config.options.tooltip = {
-    enabled: controls.tooltips.checked,
-    pinOnClick: controls.pinTooltip.checked,
+    enabled: editor.tooltips,
+    pinOnClick: editor.pinTooltip,
+    textStyle: tooltipStyle,
+    rowGap: 5,
   };
-  config.options.crosshair = { enabled: controls.crosshair.checked, color: '#94a3b888' };
-  config.options.interaction = { mode: controls.interactionMode.value, keyboard: true };
+  config.options.crosshair = { enabled: editor.crosshair, color: '#94a3b888' };
+  config.options.interaction = { mode: editor.interactionMode, keyboard: true };
   config.options.legend = {
     interactive: true,
-    position: controls.legendPosition.value,
-    html: controls.htmlLegend.checked,
+    position: editor.legendPosition,
+    html: editor.htmlLegend,
   };
   config.options.zoom = {
-    enabled: controls.zoom.checked,
+    enabled: editor.zoom,
     wheel: true,
     pinch: true,
     pan: true,
     box: true,
     resetButton: true,
   };
-  config.options.stacked = controls.stacked.checked;
-  config.options.fill = controls.fill.checked;
+  config.options.stacked = editor.stacked;
+  config.options.fill = editor.fill;
   config.options.animation = {
-    duration: Number(controls.duration.value),
-    stagger: Number(controls.stagger.value),
+    duration: Number(editor.duration),
+    stagger: Number(editor.stagger),
     easing: 'easeOutCubic',
   };
-  config.options.responsiveMode = controls.adaptive.checked ? 'adaptive' : 'fixed';
-  config.options.resizable = controls.resizable.checked;
-  config.options.direction = controls.rtl.checked ? 'rtl' : 'ltr';
-  config.options.showDataTable = controls.dataTable.checked;
+  config.options.responsiveMode = editor.adaptive ? 'adaptive' : 'fixed';
+  config.options.resizable = editor.resizable;
+  config.options.direction = editor.rtl ? 'rtl' : 'ltr';
+  config.options.showDataTable = editor.dataTable;
+  config.options.editable = true;
   config.options.accessibility = {
     autoSummary: true,
     keyboardHelp: true,
     explorationMode: true,
-    highContrast: controls.highContrast.checked,
-    dyslexiaFriendly: controls.dyslexia.checked,
-    automaticPatterns: controls.patterns.checked,
+    highContrast: editor.highContrast,
+    dyslexiaFriendly: editor.dyslexia,
+    automaticPatterns: editor.patterns,
   };
   config.options.scales = {
     ...config.options.scales,
+    x: { ...config.options.scales?.x, title: editor.xTitle, titleOffset: editor.axisOffset },
     y: {
       ...config.options.scales?.y,
-      type: controls.yScale.value,
-      reverse: controls.reverseAxis.checked,
+      title: editor.yTitle,
+      titleOffset: editor.axisOffset,
+      type: editor.yScale,
+      reverse: editor.reverseAxis,
     },
   };
+  config.options.padding = undefined;
+  config.options.layout = {
+    padding: editor.padding,
+    title: editor.layout.title,
+    subtitle: {
+      ...editor.layout.subtitle,
+      ...(editor.layout.subtitle.y === undefined
+        ? { y: editor.padding.top + editor.textStyles.title.fontSize + editor.titleOffset }
+        : {}),
+    },
+    plot: { ...editor.layout.plot, y: (editor.layout.plot.y ?? 0) + Number(editor.plotGap) },
+  };
+  config.options.startAngle = Number(editor.startAngle);
+  config.options.radialGap = Number(editor.radialGap);
+  config.options.innerRadius = Number(editor.innerRadius);
   config.data.datasets = config.data.datasets.map((dataset) => ({
     ...dataset,
-    lineStyle: controls.lineStyle.value,
-    borderWidth: Number(controls.borderWidth.value),
+    lineStyle: editor.lineStyle,
+    borderWidth: Number(editor.borderWidth),
+    pointSizes: Array(dataset.values.length).fill(Number(editor.pointSize)),
   }));
   config.options.selection = {
-    enabled: controls.selection.value !== 'off',
-    mode: controls.selection.value === 'lasso' ? 'lasso' : 'brush',
-    color: controls.accent.value,
+    enabled: editor.selection !== 'off',
+    mode: editor.selection === 'lasso' ? 'lasso' : 'brush',
+    color: editor.accent,
   };
   if (state.selected.id === 'bar') {
     config.options.drilldown = {
@@ -634,10 +979,10 @@ function currentConfig() {
       },
     };
   }
-  const annotationType = controls.annotation.value;
+  const annotationType = editor.annotation;
   if (annotationType === 'line')
     config.options.annotations = [
-      { type: 'line', value: 300, label: 'Target', color: controls.accent.value, width: 1.5 },
+      { type: 'line', value: 300, label: 'Target', color: editor.accent, width: 1.5 },
     ];
   else if (annotationType === 'box')
     config.options.annotations = [
@@ -645,19 +990,19 @@ function currentConfig() {
     ];
   else if (annotationType === 'point')
     config.options.annotations = [
-      { type: 'point', x: 2, value: 200, label: 'Review', color: controls.accent.value },
+      { type: 'point', x: 2, value: 200, label: 'Review', color: editor.accent },
     ];
   else if (annotationType === 'arrow')
     config.options.annotations = [
-      { type: 'arrow', x: 1, value: 150, x2: 3, y2: 275, color: controls.accent.value },
+      { type: 'arrow', x: 1, value: 150, x2: 3, y2: 275, color: editor.accent },
     ];
-  else if (annotationType === 'image' && controls.annotationImage.value)
+  else if (annotationType === 'image' && editor.annotationImage)
     config.options.annotations = [
       {
         type: 'image',
         x: 2,
         value: 220,
-        imageUrl: controls.annotationImage.value,
+        imageUrl: editor.annotationImage,
         imageWidth: 48,
         imageHeight: 48,
       },
@@ -666,7 +1011,6 @@ function currentConfig() {
 }
 
 function renderPlayground() {
-  updateOutputs();
   state.playground?.destroy();
   const host = document.querySelector('#playground-canvas');
   host.innerHTML = '';
@@ -675,6 +1019,7 @@ function renderPlayground() {
   host.append(canvas);
   const config = currentConfig();
   state.playground = new window.Chartix(canvas, config);
+  installDirectEditor(host, canvas);
   updateGeneratedCode(config);
 }
 
@@ -684,6 +1029,233 @@ function updateGeneratedCode(config) {
   const json = JSON.stringify(clean, null, 2).replace(/'/g, '&#39;');
   document.querySelector('#generated-code').textContent =
     `<script src="https://freber6684.github.io/Chartix/dist/chartix.min.js"></script>\n\n<div data-chartix data-config='${json}'></div>`;
+}
+
+function applyPreviewWidth(width) {
+  state.previewWidth = width;
+  const host = document.querySelector('#playground-canvas');
+  host.style.width = width ? `min(100%, ${width}px)` : '100%';
+  host.dataset.viewport = width === 375 ? 'phone' : width === 768 ? 'tablet' : 'fluid';
+  document.querySelector('#preview-size').textContent = width ? `${width}px target` : 'Responsive';
+  document.querySelectorAll('[data-preview-width]').forEach((button) => {
+    const active = Number(button.dataset.previewWidth) === width;
+    button.classList.toggle('is-active', active);
+    button.setAttribute('aria-pressed', String(active));
+  });
+  window.requestAnimationFrame(() => state.playground?.resize());
+}
+
+function loadFont(font) {
+  if (
+    ['system-ui', 'Arial', 'Georgia'].includes(font) ||
+    document.querySelector(`link[data-chartix-font="${window.CSS.escape(font)}"]`)
+  )
+    return;
+  const link = document.createElement('link');
+  link.rel = 'stylesheet';
+  link.dataset.chartixFont = font;
+  link.href = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(font).replace(/%20/g, '+')}&display=swap`;
+  document.head.append(link);
+}
+
+function rerenderFromEditor(rebuildControls = false) {
+  if (rebuildControls) renderControls();
+  renderPlayground();
+}
+
+function updateColorEditor(container, color) {
+  const hex = colorToHex(color);
+  const rgb = hexToRgb(hex);
+  container.querySelector('[data-color-part="picker"]').value = hex;
+  container.querySelector('[data-color-part="hex"]').value = hex.toUpperCase();
+  container.querySelector('[data-color-part="r"]').value = rgb.r;
+  container.querySelector('[data-color-part="g"]').value = rgb.g;
+  container.querySelector('[data-color-part="b"]').value = rgb.b;
+  container.querySelector('.color-chip').style.background = hex;
+  container.querySelector('small').textContent =
+    `${hex.toUpperCase()} · rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`;
+  return hex;
+}
+
+function setColor(key, color, container) {
+  const normalized = updateColorEditor(container, color);
+  if (key.startsWith('text.')) state.editor.textStyles[state.activeRole][key.slice(5)] = normalized;
+  else state.editor[key] = normalized;
+  rerenderFromEditor();
+}
+
+function installDirectEditor(host, canvas) {
+  const editor = state.editor;
+  const title = document.createElement('button');
+  title.className = 'direct-handle direct-title';
+  title.type = 'button';
+  title.dataset.dragRole = 'title';
+  title.textContent = 'Drag title';
+  const subtitle = document.createElement('button');
+  subtitle.className = 'direct-handle direct-subtitle';
+  subtitle.type = 'button';
+  subtitle.dataset.dragRole = 'subtitle';
+  subtitle.textContent = 'Drag subtitle';
+  const plot = document.createElement('div');
+  plot.className = 'plot-handle';
+  plot.dataset.dragRole = 'plot';
+  plot.innerHTML =
+    '<span>Drag plot</span><button type="button" class="plot-resize" aria-label="Resize chart plot"></button>';
+  host.append(title, subtitle, plot);
+  const positions = {
+    title: editor.layout.title,
+    subtitle: editor.layout.subtitle,
+    plot: editor.layout.plot,
+  };
+  title.style.left = `${positions.title.x ?? editor.padding.left}px`;
+  title.style.top = `${positions.title.y ?? editor.padding.top + 4}px`;
+  subtitle.style.left = `${positions.subtitle.x ?? editor.padding.left}px`;
+  subtitle.style.top = `${positions.subtitle.y ?? editor.padding.top + 34}px`;
+  plot.style.left = `${editor.padding.left + 54 + (positions.plot.x ?? 0)}px`;
+  plot.style.top = `${editor.padding.top + 95 + editor.plotGap + (positions.plot.y ?? 0)}px`;
+  plot.style.width = `${Math.max(120, (host.clientWidth - editor.padding.left - editor.padding.right - 70) * (positions.plot.widthScale ?? 1))}px`;
+  plot.style.height = `${Math.max(100, 300 * (positions.plot.heightScale ?? 1))}px`;
+  canvas.addEventListener('chartix:active', (event) => {
+    state.activePoint = event.detail?.region ?? null;
+  });
+  canvas.addEventListener('chartix:inactive', () => {
+    state.activePoint = null;
+  });
+  canvas.addEventListener('dblclick', (event) => {
+    if (!state.activePoint || state.activePoint.valueIndex === undefined) return;
+    const current =
+      state.selected.datasets[state.activePoint.datasetIndex]?.values[state.activePoint.valueIndex];
+    showInlineEditor(
+      host,
+      event.offsetX,
+      event.offsetY,
+      current ?? '',
+      (value) => {
+        const parsed = Number(value);
+        if (!Number.isFinite(parsed)) return;
+        state.selected.datasets[state.activePoint.datasetIndex].values[
+          state.activePoint.valueIndex
+        ] = parsed;
+        rerenderFromEditor();
+      },
+      'number',
+    );
+  });
+  host.querySelectorAll('[data-drag-role]').forEach((handle) => {
+    handle.addEventListener('pointerdown', beginDrag);
+    if (handle.matches('.direct-handle'))
+      handle.addEventListener('dblclick', (event) => {
+        event.stopPropagation();
+        const role = handle.dataset.dragRole;
+        showInlineEditor(
+          host,
+          parseFloat(handle.style.left),
+          parseFloat(handle.style.top),
+          editor[role],
+          (value) => {
+            editor[role] = value;
+            renderControls();
+            rerenderFromEditor();
+          },
+        );
+      });
+  });
+  plot.querySelector('.plot-resize').addEventListener('pointerdown', beginResize);
+}
+
+function beginDrag(event) {
+  if (event.target.closest('.plot-resize')) return;
+  event.preventDefault();
+  const handle = event.currentTarget;
+  const role = handle.dataset.dragRole;
+  const host = handle.closest('.playground-canvas');
+  const start = {
+    x: event.clientX,
+    y: event.clientY,
+    left: parseFloat(handle.style.left),
+    top: parseFloat(handle.style.top),
+  };
+  handle.setPointerCapture(event.pointerId);
+  const move = (pointer) => {
+    const x = Math.max(0, Math.min(host.clientWidth - 40, start.left + pointer.clientX - start.x));
+    const y = Math.max(0, Math.min(host.clientHeight - 30, start.top + pointer.clientY - start.y));
+    handle.style.left = `${x}px`;
+    handle.style.top = `${y}px`;
+    state.editor.layout[role] = {
+      ...state.editor.layout[role],
+      x: role === 'plot' ? x - state.editor.padding.left - 54 : x,
+      y: role === 'plot' ? y - state.editor.padding.top - 95 - state.editor.plotGap : y,
+    };
+    state.playground?.updateOptions({ layout: deepClone(state.editor.layout) });
+    updateGeneratedCode(currentConfig());
+  };
+  const end = () => {
+    handle.removeEventListener('pointermove', move);
+    handle.removeEventListener('pointerup', end);
+  };
+  handle.addEventListener('pointermove', move);
+  handle.addEventListener('pointerup', end);
+}
+
+function beginResize(event) {
+  event.preventDefault();
+  event.stopPropagation();
+  const handle = event.currentTarget;
+  const plot = handle.parentElement;
+  const host = plot.closest('.playground-canvas');
+  const start = {
+    x: event.clientX,
+    y: event.clientY,
+    width: plot.offsetWidth,
+    height: plot.offsetHeight,
+  };
+  handle.setPointerCapture(event.pointerId);
+  const move = (pointer) => {
+    const width = Math.max(
+      120,
+      Math.min(host.clientWidth - plot.offsetLeft, start.width + pointer.clientX - start.x),
+    );
+    const height = Math.max(
+      100,
+      Math.min(host.clientHeight - plot.offsetTop, start.height + pointer.clientY - start.y),
+    );
+    plot.style.width = `${width}px`;
+    plot.style.height = `${height}px`;
+    state.editor.layout.plot.widthScale =
+      width /
+      Math.max(120, host.clientWidth - state.editor.padding.left - state.editor.padding.right - 70);
+    state.editor.layout.plot.heightScale = height / 300;
+    state.playground?.updateOptions({ layout: deepClone(state.editor.layout) });
+    updateGeneratedCode(currentConfig());
+  };
+  const end = () => {
+    handle.removeEventListener('pointermove', move);
+    handle.removeEventListener('pointerup', end);
+  };
+  handle.addEventListener('pointermove', move);
+  handle.addEventListener('pointerup', end);
+}
+
+function showInlineEditor(host, x, y, value, save, type = 'text') {
+  host.querySelector('.inline-chart-editor')?.remove();
+  const input = document.createElement('input');
+  input.className = 'inline-chart-editor';
+  input.type = type;
+  input.value = value;
+  input.style.left = `${x}px`;
+  input.style.top = `${y}px`;
+  host.append(input);
+  input.focus();
+  input.select();
+  const finish = () => {
+    save(input.value);
+    input.remove();
+  };
+  input.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') finish();
+    if (event.key === 'Escape') input.remove();
+  });
+  input.addEventListener('blur', finish, { once: true });
 }
 
 function renderDocumentation() {
@@ -749,21 +1321,6 @@ function switchTab(tab) {
   });
 }
 
-function updateOutputs() {
-  document.querySelector('#title-size-value').textContent = `${controls.titleSize.value}px`;
-  document.querySelector('#label-size-value').textContent = `${controls.labelSize.value}px`;
-  document.querySelector('#angle-value').textContent = `${controls.angle.value}°`;
-  document.querySelector('#border-width-value').textContent = `${controls.borderWidth.value}px`;
-  document.querySelector('#duration-value').textContent = `${controls.duration.value}ms`;
-  document.querySelector('#stagger-value').textContent = `${controls.stagger.value}ms`;
-}
-
-themes.forEach((theme) =>
-  controls.theme.insertAdjacentHTML(
-    'beforeend',
-    `<option value="${theme}">${theme[0].toUpperCase()}${theme.slice(1)}</option>`,
-  ),
-);
 document.addEventListener('click', (event) => {
   const openButton = event.target.closest('[data-open-chart]');
   if (openButton) openChart(openButton.dataset.openChart);
@@ -780,25 +1337,103 @@ document.addEventListener('click', (event) => {
   const tab = event.target.closest('[data-tab]');
   if (tab) switchTab(tab.dataset.tab);
   const preview = event.target.closest('[data-preview-width]');
-  if (preview) {
-    const width = Number(preview.dataset.previewWidth);
-    const host = document.querySelector('#playground-canvas');
-    host.style.maxWidth = width ? `${width}px` : '';
-    document.querySelector('#preview-size').textContent = width ? `${width}px` : 'Responsive';
-    state.playground?.resize();
+  if (preview) applyPreviewWidth(Number(preview.dataset.previewWidth));
+  const jump = event.target.closest('[data-control-jump]');
+  if (jump)
+    document
+      .querySelector(`#control-${jump.dataset.controlJump}`)
+      ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  const toggle = event.target.closest('[data-text-toggle]');
+  if (toggle) {
+    const style = state.editor.textStyles[state.activeRole];
+    const key = toggle.dataset.textToggle;
+    if (key === 'fontWeight') style.fontWeight = style.fontWeight >= 700 ? 400 : 700;
+    if (key === 'fontStyle') style.fontStyle = style.fontStyle === 'italic' ? 'normal' : 'italic';
+    if (key === 'underline') style.underline = !style.underline;
+    rerenderFromEditor(true);
   }
+  if (event.target.closest('[data-apply-all]')) {
+    const source = deepClone(state.editor.textStyles[state.activeRole]);
+    TEXT_ROLES.forEach(([role]) => {
+      state.editor.textStyles[role] = deepClone(source);
+    });
+    rerenderFromEditor(true);
+  }
+  if (event.target.closest('[data-reset-layout]')) {
+    state.editor.layout = { title: {}, subtitle: {}, plot: { widthScale: 1, heightScale: 1 } };
+    rerenderFromEditor();
+  }
+  const swatch = event.target.closest('[data-palette]');
+  if (swatch)
+    setColor(
+      swatch.closest('[data-color-key]').dataset.colorKey,
+      swatch.dataset.palette,
+      swatch.closest('[data-color-key]'),
+    );
 });
 
 document.querySelector('#back-to-gallery').addEventListener('click', closeDetail);
 document.querySelector('#reset-controls').addEventListener('click', resetControls);
-document.querySelector('#drill-up').addEventListener('click', () => state.playground?.drillUp());
-Object.values(controls).forEach((control) =>
-  control.addEventListener('input', () => {
-    if (control === controls.theme)
-      controls.background.value = themeBackgrounds[controls.theme.value];
-    renderPlayground();
-  }),
-);
+document.querySelector('#chart-controls').addEventListener('change', (event) => {
+  const target = event.target;
+  if (target.matches('[data-role]')) {
+    state.activeRole = target.value;
+    renderControls();
+    return;
+  }
+  if (target.matches('[data-text-setting]')) {
+    state.editor.textStyles[state.activeRole][target.dataset.textSetting] = target.value;
+    if (target.dataset.textSetting === 'fontFamily') loadFont(target.value);
+    rerenderFromEditor(true);
+    return;
+  }
+  if (target.matches('[data-setting]')) {
+    const key = target.dataset.setting;
+    const value =
+      target.type === 'checkbox'
+        ? target.checked
+        : target.type === 'range' || target.type === 'number'
+          ? Number(target.value)
+          : target.value;
+    if (key.startsWith('text.')) state.editor.textStyles[state.activeRole][key.slice(5)] = value;
+    else state.editor[key] = value;
+    if (key === 'theme') state.editor.background = themeBackgrounds[target.value];
+    rerenderFromEditor(key === 'theme');
+  }
+});
+document.querySelector('#chart-controls').addEventListener('input', (event) => {
+  const target = event.target;
+  if (target.matches('[data-color-part]')) {
+    const container = target.closest('[data-color-key]');
+    const part = target.dataset.colorPart;
+    if (part === 'hex' && !/^#[0-9a-f]{3}([0-9a-f]{3})?$/i.test(target.value)) return;
+    if (part === 'picker' || part === 'hex')
+      setColor(container.dataset.colorKey, target.value, container);
+    else {
+      const rgb = ['r', 'g', 'b'].map((name) =>
+        Number(container.querySelector(`[data-color-part="${name}"]`).value),
+      );
+      setColor(container.dataset.colorKey, `rgb(${rgb.join(',')})`, container);
+    }
+    return;
+  }
+  if (target.matches('[data-text-padding]')) {
+    state.editor.textStyles[state.activeRole].padding[target.dataset.textPadding] = Number(
+      target.value,
+    );
+    rerenderFromEditor();
+    return;
+  }
+  if (target.matches('[data-padding]')) {
+    state.editor.padding[target.dataset.padding] = Number(target.value);
+    rerenderFromEditor();
+    return;
+  }
+  if (target.matches('[data-setting], [data-text-setting]')) {
+    const rangeOutput = target.closest('.range-label')?.querySelector('output');
+    if (rangeOutput) rangeOutput.textContent = target.value;
+  }
+});
 document.querySelector('#copy-code').addEventListener('click', async () => {
   const status = document.querySelector('#copy-status');
   try {

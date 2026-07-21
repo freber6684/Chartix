@@ -53,6 +53,7 @@ const validOptionKeys = new Set<keyof ChartOptions>([
   'innerRadius',
   'interaction',
   'legend',
+  'layout',
   'messages',
   'padding',
   'performance',
@@ -305,6 +306,31 @@ export class Chartix {
           }
         : {}),
       ...(options.legend ? { legend: { ...this.config.options.legend, ...options.legend } } : {}),
+      ...(options.layout
+        ? {
+            layout: {
+              ...this.config.options.layout,
+              ...options.layout,
+              ...(options.layout.padding
+                ? { padding: { ...this.config.options.layout?.padding, ...options.layout.padding } }
+                : {}),
+              ...(options.layout.title
+                ? { title: { ...this.config.options.layout?.title, ...options.layout.title } }
+                : {}),
+              ...(options.layout.subtitle
+                ? {
+                    subtitle: {
+                      ...this.config.options.layout?.subtitle,
+                      ...options.layout.subtitle,
+                    },
+                  }
+                : {}),
+              ...(options.layout.plot
+                ? { plot: { ...this.config.options.layout?.plot, ...options.layout.plot } }
+                : {}),
+            },
+          }
+        : {}),
       ...(options.dataLabels
         ? { dataLabels: { ...this.config.options.dataLabels, ...options.dataLabels } }
         : {}),

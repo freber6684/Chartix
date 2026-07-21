@@ -24,6 +24,7 @@ export class Tooltip {
   public show(regions: readonly HitRegion[], options: TooltipOptions = {}): void {
     const primary = regions[0];
     if (!primary) return;
+    const style = options.textStyle;
     this.element.replaceChildren();
     const heading = document.createElement('strong');
     heading.textContent = primary.label;
@@ -43,13 +44,23 @@ export class Tooltip {
         : `${region.datasetLabel}: ${new Intl.NumberFormat().format(region.value)}`;
       row.style.display = 'block';
       row.style.color = region.color;
+      row.style.marginTop = `${options.rowGap ?? 0}px`;
       this.element.append(row);
     });
     this.element.style.display = 'block';
     this.element.style.left = `${primary.x}px`;
     this.element.style.top = `${primary.y}px`;
     this.element.style.background = options.backgroundColor ?? '#111827';
-    this.element.style.color = options.color ?? '#ffffff';
+    this.element.style.color = style?.color ?? options.color ?? '#ffffff';
+    this.element.style.fontFamily = style?.fontFamily ?? 'system-ui, sans-serif';
+    this.element.style.fontSize = `${style?.fontSize ?? 12}px`;
+    this.element.style.fontWeight = String(style?.fontWeight ?? 600);
+    this.element.style.fontStyle = style?.fontStyle ?? 'normal';
+    this.element.style.textDecoration = style?.underline ? 'underline' : 'none';
+    this.element.style.lineHeight = style?.lineHeight ? `${style.lineHeight}px` : '1.5';
+    this.element.style.padding = `${style?.padding?.top ?? 8}px ${style?.padding?.right ?? 10}px ${style?.padding?.bottom ?? 8}px ${style?.padding?.left ?? 10}px`;
+    this.element.style.textShadow =
+      style?.effect === 'soft-shadow' ? `0 2px 5px ${style.effectColor ?? '#00000066'}` : 'none';
   }
 
   public hide(): void {

@@ -39,4 +39,49 @@ describe('advanced renderer appearance', () => {
     renderer.image(document.createElement('canvas'), 0.5);
     expect(context.drawImage).toHaveBeenCalled();
   });
+
+  it('renders professional text effects, underline, and independent padding', () => {
+    const gradient = { addColorStop: vi.fn() };
+    const context = {
+      setTransform: vi.fn(),
+      save: vi.fn(),
+      restore: vi.fn(),
+      translate: vi.fn(),
+      rotate: vi.fn(),
+      measureText: vi.fn(() => ({
+        width: 48,
+        actualBoundingBoxAscent: 9,
+        actualBoundingBoxDescent: 3,
+      })),
+      fillRect: vi.fn(),
+      fillText: vi.fn(),
+      strokeText: vi.fn(),
+      beginPath: vi.fn(),
+      moveTo: vi.fn(),
+      lineTo: vi.fn(),
+      stroke: vi.fn(),
+      createLinearGradient: vi.fn(() => gradient),
+    };
+    vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(
+      context as unknown as CanvasRenderingContext2D,
+    );
+    const renderer = new CanvasRenderer(document.createElement('canvas'));
+    renderer.resize(320, 200);
+    renderer.text('Chartix', 20, 30, {
+      color: '#172033',
+      font: 'italic 700 18px Inter',
+      backgroundColor: '#ffffff',
+      padding: { top: 3, right: 8, bottom: 5, left: 6 },
+      effect: 'gradient',
+      effectColor: '#625bf6',
+      underline: true,
+      lineHeight: 24,
+      letterSpacing: 1,
+    });
+    expect(context.createLinearGradient).toHaveBeenCalled();
+    expect(gradient.addColorStop).toHaveBeenCalledTimes(2);
+    expect(context.fillRect).toHaveBeenCalled();
+    expect(context.fillText).toHaveBeenCalledWith('Chartix', 0, 0);
+    expect(context.stroke).toHaveBeenCalled();
+  });
 });

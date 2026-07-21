@@ -8,11 +8,70 @@ import {
 } from '../core/Scale.js';
 import type { Renderer } from '../core/Renderer.js';
 import type { InteractionRegistry } from '../core/interactions.js';
-import type { AxisOptions, ChartData, ChartOptions, ThemeObject } from '../types/options.js';
+import type {
+  AxisOptions,
+  ChartData,
+  ChartOptions,
+  TextStyleOptions,
+  ThemeObject,
+} from '../types/options.js';
 import type { PlotArea } from './types.js';
 
-export function font(weight: number, size: number, family: string): string {
-  return `${weight} ${size}px ${family}`;
+export function font(
+  weight: number,
+  size: number,
+  family: string,
+  style: 'normal' | 'italic' = 'normal',
+): string {
+  return style === 'italic'
+    ? `italic ${weight} ${size}px ${family}`
+    : `${weight} ${size}px ${family}`;
+}
+
+export function textStyle(
+  options: ChartOptions,
+  role: keyof Pick<
+    NonNullable<ChartOptions['typography']>,
+    'title' | 'subtitle' | 'xAxis' | 'yAxis' | 'xAxisTitle' | 'yAxisTitle' | 'dataLabel'
+  >,
+  fallback: TextStyleOptions,
+): TextStyleOptions {
+  return { ...fallback, ...options.typography?.all, ...options.typography?.[role] };
+}
+
+export function rendererTextStyle(style: TextStyleOptions) {
+  return {
+    color: style.color ?? '#111827',
+    font: font(
+      style.fontWeight ?? 500,
+      style.fontSize ?? 12,
+      style.fontFamily ?? 'system-ui, sans-serif',
+      style.fontStyle,
+    ),
+    ...(style.backgroundColor ? { backgroundColor: style.backgroundColor } : {}),
+    ...(style.padding ? { padding: style.padding } : {}),
+    ...(style.underline || style.href ? { underline: true } : {}),
+    ...(style.effect ? { effect: style.effect } : {}),
+    ...(style.effectColor ? { effectColor: style.effectColor } : {}),
+    ...(style.lineHeight ? { lineHeight: style.lineHeight } : {}),
+    ...(style.letterSpacing ? { letterSpacing: style.letterSpacing } : {}),
+  };
+}
+
+export function dataLabelRendererStyle(
+  options: ChartOptions,
+  theme: ThemeObject,
+  fallbackColor: string,
+) {
+  return rendererTextStyle({
+    ...textStyle(options, 'dataLabel', {
+      color: fallbackColor,
+      fontFamily: theme.fontFamily,
+      fontSize: theme.fontSize.label,
+      fontWeight: 600,
+    }),
+    ...options.dataLabels,
+  });
 }
 
 /** Remove intentional gaps before calculating a numeric domain. */
@@ -157,27 +216,40 @@ export function drawHeader(
   data: ChartData,
   options: ChartOptions,
   theme: ThemeObject,
-  padding: number,
+  padding: number | { top: number; left: number },
   interactions?: InteractionRegistry,
   hiddenDatasets: ReadonlySet<number> = new Set(),
 ): number {
-  let y = padding;
+  const topPadding = typeof padding === 'number' ? padding : padding.top;
+  const leftPadding = typeof padding === 'number' ? padding : padding.left;
+  let y = topPadding;
   if (options.title) {
-    const titleFont = options.typography?.fontFamily ?? theme.fontFamily;
-    renderer.text(options.title, padding, y, {
-      baseline: 'top',
+    const style = textStyle(options, 'title', {
       color: theme.text,
-      font: font(650, theme.fontSize.title, titleFont),
+      fontFamily: options.typography?.fontFamily ?? theme.fontFamily,
+      fontSize: options.typography?.titleSize ?? theme.fontSize.title,
+      fontWeight: 650,
     });
-    y += 30;
+    const titleY = options.layout?.title?.y ?? y;
+    renderer.text(options.title, options.layout?.title?.x ?? leftPadding, titleY, {
+      baseline: 'top',
+      ...rendererTextStyle(style),
+    });
+    y = Math.max(y + 30, titleY + (style.fontSize ?? theme.fontSize.title) + 10);
   }
   if (options.subtitle) {
-    renderer.text(options.subtitle, padding, y, {
-      baseline: 'top',
+    const style = textStyle(options, 'subtitle', {
       color: theme.mutedText,
-      font: font(500, theme.fontSize.label, theme.fontFamily),
+      fontFamily: theme.fontFamily,
+      fontSize: theme.fontSize.label,
+      fontWeight: 500,
     });
-    y += 24;
+    const subtitleY = options.layout?.subtitle?.y ?? y;
+    renderer.text(options.subtitle, options.layout?.subtitle?.x ?? leftPadding, subtitleY, {
+      baseline: 'top',
+      ...rendererTextStyle(style),
+    });
+    y = Math.max(y + 24, subtitleY + (style.fontSize ?? theme.fontSize.label) + 10);
   }
   if (
     options.showLegend !== false &&
@@ -185,7 +257,7 @@ export function drawHeader(
     (options.legend?.position ?? 'top') === 'top'
   ) {
     data.datasets.forEach((dataset, index) => {
-      const x = padding + index * 132;
+      const x = leftPadding + index * 132;
       const color = dataset.color ?? theme.palette[index % theme.palette.length] ?? theme.text;
       const markerColor = hiddenDatasets.has(index) ? theme.grid : color;
       renderer.roundedRect(x, y + 2, 10, 10, 4, markerColor);
@@ -220,35 +292,47 @@ export function createPlotArea(
   hiddenDatasets: ReadonlySet<number> = new Set(),
 ): PlotArea {
   const padding = options.padding ?? 24;
+  const boxPadding = {
+    top: options.layout?.padding?.top ?? padding,
+    right: options.layout?.padding?.right ?? padding,
+    bottom: options.layout?.padding?.bottom ?? padding,
+    left: options.layout?.padding?.left ?? padding,
+  };
   const headerBottom = drawHeader(
     renderer,
     data,
     options,
     theme,
-    padding,
+    { top: boxPadding.top, left: boxPadding.left },
     interactions,
     hiddenDatasets,
   );
   const legendPosition = options.showLegend === false ? undefined : options.legend?.position;
   const sideLegendWidth = legendPosition === 'left' || legendPosition === 'right' ? 132 : 0;
-  const left = padding + 44 + (legendPosition === 'left' ? sideLegendWidth : 0);
-  const top = Math.max(padding + 10, headerBottom + 10);
-  const right = renderer.width - padding - (legendPosition === 'right' ? sideLegendWidth : 0);
+  const plotLayout = options.layout?.plot;
+  const baseLeft = boxPadding.left + 44 + (legendPosition === 'left' ? sideLegendWidth : 0);
+  const baseTop = Math.max(boxPadding.top + 10, headerBottom + 10);
+  const baseRight =
+    renderer.width - boxPadding.right - (legendPosition === 'right' ? sideLegendWidth : 0);
   const xRotation = Math.abs(options.xLabels?.rotation ?? 0);
   const bottom =
     renderer.height -
-    padding -
+    boxPadding.bottom -
     24 -
     Math.min(34, xRotation * 0.35) -
     (legendPosition === 'bottom' ? 28 : 0) -
     (options.footnote || options.source ? 22 : 0);
+  const left = baseLeft + (plotLayout?.x ?? 0);
+  const top = baseTop + (plotLayout?.y ?? 0);
+  const width = Math.max(1, (baseRight - baseLeft) * (plotLayout?.widthScale ?? 1));
+  const height = Math.max(1, (bottom - baseTop) * (plotLayout?.heightScale ?? 1));
   const plot = {
     left,
     top,
-    right,
-    bottom,
-    width: Math.max(1, right - left),
-    height: Math.max(1, bottom - top),
+    right: left + width,
+    bottom: top + height,
+    width,
+    height,
   };
   if (legendPosition && legendPosition !== 'top') {
     drawPositionedLegend(renderer, data, theme, plot, legendPosition, interactions, hiddenDatasets);
@@ -266,7 +350,7 @@ export function createPlotArea(
     .filter(Boolean)
     .join(' · ');
   if (footer)
-    renderer.text(footer, plot.left, renderer.height - padding, {
+    renderer.text(footer, plot.left, renderer.height - boxPadding.bottom, {
       baseline: 'bottom',
       color: theme.mutedText,
       font: font(450, Math.max(9, theme.fontSize.tick - 1), theme.fontFamily),
@@ -333,6 +417,15 @@ export function drawVerticalFrame(
     if (options.showGrid !== false) drawHorizontalGrid(renderer, plot, y, axis, theme.grid);
     const labels = options.yLabels;
     if (labels?.show === false) return;
+    const style = {
+      ...textStyle(options, 'yAxis', {
+        color: theme.mutedText,
+        fontFamily: theme.fontFamily,
+        fontSize: theme.fontSize.tick,
+        fontWeight: 450,
+      }),
+      ...labels,
+    };
     const rightAxis = axis.position === 'right';
     renderer.text(
       axis.tickFormatter?.(tick, tickIndex) ?? formatTick(tick, axis),
@@ -350,14 +443,8 @@ export function drawVerticalFrame(
             ? 'left'
             : 'right',
         baseline: 'middle',
-        color: labels?.color ?? theme.mutedText,
-        backgroundColor: labels?.backgroundColor,
+        ...rendererTextStyle(style),
         rotation: labels?.rotation,
-        font: font(
-          labels?.fontWeight ?? 450,
-          labels?.fontSize ?? theme.fontSize.tick,
-          labels?.fontFamily ?? theme.fontFamily,
-        ),
       },
     );
   });
@@ -376,16 +463,22 @@ export function drawVerticalFrame(
   }
   if (axis.title) {
     const rightAxis = axis.position === 'right';
+    const style = textStyle(options, 'yAxisTitle', {
+      color: theme.mutedText,
+      fontFamily: theme.fontFamily,
+      fontSize: theme.fontSize.label,
+      fontWeight: 600,
+    });
+    const titleOffset = axis.titleOffset ?? 0;
     renderer.text(
       axis.title,
-      rightAxis ? plot.right + 34 : plot.left - 42,
+      rightAxis ? plot.right + 34 + titleOffset : plot.left - 42 - titleOffset,
       plot.top + plot.height / 2,
       {
         align: 'center',
         baseline: 'middle',
-        color: theme.mutedText,
+        ...rendererTextStyle(style),
         rotation: rightAxis ? 90 : -90,
-        font: font(600, theme.fontSize.label, theme.fontFamily),
       },
     );
   }
@@ -516,6 +609,15 @@ export function drawVerticalFrame(
     if (index % skip !== 0) return;
     const labelOptions = options.xLabels;
     if (labelOptions?.show === false) return;
+    const style = {
+      ...textStyle(options, 'xAxis', {
+        color: theme.mutedText,
+        fontFamily: theme.fontFamily,
+        fontSize: theme.fontSize.tick,
+        fontWeight: 450,
+      }),
+      ...labelOptions,
+    };
     renderer.text(
       fitAxisLabel(
         label,
@@ -528,24 +630,28 @@ export function drawVerticalFrame(
       {
         align: 'center',
         baseline: 'middle',
-        color: labelOptions?.color ?? theme.mutedText,
-        backgroundColor: labelOptions?.backgroundColor,
+        ...rendererTextStyle(style),
         rotation: labelOptions?.rotation,
-        font: font(
-          labelOptions?.fontWeight ?? 450,
-          labelOptions?.fontSize ?? theme.fontSize.tick,
-          labelOptions?.fontFamily ?? theme.fontFamily,
-        ),
       },
     );
   });
   if (options.scales?.x?.title) {
-    renderer.text(options.scales.x.title, plot.left + plot.width / 2, plot.bottom + 38, {
-      align: 'center',
-      baseline: 'middle',
+    const style = textStyle(options, 'xAxisTitle', {
       color: theme.mutedText,
-      font: font(600, theme.fontSize.label, theme.fontFamily),
+      fontFamily: theme.fontFamily,
+      fontSize: theme.fontSize.label,
+      fontWeight: 600,
     });
+    renderer.text(
+      options.scales.x.title,
+      plot.left + plot.width / 2,
+      plot.bottom + 38 + (options.scales.x.titleOffset ?? 0),
+      {
+        align: 'center',
+        baseline: 'middle',
+        ...rendererTextStyle(style),
+      },
+    );
   }
   return scale;
 }

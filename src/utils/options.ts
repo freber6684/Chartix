@@ -91,10 +91,40 @@ export function normalizeConfig(config: ChartConfig): ChartConfig & { options: C
       decimation: { ...defaultOptions.decimation, ...config.options?.decimation },
       interaction: { ...defaultOptions.interaction, ...config.options?.interaction },
       legend: { ...defaultOptions.legend, ...config.options?.legend },
+      ...(config.options?.layout
+        ? {
+            layout: {
+              ...config.options.layout,
+              ...(config.options.layout.padding
+                ? { padding: { ...config.options.layout.padding } }
+                : {}),
+              ...(config.options.layout.title ? { title: { ...config.options.layout.title } } : {}),
+              ...(config.options.layout.subtitle
+                ? { subtitle: { ...config.options.layout.subtitle } }
+                : {}),
+              ...(config.options.layout.plot ? { plot: { ...config.options.layout.plot } } : {}),
+            },
+          }
+        : {}),
       ...(config.options?.messages ? { messages: { ...config.options.messages } } : {}),
       ...(config.options?.selection ? { selection: { ...config.options.selection } } : {}),
-      tooltip: { ...defaultOptions.tooltip, ...config.options?.tooltip },
-      ...(config.options?.typography ? { typography: { ...config.options.typography } } : {}),
+      tooltip: {
+        ...defaultOptions.tooltip,
+        ...config.options?.tooltip,
+        ...(config.options?.tooltip?.textStyle
+          ? { textStyle: { ...config.options.tooltip.textStyle } }
+          : {}),
+      },
+      ...(config.options?.typography
+        ? {
+            typography: Object.fromEntries(
+              Object.entries(config.options.typography).map(([key, value]) => [
+                key,
+                value && typeof value === 'object' ? { ...value } : value,
+              ]),
+            ),
+          }
+        : {}),
       ...(config.options?.transforms
         ? { transforms: config.options.transforms.map((transform) => ({ ...transform })) }
         : {}),

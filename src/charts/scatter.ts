@@ -1,4 +1,10 @@
-import { createAxisScale, font, formatTick, numericValues } from './cartesian.js';
+import {
+  createAxisScale,
+  dataLabelRendererStyle,
+  font,
+  formatTick,
+  numericValues,
+} from './cartesian.js';
 import type { ChartModule } from './types.js';
 
 /** Built-in scatter chart. Numeric labels are x values; dataset values are y values. */
@@ -146,14 +152,8 @@ function renderScatter(context: Parameters<ChartModule['render']>[0]): void {
           {
             align: 'center',
             baseline: 'middle',
-            color: labels.color ?? theme.text,
-            backgroundColor: labels.backgroundColor,
             rotation: labels.rotation,
-            font: font(
-              labels.fontWeight ?? 600,
-              labels.fontSize ?? theme.fontSize.label,
-              labels.fontFamily ?? theme.fontFamily,
-            ),
+            ...dataLabelRendererStyle(options, theme, theme.text),
           },
         );
       }
