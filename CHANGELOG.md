@@ -61,6 +61,9 @@ All notable Chartix changes are documented here. The project follows semantic ve
   heatmap, histogram, stock, volume, range, error bar, timeline, and Gantt, each in the gallery.
 - Dedicated box, violin, density, candlestick, OHLC, correlation-matrix, treemap, circle-packing,
   dendrogram, network, and parallel-coordinate renderers with financial dataset fields.
+- Complete requested specialized catalog: streamgraph, bullet, radial/solid gauges, sunburst,
+  icicle, Sankey, chord, tree/org/mind-map/flow variants, calendar heatmap, contour, Marimekko,
+  pictogram, waffle, word cloud, bump, Pareto, Renko, projected maps, and a 3D surface mesh.
 
 ## 0.1.0-alpha.2 - 2026-07-21
 

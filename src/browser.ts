@@ -6,6 +6,7 @@ import { BubbleChart, ScatterChart } from './charts/scatter.js';
 import { Chartix } from './core/Chartix.js';
 import { catalogCharts } from './charts/catalog.js';
 import { advancedCharts } from './charts/advanced.js';
+import { specializedCharts } from './charts/specialized.js';
 import { startAutoEmbed } from './embed/autoload.js';
 
 declare global {
@@ -24,6 +25,7 @@ Chartix.register(
   ComboChart,
   ...catalogCharts,
   ...advancedCharts,
+  ...specializedCharts,
 );
 window.Chartix = Chartix;
 

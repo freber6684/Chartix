@@ -437,12 +437,115 @@ export const HeatmapChart: ChartModule = {
   },
 };
 
-export const HistogramChart = optionAlias('histogram', BarChart, {
-  horizontal: false,
-  showLegend: false,
-});
-export const TimelineChart = optionAlias('timeline', LineChart, { showGrid: false });
-export const GanttChart = optionAlias('gantt', BarChart, { horizontal: true, showLegend: true });
+export const HistogramChart: ChartModule = {
+  id: 'histogram',
+  render(context) {
+    const values = numericValues(context.data.datasets.flatMap((dataset) => dataset.values));
+    if (!values.length) return;
+    const count = Math.max(2, Math.ceil(Math.sqrt(values.length)));
+    const min = Math.min(...values);
+    const max = Math.max(...values);
+    const size = Math.max(1, (max - min) / count);
+    const bins = new Array<number>(count).fill(0);
+    values.forEach((value) => {
+      const index = Math.min(count - 1, Math.floor((value - min) / size));
+      bins[index] = (bins[index] ?? 0) + 1;
+    });
+    BarChart.render({
+      ...context,
+      data: {
+        labels: bins.map(
+          (_, index) =>
+            `${(min + index * size).toFixed(1)}–${(min + (index + 1) * size).toFixed(1)}`,
+        ),
+        datasets: [{ label: 'Frequency', values: bins }],
+      },
+      options: { ...context.options, horizontal: false, showLegend: false },
+    });
+  },
+};
+
+export const TimelineChart: ChartModule = {
+  id: 'timeline',
+  render(context) {
+    const y = context.plot.top + context.plot.height / 2;
+    context.renderer.line(
+      [
+        { x: context.plot.left, y },
+        { x: context.plot.right, y },
+      ],
+      context.theme.grid,
+      3,
+    );
+    context.data.labels.forEach((label, index) => {
+      const x =
+        context.plot.left +
+        ((index + 0.5) / Math.max(1, context.data.labels.length)) * context.plot.width;
+      const above = index % 2 === 0;
+      const color =
+        context.theme.palette[index % context.theme.palette.length] ?? context.theme.text;
+      context.renderer.line(
+        [
+          { x, y },
+          { x, y: y + (above ? -45 : 45) },
+        ],
+        color,
+        2,
+      );
+      context.renderer.circle({ x, y }, 6, color, context.theme.background);
+      context.renderer.text(label, x, y + (above ? -52 : 52), {
+        align: 'center',
+        baseline: above ? 'bottom' : 'top',
+        color: context.theme.text,
+        font: `600 ${context.theme.fontSize.tick}px ${context.theme.fontFamily}`,
+      });
+    });
+  },
+};
+
+export const GanttChart: ChartModule = {
+  id: 'gantt',
+  render(context) {
+    const dataset = context.data.datasets[0];
+    if (!dataset) return;
+    const starts = dataset.startValues ?? dataset.values.map((_, index) => index);
+    const ends =
+      dataset.endValues ?? dataset.values.map((value, index) => index + Math.max(1, value ?? 1));
+    const scale = createAxisScale(
+      numericValues([...starts, ...ends]),
+      context.plot.left,
+      context.plot.right,
+      context.options.scales?.x,
+    );
+    const row = context.plot.height / Math.max(1, context.data.labels.length);
+    context.data.labels.forEach((label, index) => {
+      const start = starts[index];
+      const end = ends[index];
+      if (start === null || start === undefined || end === null || end === undefined) return;
+      const x = scale.project(start);
+      const right = scale.project(end);
+      const y = context.plot.top + row * (index + 0.2);
+      const color =
+        dataset.colors?.[index] ??
+        context.theme.palette[index % context.theme.palette.length] ??
+        context.theme.text;
+      context.renderer.roundedRect(
+        Math.min(x, right),
+        y,
+        Math.max(2, Math.abs(right - x)),
+        row * 0.58,
+        4,
+        color,
+      );
+      context.renderer.text(label, context.plot.left - 8, y + row * 0.29, {
+        align: 'right',
+        baseline: 'middle',
+        color: context.theme.text,
+        font: `500 ${context.theme.fontSize.tick}px ${context.theme.fontFamily}`,
+      });
+    });
+  },
+};
 
 export const catalogCharts: ChartModule[] = [
   ColumnChart,

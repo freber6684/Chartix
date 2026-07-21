@@ -12,6 +12,13 @@ scatter, bubble, and combo types, use `column`, `horizontal-bar`, `grouped-bar`,
 Candlestick and OHLC datasets accept aligned `openValues`, `highValues`, `lowValues`, and
 `closeValues`. Range/error renderers use `lowerValues`, `upperValues`, and `errorValues`.
 
+The specialized catalog adds `streamgraph`, `realtime`, `solid-gauge`, `bullet`, `radial-bar`,
+`sunburst`, `icicle`, `sankey`, `chord`, `tree`, `org-chart`, `mind-map`, `flowchart`,
+`dependency-graph`, `calendar-heatmap`, `contour`, `marimekko`, `pictogram`, `waffle`,
+`word-cloud`, `bump`, `pareto`, `renko`, `ridgeline`, `geo-scatter`, `bubble-map`, `route-map`,
+`world-map`, `choropleth`, and `surface-3d`. Geographic point/route modules read longitude and
+latitude from numeric `{x, y}` points. Gantt datasets accept aligned `startValues` and `endValues`.
+
 The public gallery now includes vertical, horizontal, grouped, stacked/100%-stacked, line, area,
 pie, doughnut, scatter, bubble, dual-axis combo, and time/logarithmic examples. `BubbleChart` uses
 `points: [{ x, y, r }]`; `ComboChart` uses per-dataset `type` and optional `yAxisId`.

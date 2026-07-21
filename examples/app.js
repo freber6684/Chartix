@@ -281,6 +281,9 @@ const catalogExamples = [
               ? { lowerValues: [18, 31, 26, 47, 40], upperValues: [27, 45, 38, 62, 52] }
               : {}),
             ...(type === 'error-bar' ? { errorValues: [3, 5, 4, 6, 4] } : {}),
+            ...(type === 'gantt'
+              ? { startValues: [0, 2, 5, 7, 10], endValues: [4, 6, 9, 12, 14] }
+              : {}),
           },
           { label: 'Previous', values: [17, 29, 36, 41, 39] },
         ],
@@ -331,6 +334,72 @@ const advancedExamples = [
 }));
 
 charts.push(...advancedExamples);
+
+const specializedExamples = [
+  ['streamgraph', 'Streamgraph', 'Trend'],
+  ['realtime', 'Real-time stream', 'Streaming'],
+  ['calendar', 'Calendar', 'Time'],
+  ['solid-gauge', 'Solid gauge', 'Progress'],
+  ['bullet', 'Bullet', 'Progress'],
+  ['radial-bar', 'Radial bar', 'Radial'],
+  ['sunburst', 'Sunburst', 'Hierarchy'],
+  ['icicle', 'Icicle', 'Hierarchy'],
+  ['tree', 'Tree diagram', 'Hierarchy'],
+  ['org-chart', 'Organization chart', 'Hierarchy'],
+  ['mind-map', 'Mind map', 'Relationships'],
+  ['flowchart', 'Flowchart', 'Flow'],
+  ['dependency-graph', 'Dependency graph', 'Relationships'],
+  ['ridgeline', 'Ridgeline', 'Statistical'],
+  ['sankey', 'Sankey', 'Flow'],
+  ['chord', 'Chord', 'Flow'],
+  ['calendar-heatmap', 'Calendar heatmap', 'Matrix'],
+  ['contour', 'Contour', 'Scientific'],
+  ['marimekko', 'Marimekko', 'Composition'],
+  ['pictogram', 'Pictogram', 'Specialized'],
+  ['waffle', 'Waffle', 'Composition'],
+  ['word-cloud', 'Word cloud', 'Text'],
+  ['bump', 'Bump', 'Ranking'],
+  ['pareto', 'Pareto', 'Quality'],
+  ['renko', 'Renko', 'Financial'],
+  ['geo-scatter', 'Geographic scatter', 'Map'],
+  ['bubble-map', 'Bubble map', 'Map'],
+  ['route-map', 'Route map', 'Map'],
+  ['world-map', 'World map', 'Map'],
+  ['choropleth', 'Choropleth', 'Map'],
+  ['surface-3d', 'Surface 3D', 'Scientific'],
+].map(([type, name, tag], index) => ({
+  id: `special-${type}`,
+  name,
+  type,
+  family: ['solid-gauge', 'radial-bar', 'sunburst', 'chord'].includes(type)
+    ? 'radial'
+    : 'cartesian',
+  tag,
+  theme: themes[(index + 5) % themes.length],
+  summary: `${name} rendered with composable Chartix geometry and the shared interaction model.`,
+  bestFor: `${tag} communication in dashboards, reports, and interactive data stories.`,
+  options: {},
+  labels: ['A', 'B', 'C', 'D', 'E', 'F', 'G'],
+  datasets: [
+    {
+      label: 'Series A',
+      values: [32, 18, 54, 41, 66, 28, 75],
+      ...(['geo-scatter', 'bubble-map', 'route-map', 'world-map'].includes(type)
+        ? {
+            points: [
+              { x: -122.4, y: 37.8, r: 7 },
+              { x: -74, y: 40.7, r: 10 },
+              { x: -0.1, y: 51.5, r: 8 },
+              { x: 139.7, y: 35.7, r: 12 },
+            ],
+          }
+        : {}),
+    },
+    { label: 'Series B', values: [22, 42, 31, 57, 48, 61, 35] },
+  ],
+}));
+
+charts.push(...specializedExamples);
 
 const state = { selected: charts[0], playground: null, tab: 'playground' };
 const controls = {

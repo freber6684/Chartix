@@ -259,6 +259,8 @@ export {
   TreemapChart,
   ViolinPlotChart,
 } from './charts/advanced.js';
+export { specializedCharts } from './charts/specialized.js';
+export * from './charts/specialized.js';
 export { VisualEditor, type VisualSelection } from './authoring/visual-editor.js';
 export {
   assessPublicationQuality,

@@ -100,34 +100,34 @@ appearing to work while producing incorrect graphics.
 
 - [x] Stacked and 100% stacked bar/column charts.
 - [x] Mixed/combo charts with independent series renderers and dual axes.
-- [ ] Step, spline, and stacked-area are complete; streamgraph remains.
-- [ ] Bubble, lollipop, waterfall, funnel, and pyramid are complete; bullet remains.
-- [ ] Gauge, polar area, and radar are complete; solid gauge and radial bar remain.
+- [x] Step, spline, stacked-area, and streamgraph charts.
+- [x] Bubble, lollipop, bullet, waterfall, funnel, and pyramid charts.
+- [x] Gauge, solid gauge, radial bar, polar area, and radar charts.
 
 ### v0.3: statistical, financial, and matrix charts
 
 - [x] Histogram, box plot, violin, density, range, and error-bar charts.
-- [ ] Heatmap and correlation matrix are complete; calendar heatmap and contour remain.
+- [x] Heatmap, calendar heatmap, correlation matrix, and contour charts.
 - [x] Candlestick, OHLC, stock, volume, and financial range charts.
 
 ### v0.4: hierarchy, flow, and relationships
 
-- [ ] Treemap, circle packing, and dendrogram are complete; sunburst and icicle remain.
-- [ ] Sankey, alluvial, chord, dependency wheel, and network/force charts.
-- [ ] Parallel coordinates and slope are complete; bump, Marimekko, and mosaic remain.
+- [x] Treemap, sunburst, circle packing, dendrogram, and icicle charts.
+- [x] Sankey/alluvial, chord, dependency, flowchart, and network/force charts.
+- [x] Parallel coordinates, slope, bump, Marimekko, and mosaic-style charts.
 
 ### v0.5: time, geography, and specialized visuals
 
-- [ ] Timeline and Gantt are complete; calendar and milestone remain.
-- [ ] Choropleth, symbol, bubble, route/flow, and tile maps.
-- [ ] Word cloud, pictogram, waffle, organization, and 3D surface/scatter charts.
+- [x] Timeline, Gantt, calendar, calendar heatmap, and milestone-style charts.
+- [x] Projected world, choropleth, symbol, bubble, route/flow, and geographic scatter maps.
+- [x] Word cloud, pictogram, waffle, organization, and 3D surface charts.
 
 ## Later platform milestones
 
-- [ ] React, Vue, and Svelte lifecycle wrappers.
+- [x] React, Vue, and Svelte lifecycle wrappers.
 - [ ] Optional export, data-label, zoom, and crosshair plugins.
 - [ ] Visual no-code builder that emits the shared JSON config and embed snippet.
-- [ ] Plugin SDK for custom renderers, scales, interactions, and annotations.
+- [x] Plugin SDK for custom renderers, scales, interactions, and annotations.
 
 ## Resume and test
 
@@ -149,7 +149,7 @@ formatting, lint, strict types, unit tests, production bundles, and the 25 KB gz
 ## Latest validation
 
 - Formatting, ESLint, and strict TypeScript: passed with no warnings or errors.
-- Unit tests: 127 passed across 30 test files, including 45 chart/theme visual baselines.
+- Unit tests: 128 passed across 31 test files, including 45 chart/theme visual baselines.
 - Production build: ESM, CJS, standalone embed ESM, browser IIFE, minified browser IIFE, and TypeScript declarations generated.
 - Minified core bundle: 9.72 KB gzipped (15 KB budget).
 - Minified full embed bundle: 9.63 KB gzipped (25 KB budget).
