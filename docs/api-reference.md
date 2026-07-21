@@ -157,3 +157,14 @@ Datasets support per-value `colors`, `pointSizes`, and `pointShapes`, plus line 
 `borderWidth`, `borderColor`, and `borderDash`. Radial charts support multiple concentric datasets,
 slice gaps, exploded indexes, and outside-label connector lines. Charts can add `subtitle`,
 `footnote`, `source`, and `watermark` text; renderer text accepts multiline strings.
+
+## Uncertainty, provenance, and analytics
+
+Line datasets can supply aligned `lowerValues` and `upperValues` arrays for confidence or forecast
+bands, `errorValues` for symmetric error bars, and `estimated` flags for visibly distinct estimated
+points. `sampleSize`, `source`, `methodology`, and `status` travel with each dataset and portable
+configuration.
+
+The dependency-free analytics exports are `linearTrend`, `movingAverage`, `detectAnomalies`,
+`forecastLinear`, `assessDataQuality`, and `derivedDataset`. They run locally, never mutate caller
+data, and return ordinary arrays/objects that can be reviewed before being added to a chart.

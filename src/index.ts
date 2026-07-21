@@ -90,6 +90,19 @@ export {
 } from './intelligence/advisor.js';
 export { adaptChartConfig } from './intelligence/responsive.js';
 export { simulateColorVision, type ColorVisionMode } from './intelligence/color-vision.js';
+/** Local statistical analysis, forecasting, anomaly, and data-quality helpers. */
+export {
+  assessDataQuality,
+  derivedDataset,
+  detectAnomalies,
+  forecastLinear,
+  linearTrend,
+  movingAverage,
+  type Anomaly,
+  type DataQualityReport,
+  type ForecastResult,
+  type RegressionResult,
+} from './analytics/index.js';
 /** Accessible text and deterministic sonification planning helpers. */
 export {
   createSonificationPlan,

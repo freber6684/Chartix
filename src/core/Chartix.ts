@@ -96,6 +96,13 @@ function validateConfig(config: ChartConfig): void {
     if (dataset.values.some((value) => value !== null && !Number.isFinite(value))) {
       throw new Error(`Chartix: dataset "${dataset.label}" contains a non-finite value.`);
     }
+    const alignedSeries = [dataset.lowerValues, dataset.upperValues, dataset.errorValues];
+    if (alignedSeries.some((values) => values && values.length !== config.data.labels.length)) {
+      throw new Error(`Chartix: dataset "${dataset.label}" has an unaligned uncertainty series.`);
+    }
+    if (dataset.estimated && dataset.estimated.length !== config.data.labels.length) {
+      throw new Error(`Chartix: dataset "${dataset.label}" has unaligned estimated flags.`);
+    }
     if (dataset.points?.some((point) => point.y !== null && !Number.isFinite(point.y))) {
       throw new Error(`Chartix: dataset "${dataset.label}" contains an invalid point.`);
     }

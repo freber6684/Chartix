@@ -35,6 +35,10 @@ export function cloneData(data: ChartData): ChartData {
       ...(dataset.pointSizes ? { pointSizes: [...dataset.pointSizes] } : {}),
       ...(dataset.pointShapes ? { pointShapes: [...dataset.pointShapes] } : {}),
       ...(dataset.borderDash ? { borderDash: [...dataset.borderDash] } : {}),
+      ...(dataset.lowerValues ? { lowerValues: [...dataset.lowerValues] } : {}),
+      ...(dataset.upperValues ? { upperValues: [...dataset.upperValues] } : {}),
+      ...(dataset.errorValues ? { errorValues: [...dataset.errorValues] } : {}),
+      ...(dataset.estimated ? { estimated: [...dataset.estimated] } : {}),
       ...(dataset.points ? { points: dataset.points.map((point) => ({ ...point })) } : {}),
     })),
   };

@@ -53,6 +53,23 @@
         "borderWidth": { "type": "number", "minimum": 0 },
         "borderDash": { "type": "array", "items": { "type": "number", "minimum": 0 } },
         "borderColor": { "$ref": "#/$defs/color" },
+        "lowerValues": {
+          "type": "array",
+          "items": { "type": ["number", "null"] }
+        },
+        "upperValues": {
+          "type": "array",
+          "items": { "type": ["number", "null"] }
+        },
+        "errorValues": {
+          "type": "array",
+          "items": { "type": ["number", "null"], "minimum": 0 }
+        },
+        "estimated": { "type": "array", "items": { "type": "boolean" } },
+        "sampleSize": { "type": "integer", "minimum": 1 },
+        "source": { "type": "string" },
+        "methodology": { "type": "string" },
+        "status": { "enum": ["observed", "estimated", "forecast", "provisional"] },
         "points": {
           "type": "array",
           "items": {

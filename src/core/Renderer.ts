@@ -21,6 +21,7 @@ export interface Renderer {
   gradient(x0: number, y0: number, x1: number, y1: number, color: string): CanvasGradient;
   line(points: Point[], color: string, width: number, style?: LineStyle): void;
   area(points: Point[], baseline: number, fill: string | CanvasGradient): void;
+  areaBetween(upper: Point[], lower: Point[], fill: string): void;
   circle(point: Point, radius: number, fill: string, stroke?: string): void;
   symbol?(point: Point, radius: number, shape: PointShape, fill: string, stroke?: string): void;
   ringSegment(
@@ -158,6 +159,18 @@ export class CanvasRenderer implements Renderer {
     this.context.moveTo(first.x, baseline);
     points.forEach((point) => this.context.lineTo(point.x, point.y));
     this.context.lineTo(last.x, baseline);
+    this.context.closePath();
+    this.context.fillStyle = fill;
+    this.context.fill();
+  }
+
+  /** Fill the polygon between matching upper and lower uncertainty bounds. */
+  public areaBetween(upper: Point[], lower: Point[], fill: string): void {
+    if (upper.length < 2 || lower.length < 2) return;
+    this.context.beginPath();
+    this.context.moveTo(upper[0]?.x ?? 0, upper[0]?.y ?? 0);
+    upper.slice(1).forEach((point) => this.context.lineTo(point.x, point.y));
+    [...lower].reverse().forEach((point) => this.context.lineTo(point.x, point.y));
     this.context.closePath();
     this.context.fillStyle = fill;
     this.context.fill();

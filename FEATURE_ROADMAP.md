@@ -53,8 +53,10 @@ delivered in stable releases so partially implemented features never appear prod
 
 - [x] Horizontal reference lines and highlighted numeric bands.
 - [ ] Vertical lines, boxes, points, callouts, arrows, images, and freeform drawing.
-- [ ] Trend lines, regression, confidence intervals, forecasts, moving averages, and control limits.
-- [ ] Outlier/anomaly detection, peak/valley labels, change-point detection, and goal tracking.
+- [ ] Trend lines, regression, confidence intervals, forecasts, and moving averages are complete;
+      control limits remain.
+- [ ] Outlier/anomaly detection is complete; peak/valley labels, change-point detection, and goal
+      tracking remain.
 - [ ] Annotation editor with snapping, collision avoidance, and responsive repositioning.
 
 ## Accessibility, internationalization, and trust
@@ -65,8 +67,8 @@ delivered in stable releases so partially implemented features never appear prod
 - [ ] Accessibility audits, color-vision simulation, contrast warnings, and keyboard help are
       complete; automatic contrast repair remains.
 - [ ] Locale-aware dates/numbers are complete; RTL scripts, vertical text, and translation hooks remain.
-- [ ] Misleading-chart, accessibility, contrast, color-vision, and performance audits are complete;
-      provenance, transformation history, and uncertainty display remain.
+- [ ] Misleading-chart, accessibility, contrast, color-vision, performance, provenance, and
+      uncertainty audits/display are complete; transformation history remains.
 
 ## Export, sharing, and developer platform
 

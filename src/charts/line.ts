@@ -9,7 +9,9 @@ export const LineChart: ChartModule = {
     const { data, options, plot, progress, renderer, theme } = context;
     const visibleValues = numericValues(
       data.datasets.flatMap((dataset, index) =>
-        context.hiddenDatasets.has(index) ? [] : dataset.values,
+        context.hiddenDatasets.has(index)
+          ? []
+          : [...dataset.values, ...(dataset.lowerValues ?? []), ...(dataset.upperValues ?? [])],
       ),
     );
     const allValues = visibleValues.length
@@ -48,6 +50,21 @@ export const LineChart: ChartModule = {
         x: data.labels.length > 1 ? plot.left + step * index : plot.left + plot.width / 2,
         y: scale.project(dataset.values[index] as number),
       }));
+      if (dataset.lowerValues && dataset.upperValues) {
+        const bounds = visibleIndexes.flatMap((index) => {
+          const lower = dataset.lowerValues?.[index];
+          const upper = dataset.upperValues?.[index];
+          if (lower === null || lower === undefined || upper === null || upper === undefined)
+            return [];
+          const x = data.labels.length > 1 ? plot.left + step * index : plot.left + plot.width / 2;
+          return [{ x, lower: scale.project(lower), upper: scale.project(upper) }];
+        });
+        renderer.areaBetween(
+          bounds.map((point) => ({ x: point.x, y: point.upper })),
+          bounds.map((point) => ({ x: point.x, y: point.lower })),
+          `${color}26`,
+        );
+      }
       const segments = options.spanGaps
         ? [points]
         : points.reduce<Array<typeof points>>((groups, point, index) => {
@@ -92,6 +109,38 @@ export const LineChart: ChartModule = {
           );
         const value = dataset.values[valueIndex];
         if (value !== undefined && value !== null) {
+          const error = dataset.errorValues?.[valueIndex];
+          if (error !== null && error !== undefined && error > 0) {
+            const high = scale.project(value + error);
+            const low = scale.project(value - error);
+            renderer.line(
+              [
+                { x: point.x, y: high },
+                { x: point.x, y: low },
+              ],
+              pointColor,
+              1.5,
+            );
+            renderer.line(
+              [
+                { x: point.x - 4, y: high },
+                { x: point.x + 4, y: high },
+              ],
+              pointColor,
+              1.5,
+            );
+            renderer.line(
+              [
+                { x: point.x - 4, y: low },
+                { x: point.x + 4, y: low },
+              ],
+              pointColor,
+              1.5,
+            );
+          }
+          if (dataset.estimated?.[valueIndex]) {
+            renderer.symbol?.(point, pointRadius + 3, 'diamond', theme.background, pointColor);
+          }
           context.interactions.add({
             kind: 'point',
             datasetIndex,

@@ -34,6 +34,8 @@ All notable Chartix changes are documented here. The project follows semantic ve
   gaps/explosions, connector labels, multiline text, subtitles, notes, sources, and watermarks.
 - Accessibility Studio options for rich summaries, live focus narration, keyboard help, high
   contrast, dyslexia-friendly typography, Braille text, and local sonification.
+- Confidence/forecast bands, error bars, estimated-value markers, series provenance metadata,
+  regression, moving averages, anomaly detection, linear forecasts, and data-quality reports.
 
 ## 0.1.0-alpha.2 - 2026-07-21
 

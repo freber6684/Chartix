@@ -46,6 +46,22 @@ export interface ChartDataset {
   borderWidth?: number;
   borderDash?: number[];
   borderColor?: string;
+  /** Lower confidence or forecast boundary aligned with `values`. */
+  lowerValues?: Array<number | null>;
+  /** Upper confidence or forecast boundary aligned with `values`. */
+  upperValues?: Array<number | null>;
+  /** Symmetric error magnitude aligned with `values`. */
+  errorValues?: Array<number | null>;
+  /** Mark values that are estimates rather than observations. */
+  estimated?: boolean[];
+  /** Optional sample size behind this series. */
+  sampleSize?: number;
+  /** Human-readable data source or URL. */
+  source?: string;
+  /** Short collection or calculation methodology. */
+  methodology?: string;
+  /** Data lifecycle state shown by quality tools. */
+  status?: 'observed' | 'estimated' | 'forecast' | 'provisional';
 }
 
 /** Animation settings for chart entrance transitions. */
