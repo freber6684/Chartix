@@ -201,3 +201,10 @@ documentation, and creation metadata.
 `tableToChartData` maps label and numeric columns into Chartix data, while `loadTabular` accepts an
 injectable `fetch` implementation for remote sources. Transform pipelines additionally support
 `group`, numeric `bin`, moving-average/cumulative `window`, and dataset/category `pivot` steps.
+
+## Advanced fills and HTML legends
+
+Datasets accept `pattern: 'diagonal' | 'dots' | 'crosshatch'` and a `shadow` object. Radial charts
+support `radialGradient` and `radialCornerRadius`; outside labels automatically separate to prevent
+overlap. `backgroundImage` and `backgroundImageOpacity` place an image below chart marks. Set
+`legend.html` to create an accessible, interactive DOM legend beside the canvas.

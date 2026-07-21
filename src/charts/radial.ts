@@ -12,6 +12,7 @@ function renderRadial(context: ChartRenderContext, defaultInnerRadius: number): 
     .filter(({ datasetIndex }) => !context.hiddenDatasets.has(datasetIndex));
   const ringWidth = (outerRadius - baseInnerRadius) / Math.max(1, visibleDatasets.length);
   const gap = Math.max(0, ((options.radialGap ?? 1) * Math.PI) / 180);
+  const lastOutsideY = { left: Number.NEGATIVE_INFINITY, right: Number.NEGATIVE_INFINITY };
 
   visibleDatasets.forEach(({ dataset, datasetIndex }, ringIndex) => {
     const values = dataset.values.map((value) => Math.max(0, value ?? 0));
@@ -41,15 +42,24 @@ function renderRadial(context: ChartRenderContext, defaultInnerRadius: number): 
       };
       const drawStart = angle + Math.min(gap / 2, sweep / 3);
       const drawEnd = end - Math.min(gap / 2, sweep / 3);
+      const fill =
+        dataset.pattern && renderer.pattern
+          ? renderer.pattern(color, theme.background, dataset.pattern)
+          : options.radialGradient && renderer.radialGradient
+            ? renderer.radialGradient(sliceCenter, ringOuter, color)
+            : color;
+      renderer.setShadow?.(dataset.shadow);
       renderer.ringSegment(
         sliceCenter,
         ringInner,
         ringOuter,
         drawStart,
         drawEnd,
-        color,
+        fill,
         dataset.borderColor ?? theme.background,
+        options.radialCornerRadius,
       );
+      renderer.setShadow?.();
       context.interactions.add({
         kind: 'slice',
         datasetIndex,
@@ -77,7 +87,12 @@ function renderRadial(context: ChartRenderContext, defaultInnerRadius: number): 
               ? (ringInner + ringOuter) / 2
               : ringInner + ringWidth * 0.68;
         const x = sliceCenter.x + Math.cos(middle) * radius;
-        const y = sliceCenter.y + Math.sin(middle) * radius;
+        let y = sliceCenter.y + Math.sin(middle) * radius;
+        if (position === 'outside') {
+          const side = Math.cos(middle) >= 0 ? 'right' : 'left';
+          y = Math.max(y, lastOutsideY[side] + (labels.fontSize ?? theme.fontSize.label) + 4);
+          lastOutsideY[side] = y;
+        }
         if (position === 'outside')
           renderer.line(
             [

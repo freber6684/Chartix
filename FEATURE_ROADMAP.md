@@ -27,14 +27,16 @@ delivered in stable releases so partially implemented features never appear prod
 - [x] Linear numeric scales and category axes with rotated/styled labels.
 - [x] Time, logarithmic, percentage, radial, and band scale primitives.
 - [x] Multiple y axes, independent dataset axes, inversion, domains, custom ticks, and broken axes.
-- [ ] Automatic collision avoidance, label wrapping/truncation, and smart legend layout.
+- [ ] Automatic radial label collision avoidance and HTML legend layout are complete; general axis
+      wrapping/truncation remains.
 - [ ] Facets/small multiples, synchronized dashboards, polar layouts, and RTL layout.
 
 ## Styling, marks, and animation
 
 - [x] Themes, custom palettes/backgrounds, typography, gradients, rounded marks, and labels.
 - [x] Reduced-motion support and entrance animation easing.
-- [ ] Per-mark colors/sizes/shapes and borders are complete; patterns, textures, shadows, and CSS variables remain.
+- [x] Per-mark colors/sizes/shapes, borders, accessible patterns/textures, shadows/glows, and CSS
+      variable design tokens.
 - [x] Line curves, steps, dashes, point symbols, stacked marks, and mixed series.
 - [ ] Update transitions and pause/resume/seek/delay/loop controls are complete; exit transitions,
       staggering, and motion-path morphing remain.

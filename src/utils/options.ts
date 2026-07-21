@@ -39,6 +39,7 @@ export function cloneData(data: ChartData): ChartData {
       ...(dataset.upperValues ? { upperValues: [...dataset.upperValues] } : {}),
       ...(dataset.errorValues ? { errorValues: [...dataset.errorValues] } : {}),
       ...(dataset.estimated ? { estimated: [...dataset.estimated] } : {}),
+      ...(dataset.shadow ? { shadow: { ...dataset.shadow } } : {}),
       ...(dataset.points ? { points: dataset.points.map((point) => ({ ...point })) } : {}),
     })),
   };

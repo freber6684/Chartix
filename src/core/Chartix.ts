@@ -28,6 +28,8 @@ const validOptionKeys = new Set<keyof ChartOptions>([
   'annotations',
   'ariaLabel',
   'backgroundColor',
+  'backgroundImage',
+  'backgroundImageOpacity',
   'colors',
   'crosshair',
   'dataLabels',
@@ -56,6 +58,8 @@ const validOptionKeys = new Set<keyof ChartOptions>([
   'showLegend',
   'startAngle',
   'radialGap',
+  'radialGradient',
+  'radialCornerRadius',
   'explodedSlices',
   'explodeOffset',
   'subtitle',
@@ -134,6 +138,8 @@ export class Chartix {
   private readonly resetZoomButton: HTMLButtonElement | undefined;
   private accessibilityHelp?: HTMLElement;
   private explorationLive?: HTMLElement;
+  private htmlLegend: HTMLElement | undefined;
+  private backgroundImage?: HTMLImageElement;
   private destroyed = false;
   private animateNextRender = true;
   private performanceStats: PerformanceStats = {
@@ -220,6 +226,7 @@ export class Chartix {
       onReset: () => this.resetZoom(),
     });
     this.applyContainerSizing();
+    this.loadBackgroundImage();
     this.applyAccessibility();
     this.resize();
     if (this.config.options.responsive && typeof ResizeObserver !== 'undefined') {
@@ -468,6 +475,7 @@ export class Chartix {
     this.dataTable?.remove();
     this.accessibilityHelp?.remove();
     this.explorationLive?.remove();
+    this.htmlLegend?.remove();
     this.canvas.removeAttribute('role');
     this.canvas.removeAttribute('aria-label');
     this.canvas.removeAttribute('aria-describedby');
@@ -522,6 +530,9 @@ export class Chartix {
     }
     this.runPlugins('beforeRender', { theme, progress });
     this.renderer.clear(theme.background);
+    if (this.backgroundImage?.complete) {
+      this.renderer.image?.(this.backgroundImage, drawOptions.backgroundImageOpacity ?? 0.2);
+    }
     this.regions = [];
     const interactions = {
       add: (region: HitRegion): void => {
@@ -586,6 +597,7 @@ export class Chartix {
         animationDisabled: !this.animateNextRender || this.resolveAnimation() === null,
       };
       this.config.options.performance?.onRender?.({ ...this.performanceStats });
+      this.updateHTMLLegend(theme);
       this.canvas.dispatchEvent(
         new CustomEvent('chartix:render', { detail: this.performanceStats }),
       );
@@ -596,6 +608,46 @@ export class Chartix {
         performance: this.performanceStats,
       });
     }
+  }
+
+  private loadBackgroundImage(): void {
+    const url = this.config.options.backgroundImage;
+    if (!url || typeof Image === 'undefined') return;
+    const image = new Image();
+    image.crossOrigin = 'anonymous';
+    image.addEventListener('load', () => {
+      if (!this.destroyed) this.render(false);
+    });
+    image.src = url;
+    this.backgroundImage = image;
+  }
+
+  private updateHTMLLegend(theme: ReturnType<typeof resolveTheme>): void {
+    this.htmlLegend?.remove();
+    this.htmlLegend = undefined;
+    if (!this.config.options.legend?.html || !this.canvas.parentElement) return;
+    const legend = document.createElement('div');
+    legend.className = 'chartix-html-legend';
+    legend.setAttribute('role', 'list');
+    this.config.data.datasets.forEach((dataset, index) => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.setAttribute('role', 'listitem');
+      button.setAttribute('aria-pressed', String(!this.hiddenDatasets.has(index)));
+      button.textContent = dataset.label;
+      button.style.setProperty(
+        '--chartix-legend-color',
+        dataset.color ?? theme.palette[index % theme.palette.length] ?? theme.text,
+      );
+      button.addEventListener('click', () => {
+        if (this.hiddenDatasets.has(index)) this.hiddenDatasets.delete(index);
+        else this.hiddenDatasets.add(index);
+        this.render(false);
+      });
+      legend.append(button);
+    });
+    this.canvas.insertAdjacentElement('afterend', legend);
+    this.htmlLegend = legend;
   }
 
   private resolveAnimation(): ResolvedAnimationOptions | null {

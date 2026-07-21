@@ -44,6 +44,8 @@ All notable Chartix changes are documented here. The project follows semantic ve
   brand audits, privacy redaction, and SHA-256 portable-manifest fingerprints.
 - CSV/TSV/JSON and remote data connectors with type inference/table mapping, plus group, bin,
   moving-window, cumulative-window, and pivot transforms.
+- Accessible pattern fills, radial gradients, shadows/glows, background images, rounded doughnut
+  segments, generated HTML legends, and automatic radial-label collision avoidance.
 
 ## 0.1.0-alpha.2 - 2026-07-21
 

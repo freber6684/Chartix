@@ -11,6 +11,14 @@ export interface LineStyle {
   interpolation?: 'straight' | 'smooth' | 'step-before' | 'step-after';
 }
 
+export type Paint = string | CanvasGradient | CanvasPattern;
+export interface ShadowStyle {
+  color?: string;
+  blur?: number;
+  offsetX?: number;
+  offsetY?: number;
+}
+
 export type PointShape = 'circle' | 'square' | 'triangle' | 'diamond' | 'cross';
 
 /** Renderer contract used by chart modules. */
@@ -19,8 +27,12 @@ export interface Renderer {
   readonly height: number;
   clear(background: string): void;
   gradient(x0: number, y0: number, x1: number, y1: number, color: string): CanvasGradient;
+  radialGradient?(point: Point, radius: number, color: string): CanvasGradient;
+  pattern?(color: string, background: string, kind: 'diagonal' | 'dots' | 'crosshatch'): Paint;
+  setShadow?(style?: ShadowStyle): void;
+  image?(image: CanvasImageSource, opacity?: number): void;
   line(points: Point[], color: string, width: number, style?: LineStyle): void;
-  area(points: Point[], baseline: number, fill: string | CanvasGradient): void;
+  area(points: Point[], baseline: number, fill: Paint): void;
   areaBetween(upper: Point[], lower: Point[], fill: string): void;
   circle(point: Point, radius: number, fill: string, stroke?: string): void;
   symbol?(point: Point, radius: number, shape: PointShape, fill: string, stroke?: string): void;
@@ -30,8 +42,9 @@ export interface Renderer {
     outerRadius: number,
     startAngle: number,
     endAngle: number,
-    fill: string,
+    fill: Paint,
     stroke?: string,
+    cornerRadius?: number,
   ): void;
   roundedRect(
     x: number,
@@ -39,7 +52,7 @@ export interface Renderer {
     width: number,
     height: number,
     radius: number,
-    fill: string | CanvasGradient,
+    fill: Paint,
   ): void;
   text(
     value: string,
@@ -98,6 +111,66 @@ export class CanvasRenderer implements Renderer {
     return gradient;
   }
 
+  public radialGradient(point: Point, radius: number, color: string): CanvasGradient {
+    const gradient = this.context.createRadialGradient(
+      point.x,
+      point.y,
+      0,
+      point.x,
+      point.y,
+      radius,
+    );
+    gradient.addColorStop(0, color);
+    gradient.addColorStop(1, gradientEndColor(color));
+    return gradient;
+  }
+
+  public pattern(
+    color: string,
+    background: string,
+    kind: 'diagonal' | 'dots' | 'crosshatch',
+  ): Paint {
+    const tile = document.createElement('canvas');
+    tile.width = 10;
+    tile.height = 10;
+    const context = tile.getContext('2d');
+    if (!context) return color;
+    context.fillStyle = background;
+    context.fillRect(0, 0, 10, 10);
+    context.strokeStyle = color;
+    context.fillStyle = color;
+    context.lineWidth = 2;
+    if (kind === 'dots') {
+      context.beginPath();
+      context.arc(5, 5, 2, 0, Math.PI * 2);
+      context.fill();
+    } else {
+      context.beginPath();
+      context.moveTo(-2, 10);
+      context.lineTo(10, -2);
+      if (kind === 'crosshatch') {
+        context.moveTo(0, 0);
+        context.lineTo(10, 10);
+      }
+      context.stroke();
+    }
+    return this.context.createPattern(tile, 'repeat') ?? color;
+  }
+
+  public setShadow(style?: ShadowStyle): void {
+    this.context.shadowColor = style?.color ?? 'transparent';
+    this.context.shadowBlur = style?.blur ?? 0;
+    this.context.shadowOffsetX = style?.offsetX ?? 0;
+    this.context.shadowOffsetY = style?.offsetY ?? 0;
+  }
+
+  public image(image: CanvasImageSource, opacity = 1): void {
+    this.context.save();
+    this.context.globalAlpha = Math.max(0, Math.min(1, opacity));
+    this.context.drawImage(image, 0, 0, this.width, this.height);
+    this.context.restore();
+  }
+
   /** Draw a rounded rectangle. */
   public roundedRect(
     x: number,
@@ -105,7 +178,7 @@ export class CanvasRenderer implements Renderer {
     width: number,
     height: number,
     radius: number,
-    fill: string | CanvasGradient,
+    fill: Paint,
   ): void {
     if (width <= 0 || height <= 0) return;
     const safeRadius = Math.min(radius, width / 2, height / 2);
@@ -151,7 +224,7 @@ export class CanvasRenderer implements Renderer {
   }
 
   /** Fill the area between a polyline and a baseline. */
-  public area(points: Point[], baseline: number, fill: string | CanvasGradient): void {
+  public area(points: Point[], baseline: number, fill: Paint): void {
     const first = points[0];
     const last = points.at(-1);
     if (!first || !last) return;
@@ -232,9 +305,22 @@ export class CanvasRenderer implements Renderer {
     outerRadius: number,
     startAngle: number,
     endAngle: number,
-    fill: string,
+    fill: Paint,
     stroke?: string,
+    cornerRadius = 0,
   ): void {
+    if (cornerRadius > 0 && innerRadius > 0) {
+      const radius = (innerRadius + outerRadius) / 2;
+      const inset = Math.min((endAngle - startAngle) / 3, cornerRadius / Math.max(1, radius));
+      this.context.beginPath();
+      this.context.arc(point.x, point.y, radius, startAngle + inset, endAngle - inset);
+      this.context.strokeStyle = fill;
+      this.context.lineWidth = outerRadius - innerRadius;
+      this.context.lineCap = 'round';
+      this.context.stroke();
+      this.context.lineCap = 'butt';
+      return;
+    }
     this.context.beginPath();
     this.context.arc(point.x, point.y, outerRadius, startAngle, endAngle);
     if (innerRadius > 0) {

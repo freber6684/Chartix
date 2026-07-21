@@ -62,6 +62,10 @@ export interface ChartDataset {
   methodology?: string;
   /** Data lifecycle state shown by quality tools. */
   status?: 'observed' | 'estimated' | 'forecast' | 'provisional';
+  /** Repeating accessible texture drawn over filled marks. */
+  pattern?: 'diagonal' | 'dots' | 'crosshatch';
+  /** Per-dataset shadow or glow effect. */
+  shadow?: { color?: string; blur?: number; offsetX?: number; offsetY?: number };
 }
 
 /** Animation settings for chart entrance transitions. */
@@ -166,6 +170,8 @@ export interface LegendOptions {
   interactive?: boolean;
   /** Legend placement relative to the plot. */
   position?: 'top' | 'bottom' | 'left' | 'right' | 'inside';
+  /** Render an accessible DOM legend in addition to the canvas layout. */
+  html?: boolean;
 }
 
 /** A horizontal reference line or highlighted numeric range. */
@@ -320,6 +326,10 @@ export interface ChartOptions {
   animation?: false | AnimationOptions;
   /** Override the theme's canvas background color. */
   backgroundColor?: string;
+  /** Runtime-loaded image URL drawn behind the chart. */
+  backgroundImage?: string;
+  /** Background-image opacity. */
+  backgroundImageOpacity?: number;
   /** Override the theme palette for all datasets or slices. */
   colors?: string[];
   /** Guides drawn through an active Cartesian mark. */
@@ -376,6 +386,10 @@ export interface ChartOptions {
   startAngle?: number;
   /** Angular space between radial slices, in degrees. */
   radialGap?: number;
+  /** Use center-to-edge gradients for radial slices. */
+  radialGradient?: boolean;
+  /** Rounded radial segment cap radius. */
+  radialCornerRadius?: number;
   /** Slice indexes pulled away from the radial center. */
   explodedSlices?: number[];
   /** Distance used to explode selected radial slices. */

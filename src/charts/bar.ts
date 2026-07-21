@@ -77,7 +77,10 @@ function renderVertical(context: ChartRenderContext): void {
         (options.stacked ? 0 : datasetIndex * barWidth);
       const y = Math.min(startY, targetY);
       const height = Math.abs(targetY - startY);
-      const fill = renderer.gradient(x, y, x, Math.max(y + height, y + 1), valueColor);
+      const fill =
+        dataset.pattern && renderer.pattern
+          ? renderer.pattern(valueColor, theme.background, dataset.pattern)
+          : renderer.gradient(x, y, x, Math.max(y + height, y + 1), valueColor);
       const active = context.activeRegions?.some(
         (region) => region.datasetIndex === datasetIndex && region.valueIndex === valueIndex,
       );
@@ -90,7 +93,9 @@ function renderVertical(context: ChartRenderContext): void {
           theme.radius + 2,
           `${valueColor}55`,
         );
+      renderer.setShadow?.(dataset.shadow);
       renderer.roundedRect(x, y, Math.max(1, barWidth - 3), height, theme.radius, fill);
+      renderer.setShadow?.();
       context.interactions.add({
         kind: 'bar',
         datasetIndex,
@@ -225,7 +230,10 @@ function renderHorizontal(context: ChartRenderContext): void {
         (categoryHeight - groupHeight) / 2 +
         (options.stacked ? 0 : datasetIndex * barHeight);
       const width = Math.abs(targetX - startX);
-      const fill = renderer.gradient(x, y, Math.max(x + width, x + 1), y, valueColor);
+      const fill =
+        dataset.pattern && renderer.pattern
+          ? renderer.pattern(valueColor, theme.background, dataset.pattern)
+          : renderer.gradient(x, y, Math.max(x + width, x + 1), y, valueColor);
       const active = context.activeRegions?.some(
         (region) => region.datasetIndex === datasetIndex && region.valueIndex === valueIndex,
       );
@@ -238,7 +246,9 @@ function renderHorizontal(context: ChartRenderContext): void {
           theme.radius + 2,
           `${valueColor}55`,
         );
+      renderer.setShadow?.(dataset.shadow);
       renderer.roundedRect(x, y, width, Math.max(1, barHeight - 3), theme.radius, fill);
+      renderer.setShadow?.();
       context.interactions.add({
         kind: 'bar',
         datasetIndex,

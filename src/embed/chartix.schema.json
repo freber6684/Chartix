@@ -70,6 +70,17 @@
         "source": { "type": "string" },
         "methodology": { "type": "string" },
         "status": { "enum": ["observed", "estimated", "forecast", "provisional"] },
+        "pattern": { "enum": ["diagonal", "dots", "crosshatch"] },
+        "shadow": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "color": { "$ref": "#/$defs/color" },
+            "blur": { "type": "number", "minimum": 0 },
+            "offsetX": { "type": "number" },
+            "offsetY": { "type": "number" }
+          }
+        },
         "points": {
           "type": "array",
           "items": {
@@ -196,6 +207,8 @@
           ]
         },
         "backgroundColor": { "$ref": "#/$defs/color" },
+        "backgroundImage": { "type": "string" },
+        "backgroundImageOpacity": { "type": "number", "minimum": 0, "maximum": 1 },
         "colors": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/color" } },
         "crosshair": {
           "type": "object",
@@ -240,7 +253,8 @@
           "additionalProperties": false,
           "properties": {
             "interactive": { "type": "boolean" },
-            "position": { "enum": ["top", "bottom", "left", "right", "inside"] }
+            "position": { "enum": ["top", "bottom", "left", "right", "inside"] },
+            "html": { "type": "boolean" }
           }
         },
         "drilldown": {
@@ -283,6 +297,8 @@
         "showLegend": { "type": "boolean" },
         "startAngle": { "type": "number" },
         "radialGap": { "type": "number", "minimum": 0 },
+        "radialGradient": { "type": "boolean" },
+        "radialCornerRadius": { "type": "number", "minimum": 0 },
         "explodedSlices": {
           "type": "array",
           "uniqueItems": true,
