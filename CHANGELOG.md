@@ -30,6 +30,8 @@ All notable Chartix changes are documented here. The project follows semantic ve
 - Optional React, Vue, Svelte, Web Component, and server-HTML adapters without framework dependencies.
 - Local chart recommendations, plain-language summaries, visual-integrity/accessibility/performance
   audits, color-vision simulation, and semantic responsive adaptation.
+- Smooth/step/dashed lines, point symbols, per-value styling, concentric radial datasets, slice
+  gaps/explosions, connector labels, multiline text, subtitles, notes, sources, and watermarks.
 
 ## 0.1.0-alpha.2 - 2026-07-21
 

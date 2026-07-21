@@ -143,3 +143,10 @@ All registries have matching unregister methods. See [plugins and frameworks](pl
 `recommendChart`, `auditChart`, `summarizeChart`, `simulateColorVision`, and `adaptChartConfig`
 provide local-only advice, integrity/accessibility checks, summaries, simulation, and adaptive
 layout. See [chart intelligence](chart-intelligence.md).
+
+## Advanced appearance
+
+Datasets support per-value `colors`, `pointSizes`, and `pointShapes`, plus line `lineStyle`,
+`borderWidth`, `borderColor`, and `borderDash`. Radial charts support multiple concentric datasets,
+slice gaps, exploded indexes, and outside-label connector lines. Charts can add `subtitle`,
+`footnote`, `source`, and `watermark` text; renderer text accepts multiline strings.

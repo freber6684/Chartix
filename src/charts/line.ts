@@ -22,6 +22,7 @@ export const LineChart: ChartModule = {
       if (context.hiddenDatasets.has(datasetIndex)) return;
       const color =
         dataset.color ?? theme.palette[datasetIndex % theme.palette.length] ?? theme.text;
+      const borderColor = dataset.borderColor ?? color;
       const decimation = options.decimation;
       const threshold = decimation?.threshold ?? 1000;
       const requestedSamples =
@@ -61,14 +62,34 @@ export const LineChart: ChartModule = {
           const fill = renderer.gradient(0, plot.top, 0, plot.bottom, `${color}44`);
           renderer.area(segment, scale.project(Math.max(scale.min, Math.min(0, scale.max))), fill);
         }
-        renderer.line(segment, color, 2.5);
+        renderer.line(segment, borderColor, dataset.borderWidth ?? 2.5, {
+          interpolation: dataset.lineStyle ?? 'straight',
+          ...(dataset.borderDash ? { dash: dataset.borderDash } : {}),
+        });
       });
       points.forEach((point, index) => {
         const valueIndex = visibleIndexes[index] ?? index;
         const active = context.activeRegions?.some(
           (region) => region.datasetIndex === datasetIndex && region.valueIndex === valueIndex,
         );
-        renderer.circle(point, active ? 5.5 : 3.5, color, theme.background);
+        const pointColor = dataset.colors?.[valueIndex] ?? color;
+        const pointRadius = dataset.pointSizes?.[valueIndex] ?? 3.5;
+        const shape = dataset.pointShapes?.[valueIndex] ?? 'circle';
+        if (renderer.symbol)
+          renderer.symbol(
+            point,
+            active ? pointRadius + 2 : pointRadius,
+            shape,
+            pointColor,
+            theme.background,
+          );
+        else
+          renderer.circle(
+            point,
+            active ? pointRadius + 2 : pointRadius,
+            pointColor,
+            theme.background,
+          );
         const value = dataset.values[valueIndex];
         if (value !== undefined && value !== null) {
           context.interactions.add({
@@ -78,7 +99,7 @@ export const LineChart: ChartModule = {
             label: data.labels[valueIndex] ?? '',
             datasetLabel: dataset.label,
             value,
-            color,
+            color: pointColor,
             x: point.x,
             y: point.y,
             radius: 10,

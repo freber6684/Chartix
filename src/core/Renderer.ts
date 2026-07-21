@@ -6,15 +6,23 @@ export interface Point {
   y: number;
 }
 
+export interface LineStyle {
+  dash?: number[];
+  interpolation?: 'straight' | 'smooth' | 'step-before' | 'step-after';
+}
+
+export type PointShape = 'circle' | 'square' | 'triangle' | 'diamond' | 'cross';
+
 /** Renderer contract used by chart modules. */
 export interface Renderer {
   readonly width: number;
   readonly height: number;
   clear(background: string): void;
   gradient(x0: number, y0: number, x1: number, y1: number, color: string): CanvasGradient;
-  line(points: Point[], color: string, width: number): void;
+  line(points: Point[], color: string, width: number, style?: LineStyle): void;
   area(points: Point[], baseline: number, fill: string | CanvasGradient): void;
   circle(point: Point, radius: number, fill: string, stroke?: string): void;
+  symbol?(point: Point, radius: number, shape: PointShape, fill: string, stroke?: string): void;
   ringSegment(
     point: Point,
     innerRadius: number,
@@ -107,18 +115,38 @@ export class CanvasRenderer implements Renderer {
   }
 
   /** Draw a polyline with rounded joins. */
-  public line(points: Point[], color: string, width: number): void {
+  public line(points: Point[], color: string, width: number, style: LineStyle = {}): void {
     if (points.length === 0) return;
+    const expanded = style.interpolation?.startsWith('step')
+      ? points.flatMap((point, index) => {
+          const previous = points[index - 1];
+          if (!previous) return [point];
+          return style.interpolation === 'step-before'
+            ? [{ x: previous.x, y: point.y }, point]
+            : [{ x: point.x, y: previous.y }, point];
+        })
+      : points;
     this.context.beginPath();
-    points.forEach((point, index) => {
+    expanded.forEach((point, index) => {
       if (index === 0) this.context.moveTo(point.x, point.y);
-      else this.context.lineTo(point.x, point.y);
+      else if (style.interpolation === 'smooth') {
+        const previous = expanded[index - 1] ?? point;
+        this.context.quadraticCurveTo(
+          previous.x,
+          previous.y,
+          (previous.x + point.x) / 2,
+          (previous.y + point.y) / 2,
+        );
+        if (index === expanded.length - 1) this.context.lineTo(point.x, point.y);
+      } else this.context.lineTo(point.x, point.y);
     });
     this.context.strokeStyle = color;
     this.context.lineWidth = width;
     this.context.lineCap = 'round';
     this.context.lineJoin = 'round';
+    this.context.setLineDash(style.dash ?? []);
     this.context.stroke();
+    this.context.setLineDash([]);
   }
 
   /** Fill the area between a polyline and a baseline. */
@@ -146,6 +174,42 @@ export class CanvasRenderer implements Renderer {
       this.context.lineWidth = 2;
       this.context.stroke();
     }
+  }
+
+  /** Draw a standard point symbol. */
+  public symbol(
+    point: Point,
+    radius: number,
+    shape: PointShape,
+    fill: string,
+    stroke?: string,
+  ): void {
+    if (shape === 'circle') return this.circle(point, radius, fill, stroke);
+    this.context.beginPath();
+    if (shape === 'square')
+      this.context.rect(point.x - radius, point.y - radius, radius * 2, radius * 2);
+    else if (shape === 'diamond') {
+      this.context.moveTo(point.x, point.y - radius);
+      this.context.lineTo(point.x + radius, point.y);
+      this.context.lineTo(point.x, point.y + radius);
+      this.context.lineTo(point.x - radius, point.y);
+      this.context.closePath();
+    } else if (shape === 'triangle') {
+      this.context.moveTo(point.x, point.y - radius);
+      this.context.lineTo(point.x + radius, point.y + radius);
+      this.context.lineTo(point.x - radius, point.y + radius);
+      this.context.closePath();
+    } else {
+      this.context.moveTo(point.x - radius, point.y);
+      this.context.lineTo(point.x + radius, point.y);
+      this.context.moveTo(point.x, point.y - radius);
+      this.context.lineTo(point.x, point.y + radius);
+    }
+    this.context.fillStyle = fill;
+    if (shape !== 'cross') this.context.fill();
+    this.context.strokeStyle = stroke ?? fill;
+    this.context.lineWidth = 2;
+    this.context.stroke();
   }
 
   /** Draw a pie slice or doughnut ring segment. Angles are in radians. */
@@ -221,7 +285,12 @@ export class CanvasRenderer implements Renderer {
       );
     }
     this.context.fillStyle = options.color;
-    this.context.fillText(value, 0, 0);
+    const lines = value.split('\n');
+    const lineHeight = Math.max(
+      12,
+      Number.parseFloat(this.context.font.match(/\d+(?:\.\d+)?px/)?.[0] ?? '12') * 1.25,
+    );
+    lines.forEach((line, index) => this.context.fillText(line, 0, index * lineHeight));
     this.context.restore();
   }
 }

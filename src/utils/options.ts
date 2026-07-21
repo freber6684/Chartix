@@ -31,6 +31,10 @@ export function cloneData(data: ChartData): ChartData {
       ...dataset,
       values: [...dataset.values],
       ...(dataset.radii ? { radii: [...dataset.radii] } : {}),
+      ...(dataset.colors ? { colors: [...dataset.colors] } : {}),
+      ...(dataset.pointSizes ? { pointSizes: [...dataset.pointSizes] } : {}),
+      ...(dataset.pointShapes ? { pointShapes: [...dataset.pointShapes] } : {}),
+      ...(dataset.borderDash ? { borderDash: [...dataset.borderDash] } : {}),
       ...(dataset.points ? { points: dataset.points.map((point) => ({ ...point })) } : {}),
     })),
   };
@@ -55,6 +59,9 @@ export function normalizeConfig(config: ChartConfig): ChartConfig & { options: C
         ...(config.options?.scales?.y1 ? { y1: { ...config.options.scales.y1 } } : {}),
       },
       ...(config.options?.colors ? { colors: [...config.options.colors] } : {}),
+      ...(config.options?.explodedSlices
+        ? { explodedSlices: [...config.options.explodedSlices] }
+        : {}),
       ...(config.options?.annotations
         ? { annotations: config.options.annotations.map((annotation) => ({ ...annotation })) }
         : {}),

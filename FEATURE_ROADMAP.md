@@ -34,8 +34,8 @@ delivered in stable releases so partially implemented features never appear prod
 
 - [x] Themes, custom palettes/backgrounds, typography, gradients, rounded marks, and labels.
 - [x] Reduced-motion support and entrance animation easing.
-- [ ] Per-mark conditional styling, patterns, textures, shadows, borders, and CSS variables.
-- [ ] Line curves, steps, dashes, and point symbols. Stacked marks and mixed series are complete.
+- [ ] Per-mark colors/sizes/shapes and borders are complete; patterns, textures, shadows, and CSS variables remain.
+- [x] Line curves, steps, dashes, point symbols, stacked marks, and mixed series.
 - [ ] Update/exit transitions, staggered animation, motion-path morphing, and timeline controls.
 - [ ] Theme designer, brand-token import, dark-mode auto switching, and style presets.
 

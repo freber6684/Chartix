@@ -151,6 +151,14 @@ export function drawHeader(
     });
     y += 30;
   }
+  if (options.subtitle) {
+    renderer.text(options.subtitle, padding, y, {
+      baseline: 'top',
+      color: theme.mutedText,
+      font: font(500, theme.fontSize.label, theme.fontFamily),
+    });
+    y += 24;
+  }
   if (
     options.showLegend !== false &&
     data.datasets.length > 0 &&
@@ -212,7 +220,8 @@ export function createPlotArea(
     padding -
     24 -
     Math.min(34, xRotation * 0.35) -
-    (legendPosition === 'bottom' ? 28 : 0);
+    (legendPosition === 'bottom' ? 28 : 0) -
+    (options.footnote || options.source ? 22 : 0);
   const plot = {
     left,
     top,
@@ -224,6 +233,24 @@ export function createPlotArea(
   if (legendPosition && legendPosition !== 'top') {
     drawPositionedLegend(renderer, data, theme, plot, legendPosition, interactions, hiddenDatasets);
   }
+  if (options.watermark) {
+    renderer.text(options.watermark, plot.left + plot.width / 2, plot.top + plot.height / 2, {
+      align: 'center',
+      baseline: 'middle',
+      color: `${theme.mutedText}33`,
+      rotation: -20,
+      font: font(700, Math.max(20, theme.fontSize.title * 2), theme.fontFamily),
+    });
+  }
+  const footer = [options.footnote, options.source ? `Source: ${options.source}` : undefined]
+    .filter(Boolean)
+    .join(' · ');
+  if (footer)
+    renderer.text(footer, plot.left, renderer.height - padding, {
+      baseline: 'bottom',
+      color: theme.mutedText,
+      font: font(450, Math.max(9, theme.fontSize.tick - 1), theme.fontFamily),
+    });
   return plot;
 }
 

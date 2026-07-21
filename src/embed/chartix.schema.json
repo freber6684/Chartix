@@ -43,6 +43,16 @@
         "stack": { "type": "string" },
         "yAxisId": { "enum": ["y", "y1"] },
         "radii": { "type": "array", "items": { "type": "number", "minimum": 0 } },
+        "colors": { "type": "array", "items": { "$ref": "#/$defs/color" } },
+        "pointSizes": { "type": "array", "items": { "type": "number", "minimum": 0 } },
+        "pointShapes": {
+          "type": "array",
+          "items": { "enum": ["circle", "square", "triangle", "diamond", "cross"] }
+        },
+        "lineStyle": { "enum": ["straight", "smooth", "step-before", "step-after"] },
+        "borderWidth": { "type": "number", "minimum": 0 },
+        "borderDash": { "type": "array", "items": { "type": "number", "minimum": 0 } },
+        "borderColor": { "$ref": "#/$defs/color" },
         "points": {
           "type": "array",
           "items": {
@@ -241,6 +251,17 @@
         "showGrid": { "type": "boolean" },
         "showLegend": { "type": "boolean" },
         "startAngle": { "type": "number" },
+        "radialGap": { "type": "number", "minimum": 0 },
+        "explodedSlices": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "integer", "minimum": 0 }
+        },
+        "explodeOffset": { "type": "number", "minimum": 0 },
+        "subtitle": { "type": "string" },
+        "footnote": { "type": "string" },
+        "source": { "type": "string" },
+        "watermark": { "type": "string" },
         "title": { "type": "string" },
         "tooltip": {
           "type": "object",

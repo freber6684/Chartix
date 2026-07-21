@@ -18,23 +18,23 @@ exports[`MVP visual command baselines > 'bar' / 'sunset' 1`] = `"0068b5d6c599b46
 
 exports[`MVP visual command baselines > 'bar' / 'vibrant' 1`] = `"cd758f6128bda54ad0c1ece99a4e9061af4767cd2808c0776448eba5330ed02e"`;
 
-exports[`MVP visual command baselines > 'doughnut' / 'corporate' 1`] = `"3e160e21d7e97305e19bbabb3f3ef96e7b4267235ef18e756a0534e7e8abaad9"`;
+exports[`MVP visual command baselines > 'doughnut' / 'corporate' 1`] = `"1420d598036f6e7a3c497c8afe50f667cc06b8b971901cd17f449634c5f18bc7"`;
 
-exports[`MVP visual command baselines > 'doughnut' / 'dark' 1`] = `"e87a94c0f2ad59b872e4ee0cdf91f1a6a32d716ddd10ec7ea81f7b07537da5d1"`;
+exports[`MVP visual command baselines > 'doughnut' / 'dark' 1`] = `"e08ca9a5732da0532d3adef79dc5f26ee14f4f5aa795247491be4bb006403cd0"`;
 
-exports[`MVP visual command baselines > 'doughnut' / 'forest' 1`] = `"9911bcee10415403c9f00f83dbd859d3c04f35af689a5ca72559bbda8bafece4"`;
+exports[`MVP visual command baselines > 'doughnut' / 'forest' 1`] = `"8356f7c353fc862f67c27cb07a74b84fce48ba67d1f311b1a45df76191a67a92"`;
 
-exports[`MVP visual command baselines > 'doughnut' / 'light' 1`] = `"58545cfe9c5b0155d77f152f8a2972216ec302d75afb11ee61bfaf07492ba6a1"`;
+exports[`MVP visual command baselines > 'doughnut' / 'light' 1`] = `"94cfb45e3719deec900de1c89c8c1d58a5e7b60d763c112abc52b4a78d58d062"`;
 
-exports[`MVP visual command baselines > 'doughnut' / 'minimal' 1`] = `"0a1e0a4921875c9d8b9b0761fcdbc6d424f1c6635a6a0ef2ad51373565639d57"`;
+exports[`MVP visual command baselines > 'doughnut' / 'minimal' 1`] = `"e2730befed61a39e531a404a675126923c22d41d6be76ae206899b68b2e5f564"`;
 
-exports[`MVP visual command baselines > 'doughnut' / 'ocean' 1`] = `"e3e9fcf2e0c9d27e207421fa8fe22e237d7f19116bbb7c7bd25a1e6c1b969f54"`;
+exports[`MVP visual command baselines > 'doughnut' / 'ocean' 1`] = `"0190f966aaa73a59a17d544333c8df10f511d1a6dd686edb4beb978864ea673b"`;
 
-exports[`MVP visual command baselines > 'doughnut' / 'rose' 1`] = `"ce343c906a2f9b297a3c9a8dd8f2a8fc695fb191ed429b27fb8e762a4689d00b"`;
+exports[`MVP visual command baselines > 'doughnut' / 'rose' 1`] = `"e6540c749379b3328acdd70a79018a25365cfa2aa7d186eb80cc9db62816c750"`;
 
-exports[`MVP visual command baselines > 'doughnut' / 'sunset' 1`] = `"5f3e44cf924a114ee5da4dc2ee2249c5122584e7762cc4aaac9acd6c57662867"`;
+exports[`MVP visual command baselines > 'doughnut' / 'sunset' 1`] = `"ec79772dcdd80d8ae2f756ee21bab9524fb21c2b512aca18511f55549fb08fdc"`;
 
-exports[`MVP visual command baselines > 'doughnut' / 'vibrant' 1`] = `"6aba0c6e2329e6cff048fe7d452887646edfcff5cf7e747f2c6da7b184a410cd"`;
+exports[`MVP visual command baselines > 'doughnut' / 'vibrant' 1`] = `"e632f46eebb9b005b3b6769654b1aaee82a753c9b7033445fb41af7120a65b13"`;
 
 exports[`MVP visual command baselines > 'line' / 'corporate' 1`] = `"8efabd605562cc676a8958d34efcc9e02290227589b37b221b205c7f103ba904"`;
 
@@ -54,23 +54,23 @@ exports[`MVP visual command baselines > 'line' / 'sunset' 1`] = `"d4479fbc56f12f
 
 exports[`MVP visual command baselines > 'line' / 'vibrant' 1`] = `"3e056d2a8be4f7065ff81e8512e8bf14ed6fd166c9eab8e16ba9988cd0e05624"`;
 
-exports[`MVP visual command baselines > 'pie' / 'corporate' 1`] = `"7181b62cf2923fd6dd3f832efd91afeb32533aecd1d990fe8f8c9411dd475ed4"`;
+exports[`MVP visual command baselines > 'pie' / 'corporate' 1`] = `"51222c8cb10053aef54409fc065eb0fec27544a4f27383aab9478f2f8566cf23"`;
 
-exports[`MVP visual command baselines > 'pie' / 'dark' 1`] = `"14a1cdc4fa9d3d4f62823153af077fde0db85071d12f41689860303cee8ba198"`;
+exports[`MVP visual command baselines > 'pie' / 'dark' 1`] = `"30e44acde3f8e6bd27b4961c371cc3cb6f36512d6b0392535ab47cc8ae1ad628"`;
 
-exports[`MVP visual command baselines > 'pie' / 'forest' 1`] = `"05a7345401fe24109372875d8aa080359d72a47d9577c4b09c3633aca30f5645"`;
+exports[`MVP visual command baselines > 'pie' / 'forest' 1`] = `"e087e17c5549ab226205bf72b7cefe59ea86ae67afa6a0db7562f17d32a23af8"`;
 
-exports[`MVP visual command baselines > 'pie' / 'light' 1`] = `"496748ad2a2d77e59dc22e75c8d093b7b5f36123f7ed6eadf505fea826100470"`;
+exports[`MVP visual command baselines > 'pie' / 'light' 1`] = `"95d9874edf34585220124183aeb4f489f7cbb46825a0e4de6ac2308ecfa2a223"`;
 
-exports[`MVP visual command baselines > 'pie' / 'minimal' 1`] = `"ef84e97604ee6ca6b4d01f7eafb1d4893fc96212fe9f5c04ab7953c4f6afb84b"`;
+exports[`MVP visual command baselines > 'pie' / 'minimal' 1`] = `"374443017f15e2694d4c76aa067e0beef9221a544e3ca495e60019dd3e0e5a67"`;
 
-exports[`MVP visual command baselines > 'pie' / 'ocean' 1`] = `"96a3c8b999d21d062f403b4cd423677a75c60419012462daed1c36e89655132a"`;
+exports[`MVP visual command baselines > 'pie' / 'ocean' 1`] = `"feb49b718efa3556b5343354d5fc8ae7cf7c7757f989ad9141411accf58f44c1"`;
 
-exports[`MVP visual command baselines > 'pie' / 'rose' 1`] = `"43c65e6419633acfacacb40fa36ff97cb4d02b2cd8a0ce3e08f74ea95eef54cb"`;
+exports[`MVP visual command baselines > 'pie' / 'rose' 1`] = `"703f1f9d2f9ddf8444978f3e7fdc0feb3bd0386712d9531142d61cc1f612b7cf"`;
 
-exports[`MVP visual command baselines > 'pie' / 'sunset' 1`] = `"6041855f178a91b14f8f20c6c0d2d0447fa18d1057e14eb81d8da99e51aadf13"`;
+exports[`MVP visual command baselines > 'pie' / 'sunset' 1`] = `"a285ef6a46f4402637738f4b78e9b302f6d11dfeed13dde0ff8a9a70cc5cada0"`;
 
-exports[`MVP visual command baselines > 'pie' / 'vibrant' 1`] = `"c1ed3034af960b98eaadfec90b1f01f646270c2366eb60bc34248e1602abe1f0"`;
+exports[`MVP visual command baselines > 'pie' / 'vibrant' 1`] = `"8199d638d087872a2d1ef0d0df770dec29935ed0db59dd34d0b6bccba51f416b"`;
 
 exports[`MVP visual command baselines > 'scatter' / 'corporate' 1`] = `"1ae398415f3b806a323144ef5b9b1da25a3586c0b4338bc4edaf4f5a37b53083"`;
 

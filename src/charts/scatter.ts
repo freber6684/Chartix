@@ -114,9 +114,16 @@ function renderScatter(context: Parameters<ChartModule['render']>[0]): void {
       );
       const radius = Math.max(
         2,
-        ('r' in entry ? entry.r : undefined) ?? dataset.radii?.[index] ?? 5,
+        ('r' in entry ? entry.r : undefined) ??
+          dataset.pointSizes?.[index] ??
+          dataset.radii?.[index] ??
+          5,
       );
-      renderer.circle(point, active ? radius + 2 : radius, color, theme.background);
+      const pointColor = dataset.colors?.[index] ?? color;
+      const shape = dataset.pointShapes?.[index] ?? 'circle';
+      if (renderer.symbol)
+        renderer.symbol(point, active ? radius + 2 : radius, shape, pointColor, theme.background);
+      else renderer.circle(point, active ? radius + 2 : radius, pointColor, theme.background);
       context.interactions.add({
         kind: 'point',
         datasetIndex,
@@ -124,7 +131,7 @@ function renderScatter(context: Parameters<ChartModule['render']>[0]): void {
         label: String(entry.x),
         datasetLabel: dataset.label,
         value: entry.y,
-        color,
+        color: pointColor,
         x: point.x,
         y: point.y,
         radius: radius + 6,

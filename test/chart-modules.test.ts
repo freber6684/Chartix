@@ -60,6 +60,15 @@ describe('built-in chart modules', () => {
     expect(renderer.labels).toHaveLength(3);
   });
 
+  it('renders independent radial datasets as concentric rings', () => {
+    const renderer = new RecordingRenderer();
+    const value = context(renderer);
+    value.data.datasets.push({ label: 'Second ring', values: [8, 14, 20] });
+    value.options = { radialGap: 2, explodedSlices: [1], explodeOffset: 8 };
+    DoughnutChart.render(value);
+    expect(renderer.segments).toBe(6);
+  });
+
   it('renders scatter values as points', () => {
     const renderer = new RecordingRenderer();
     ScatterChart.render(context(renderer));

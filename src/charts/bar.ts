@@ -54,6 +54,7 @@ function renderVertical(context: ChartRenderContext): void {
     const color = dataset.color ?? theme.palette[datasetIndex % theme.palette.length] ?? theme.text;
     dataset.values.forEach((rawValue, valueIndex) => {
       if (rawValue === null) return;
+      const valueColor = dataset.colors?.[valueIndex] ?? color;
       const value = options.stacked ? stackedValue(context, datasetIndex, valueIndex) : rawValue;
       const startValue = options.stacked
         ? value >= 0
@@ -76,7 +77,7 @@ function renderVertical(context: ChartRenderContext): void {
         (options.stacked ? 0 : datasetIndex * barWidth);
       const y = Math.min(startY, targetY);
       const height = Math.abs(targetY - startY);
-      const fill = renderer.gradient(x, y, x, Math.max(y + height, y + 1), color);
+      const fill = renderer.gradient(x, y, x, Math.max(y + height, y + 1), valueColor);
       const active = context.activeRegions?.some(
         (region) => region.datasetIndex === datasetIndex && region.valueIndex === valueIndex,
       );
@@ -87,7 +88,7 @@ function renderVertical(context: ChartRenderContext): void {
           Math.max(1, barWidth + 1),
           height + 4,
           theme.radius + 2,
-          `${color}55`,
+          `${valueColor}55`,
         );
       renderer.roundedRect(x, y, Math.max(1, barWidth - 3), height, theme.radius, fill);
       context.interactions.add({
@@ -97,7 +98,7 @@ function renderVertical(context: ChartRenderContext): void {
         label: data.labels[valueIndex] ?? '',
         datasetLabel: dataset.label,
         value: rawValue,
-        color,
+        color: valueColor,
         x: x + Math.max(1, barWidth - 3) / 2,
         y,
         bounds: { x, y, width: Math.max(1, barWidth - 3), height: Math.max(1, height) },
@@ -203,6 +204,7 @@ function renderHorizontal(context: ChartRenderContext): void {
     const color = dataset.color ?? theme.palette[datasetIndex % theme.palette.length] ?? theme.text;
     dataset.values.forEach((rawValue, valueIndex) => {
       if (rawValue === null) return;
+      const valueColor = dataset.colors?.[valueIndex] ?? color;
       const value = options.stacked ? stackedValue(context, datasetIndex, valueIndex) : rawValue;
       const startValue = options.stacked
         ? value >= 0
@@ -223,7 +225,7 @@ function renderHorizontal(context: ChartRenderContext): void {
         (categoryHeight - groupHeight) / 2 +
         (options.stacked ? 0 : datasetIndex * barHeight);
       const width = Math.abs(targetX - startX);
-      const fill = renderer.gradient(x, y, Math.max(x + width, x + 1), y, color);
+      const fill = renderer.gradient(x, y, Math.max(x + width, x + 1), y, valueColor);
       const active = context.activeRegions?.some(
         (region) => region.datasetIndex === datasetIndex && region.valueIndex === valueIndex,
       );
@@ -234,7 +236,7 @@ function renderHorizontal(context: ChartRenderContext): void {
           width + 4,
           Math.max(1, barHeight + 1),
           theme.radius + 2,
-          `${color}55`,
+          `${valueColor}55`,
         );
       renderer.roundedRect(x, y, width, Math.max(1, barHeight - 3), theme.radius, fill);
       context.interactions.add({
@@ -244,7 +246,7 @@ function renderHorizontal(context: ChartRenderContext): void {
         label: data.labels[valueIndex] ?? '',
         datasetLabel: dataset.label,
         value: rawValue,
-        color,
+        color: valueColor,
         x: x + width,
         y: y + Math.max(1, barHeight - 3) / 2,
         bounds: { x, y, width: Math.max(1, width), height: Math.max(1, barHeight - 3) },

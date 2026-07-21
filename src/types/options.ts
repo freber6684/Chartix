@@ -34,6 +34,18 @@ export interface ChartDataset {
   radii?: number[];
   /** Optional object-form coordinates for scatter and bubble charts. */
   points?: ChartPoint[];
+  /** Per-value color overrides. */
+  colors?: string[];
+  /** Per-point radius overrides. */
+  pointSizes?: number[];
+  /** Per-point marker symbols. */
+  pointShapes?: Array<'circle' | 'square' | 'triangle' | 'diamond' | 'cross'>;
+  /** Line interpolation style. */
+  lineStyle?: 'straight' | 'smooth' | 'step-before' | 'step-after';
+  /** Line dash and border appearance. */
+  borderWidth?: number;
+  borderDash?: number[];
+  borderColor?: string;
 }
 
 /** Animation settings for chart entrance transitions. */
@@ -312,6 +324,20 @@ export interface ChartOptions {
   showLegend?: boolean;
   /** Starting angle for radial charts, in degrees. */
   startAngle?: number;
+  /** Angular space between radial slices, in degrees. */
+  radialGap?: number;
+  /** Slice indexes pulled away from the radial center. */
+  explodedSlices?: number[];
+  /** Distance used to explode selected radial slices. */
+  explodeOffset?: number;
+  /** Optional secondary heading. */
+  subtitle?: string;
+  /** Small footer note rendered below the plot. */
+  footnote?: string;
+  /** Data-source note rendered below the plot. */
+  source?: string;
+  /** Subtle text drawn behind chart marks. */
+  watermark?: string;
   /** Optional chart title. */
   title?: string;
   /** Global typography overrides. */
