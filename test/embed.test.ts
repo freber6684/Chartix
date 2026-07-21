@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { parseEmbedConfig } from '../src/embed/autoload.js';
+import { parseEmbedConfig, scanEmbeds } from '../src/embed/autoload.js';
 
 describe('parseEmbedConfig', () => {
   it('parses the simple data-attribute format', () => {
@@ -43,5 +43,9 @@ describe('parseEmbedConfig', () => {
     expect(parseEmbedConfig(element).theme).toBe('ocean');
     element.dataset.theme = 'missing';
     expect(parseEmbedConfig(element).theme).toBe('light');
+  });
+
+  it('ignores text nodes added by dynamic editors', () => {
+    expect(() => scanEmbeds(document.createTextNode('editor update'))).not.toThrow();
   });
 });

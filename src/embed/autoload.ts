@@ -91,9 +91,10 @@ export function renderEmbed(element: HTMLElement): Chartix {
 }
 
 /** Scan a root node for unrendered declarative charts. */
-export function scanEmbeds(root: ParentNode = document): void {
+export function scanEmbeds(root: ParentNode | Node = document): void {
   const elements: HTMLElement[] = [];
   if (root instanceof HTMLElement && root.matches('[data-chartix]')) elements.push(root);
+  if (!('querySelectorAll' in root)) return;
   root.querySelectorAll<HTMLElement>('[data-chartix]').forEach((element) => elements.push(element));
   elements.forEach((element) => {
     try {
@@ -118,9 +119,7 @@ export function startAutoEmbed(): void {
   scanEmbeds();
   if (observer || typeof MutationObserver === 'undefined') return;
   observer = new MutationObserver((records) => {
-    records.forEach((record) =>
-      record.addedNodes.forEach((node) => scanEmbeds(node as ParentNode)),
-    );
+    records.forEach((record) => record.addedNodes.forEach((node) => scanEmbeds(node)));
   });
   observer.observe(document.documentElement, { childList: true, subtree: true });
 }
