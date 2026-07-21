@@ -83,7 +83,7 @@ Chartix.register(BarChart);
           <div><strong>9.63 KB</strong><span>Gzipped embed</span></div>
           <div><strong>9</strong><span>Curated themes</span></div>
           <div><strong>0</strong><span>Runtime dependencies</span></div>
-          <div><strong>68/68</strong><span>Tests passing</span></div>
+          <div><strong>70/70</strong><span>Tests passing</span></div>
         </section>
 
         <section class="gallery-section" id="gallery" aria-labelledby="gallery-title">
@@ -258,9 +258,40 @@ Chartix.register(BarChart);
                   <label class="toggle-row"
                     >Show crosshair<input id="control-crosshair" type="checkbox" /><span></span
                   ></label>
+                  <label
+                    >Tooltip mode
+                    <select id="control-interaction-mode">
+                      <option value="nearest">Nearest</option>
+                      <option value="index">Same index</option>
+                      <option value="dataset">Dataset</option>
+                      <option value="intersect">Intersect only</option>
+                    </select>
+                  </label>
+                  <label
+                    >Legend position
+                    <select id="control-legend-position">
+                      <option value="top">Top</option>
+                      <option value="bottom">Bottom</option>
+                      <option value="left">Left</option>
+                      <option value="right">Right</option>
+                      <option value="inside">Inside</option>
+                    </select>
+                  </label>
+                  <label class="toggle-row"
+                    >Enable zoom + pan<input id="control-zoom" type="checkbox" /><span></span
+                  ></label>
+                  <label
+                    >Drag selection
+                    <select id="control-selection">
+                      <option value="off">Off</option>
+                      <option value="brush">Brush</option>
+                      <option value="lasso">Lasso</option>
+                    </select>
+                  </label>
+                  <button class="copy-button" id="drill-up" type="button">Drill up</button>
                   <p class="panel-intro">
-                    Hover or tap marks. Focus the chart and use arrow keys. Click a legend item to
-                    hide its series.
+                    Hover/tap marks; use arrows, +/−/0 keys, wheel zoom, drag pan, Shift+drag box
+                    zoom, or click January to test drill-down.
                   </p>
                 </fieldset>
               </form>

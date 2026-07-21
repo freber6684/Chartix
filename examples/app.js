@@ -153,6 +153,10 @@ const controls = {
   angle: document.querySelector('#control-angle'),
   tooltips: document.querySelector('#control-tooltips'),
   crosshair: document.querySelector('#control-crosshair'),
+  interactionMode: document.querySelector('#control-interaction-mode'),
+  legendPosition: document.querySelector('#control-legend-position'),
+  zoom: document.querySelector('#control-zoom'),
+  selection: document.querySelector('#control-selection'),
 };
 
 function deepClone(value) {
@@ -225,6 +229,10 @@ function resetControls() {
   controls.position.value = chart.options.dataLabels?.position ?? 'outside';
   controls.tooltips.checked = true;
   controls.crosshair.checked = chart.family === 'cartesian';
+  controls.interactionMode.value = chart.datasets.length > 1 ? 'index' : 'nearest';
+  controls.legendPosition.value = 'top';
+  controls.zoom.checked = false;
+  controls.selection.value = 'off';
   updateOutputs();
   renderPlayground();
 }
@@ -258,6 +266,28 @@ function currentConfig() {
   };
   config.options.tooltip = { enabled: controls.tooltips.checked };
   config.options.crosshair = { enabled: controls.crosshair.checked, color: '#94a3b888' };
+  config.options.interaction = { mode: controls.interactionMode.value, keyboard: true };
+  config.options.legend = { interactive: true, position: controls.legendPosition.value };
+  config.options.zoom = {
+    enabled: controls.zoom.checked,
+    wheel: true,
+    pan: true,
+    box: true,
+    resetButton: true,
+  };
+  config.options.selection = {
+    enabled: controls.selection.value !== 'off',
+    mode: controls.selection.value === 'lasso' ? 'lasso' : 'brush',
+    color: controls.accent.value,
+  };
+  if (state.selected.id === 'bar') {
+    config.options.drilldown = {
+      '0:0': {
+        labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+        datasets: [{ label: 'January revenue', values: [22, 34, 29, 35] }],
+      },
+    };
+  }
   if (state.selected.type === 'line') {
     config.options.annotations = [
       { type: 'line', value: 300, label: 'Target', color: controls.accent.value, width: 1.5 },
@@ -379,6 +409,7 @@ document.addEventListener('click', (event) => {
 
 document.querySelector('#back-to-gallery').addEventListener('click', closeDetail);
 document.querySelector('#reset-controls').addEventListener('click', resetControls);
+document.querySelector('#drill-up').addEventListener('click', () => state.playground?.drillUp());
 Object.values(controls).forEach((control) =>
   control.addEventListener('input', () => {
     if (control === controls.theme)

@@ -31,10 +31,12 @@ export type {
   LabelOptions,
   LegendOptions,
   ScaleOptions,
+  SelectionOptions,
   ThemeName,
   ThemeObject,
   TypographyOptions,
   TooltipOptions,
+  ZoomOptions,
 } from './types/options.js';
 /** Interaction hit-region types for custom chart modules. */
 export type { Bounds, HitRegion, InteractionRegistry } from './core/interactions.js';

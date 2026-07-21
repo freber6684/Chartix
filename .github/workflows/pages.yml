@@ -43,7 +43,7 @@ jobs:
         shell: bash
         run: |
           mkdir -p _site
-          cp -R dist examples _site/
+          cp -R dist examples features _site/
           cp site/index.html _site/index.html
           touch _site/.nojekyll
 

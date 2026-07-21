@@ -38,6 +38,9 @@ changes so the next session can resume without reconstructing history.
 - [x] Add clickable and keyboard-activatable legends for showing and hiding datasets.
 - [x] Add optional Cartesian crosshairs and horizontal line/range annotations.
 - [x] Add automatic min/max downsampling for line series above a configurable threshold.
+- [x] Add four interaction modes, grouped tooltips, mark click events, and JSON drill-down/up.
+- [x] Add five legend positions, wheel/keyboard/box zoom, drag pan, reset, brush, and lasso.
+- [x] Add and deploy a real public Features route instead of a navigation 404.
 
 ## Remaining for v0.1
 
@@ -106,7 +109,7 @@ formatting, lint, strict types, unit tests, production bundles, and the 25 KB gz
 ## Latest validation
 
 - Formatting, ESLint, and strict TypeScript: passed with no warnings or errors.
-- Unit tests: 68 passed across 11 test files, including 45 chart/theme visual baselines.
+- Unit tests: 70 passed across 11 test files, including 45 chart/theme visual baselines.
 - Production build: ESM, CJS, standalone embed ESM, browser IIFE, minified browser IIFE, and TypeScript declarations generated.
 - Minified core bundle: 9.72 KB gzipped (15 KB budget).
 - Minified full embed bundle: 9.63 KB gzipped (25 KB budget).

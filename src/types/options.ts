@@ -44,6 +44,8 @@ export interface InteractionOptions {
   keyboard?: boolean;
   /** Require the pointer to intersect a mark instead of selecting the nearest mark. */
   intersect?: boolean;
+  /** How marks are grouped for hover and keyboard tooltips. */
+  mode?: 'nearest' | 'dataset' | 'index' | 'intersect';
 }
 
 /** Floating value-card behavior. */
@@ -70,6 +72,8 @@ export interface CrosshairOptions {
 export interface LegendOptions {
   /** Let users click or keyboard-activate a series to show or hide it. */
   interactive?: boolean;
+  /** Legend placement relative to the plot. */
+  position?: 'top' | 'bottom' | 'left' | 'right' | 'inside';
 }
 
 /** A horizontal reference line or highlighted numeric range. */
@@ -98,6 +102,30 @@ export interface DecimationOptions {
   threshold?: number;
   /** Approximate maximum number of rendered points. */
   samples?: number;
+}
+
+/** Wheel, drag-pan, and box-zoom behavior. */
+export interface ZoomOptions {
+  /** Enable viewport zoom controls. */
+  enabled?: boolean;
+  /** Enable wheel or trackpad zooming. */
+  wheel?: boolean;
+  /** Enable horizontal drag-panning. */
+  pan?: boolean;
+  /** Enable Shift+drag box zooming. */
+  box?: boolean;
+  /** Show an accessible reset button when zoomed. */
+  resetButton?: boolean;
+}
+
+/** Brush or lasso data selection. */
+export interface SelectionOptions {
+  /** Enable drag selection. */
+  enabled?: boolean;
+  /** Selection geometry. */
+  mode?: 'brush' | 'lasso';
+  /** CSS overlay color. */
+  color?: string;
 }
 
 /** Built-in color themes shipped with Chartix. */
@@ -156,6 +184,8 @@ export interface ChartOptions {
   dataLabels?: LabelOptions;
   /** Automatic sampling for large line datasets. */
   decimation?: DecimationOptions;
+  /** Point-specific drill-down data keyed by `datasetIndex:valueIndex` or label. */
+  drilldown?: Record<string, ChartData>;
   /** Fill the area below a line. */
   fill?: boolean;
   /** Render bars horizontally. */
@@ -176,6 +206,8 @@ export interface ChartOptions {
   resizable?: boolean;
   /** Cartesian scale settings. */
   scales?: ScaleOptions;
+  /** Brush or lasso data selection. */
+  selection?: SelectionOptions;
   /** Add a visually hidden data table beside the canvas. */
   showDataTable?: boolean;
   /** Display subtle grid lines. */
@@ -196,6 +228,8 @@ export interface ChartOptions {
   xLabels?: LabelOptions;
   /** Numeric y-axis label styling. */
   yLabels?: LabelOptions;
+  /** Wheel, drag-pan, and box-zoom behavior. */
+  zoom?: ZoomOptions;
 }
 
 /** Theme tokens used by all Chartix renderers. */

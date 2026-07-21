@@ -131,13 +131,21 @@
           "properties": {
             "enabled": { "type": "boolean" },
             "keyboard": { "type": "boolean" },
-            "intersect": { "type": "boolean" }
+            "intersect": { "type": "boolean" },
+            "mode": { "enum": ["nearest", "dataset", "index", "intersect"] }
           }
         },
         "legend": {
           "type": "object",
           "additionalProperties": false,
-          "properties": { "interactive": { "type": "boolean" } }
+          "properties": {
+            "interactive": { "type": "boolean" },
+            "position": { "enum": ["top", "bottom", "left", "right", "inside"] }
+          }
+        },
+        "drilldown": {
+          "type": "object",
+          "additionalProperties": { "$ref": "#/$defs/data" }
         },
         "padding": { "type": "number", "minimum": 0 },
         "responsive": { "type": "boolean" },
@@ -151,6 +159,15 @@
               "additionalProperties": false,
               "properties": { "beginAtZero": { "type": "boolean" } }
             }
+          }
+        },
+        "selection": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "enabled": { "type": "boolean" },
+            "mode": { "enum": ["brush", "lasso"] },
+            "color": { "$ref": "#/$defs/color" }
           }
         },
         "showDataTable": { "type": "boolean" },
@@ -179,7 +196,18 @@
         },
         "width": { "type": "number", "exclusiveMinimum": 0 },
         "xLabels": { "$ref": "#/$defs/labelOptions" },
-        "yLabels": { "$ref": "#/$defs/labelOptions" }
+        "yLabels": { "$ref": "#/$defs/labelOptions" },
+        "zoom": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "enabled": { "type": "boolean" },
+            "wheel": { "type": "boolean" },
+            "pan": { "type": "boolean" },
+            "box": { "type": "boolean" },
+            "resetButton": { "type": "boolean" }
+          }
+        }
       }
     },
     "theme": {

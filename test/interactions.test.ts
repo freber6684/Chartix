@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { findHitRegion, type HitRegion } from '../src/core/interactions.js';
+import { findHitRegion, findHitRegions, type HitRegion } from '../src/core/interactions.js';
 
 const regions: HitRegion[] = [
   {
@@ -36,5 +36,20 @@ describe('interaction hit testing', () => {
 
   it('can return the nearest data mark', () => {
     expect(findHitRegion(regions, 70, 70, false)?.valueIndex).toBe(1);
+  });
+
+  it('groups marks by index or dataset', () => {
+    const secondDataset: HitRegion = {
+      ...regions[0]!,
+      datasetIndex: 1,
+      datasetLabel: 'Costs',
+      value: 8,
+      x: 24,
+    };
+    const grouped = [...regions, secondDataset];
+    expect(findHitRegions(grouped, 15, 15, 'index')).toHaveLength(2);
+    expect(findHitRegions(grouped, 15, 15, 'dataset')).toHaveLength(2);
+    expect(findHitRegions(grouped, 200, 200, 'intersect')).toEqual([]);
+    expect(findHitRegions(grouped, 200, 200, 'nearest')).toHaveLength(1);
   });
 });

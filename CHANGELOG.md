@@ -15,6 +15,9 @@ All notable Chartix changes are documented here. The project follows semantic ve
 - Independent 15 KB core and 25 KB full-embed gzip budgets with downloadable CI build artifacts.
 - Forty-five visual-command snapshot baselines spanning every MVP chart and built-in theme.
 - A pinned, reproducible visual benchmark page for Chartix, Chart.js, ApexCharts, and Recharts.
+- Four interaction modes, grouped tooltips, mark click events, and JSON drill-down/up.
+- Five legend positions, wheel/keyboard/box zoom, pan, reset controls, brush, and lasso selection.
+- A real public `/features/` implementation ledger replacing the missing route.
 
 ## 0.1.0-alpha.2 - 2026-07-21
 

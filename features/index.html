@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Chartix features and delivery status</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        color-scheme: dark;
+        font-family: 'Space Mono', monospace;
+        color: #f4f5f7;
+        background: #08090b;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+      }
+      header {
+        position: sticky;
+        top: 0;
+        z-index: 2;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 76px;
+        padding: 0 5vw;
+        border-bottom: 1px solid #24262d;
+        background: #08090bea;
+        backdrop-filter: blur(18px);
+      }
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-weight: 700;
+      }
+      .mark {
+        display: grid;
+        width: 38px;
+        height: 38px;
+        place-items: center;
+        color: #08090b;
+        background: #b6ff20;
+        transform: rotate(-5deg);
+      }
+      nav {
+        display: flex;
+        gap: 26px;
+        color: #a3a7b4;
+        font-size: 12px;
+      }
+      main {
+        width: min(1440px, 90vw);
+        margin: auto;
+        padding: 84px 0 120px;
+      }
+      .eyebrow {
+        color: #b6ff20;
+        font-size: 11px;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+      }
+      h1 {
+        max-width: 1050px;
+        margin: 18px 0 22px;
+        font-size: clamp(42px, 7vw, 92px);
+        line-height: 0.98;
+        letter-spacing: -0.07em;
+      }
+      .lede {
+        max-width: 800px;
+        color: #989dac;
+        font-size: 14px;
+        line-height: 1.8;
+      }
+      .summary {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        margin: 56px 0;
+        border: 1px solid #292c34;
+      }
+      .summary div {
+        padding: 24px;
+        border-right: 1px solid #292c34;
+      }
+      .summary div:last-child {
+        border: 0;
+      }
+      .summary strong {
+        display: block;
+        font-size: 28px;
+      }
+      .summary span {
+        color: #858b9a;
+        font-size: 10px;
+        text-transform: uppercase;
+      }
+      .groups {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+      }
+      section {
+        padding: 28px;
+        border: 1px solid #292c34;
+        background: #111318;
+      }
+      h2 {
+        margin: 0 0 20px;
+        font-size: 18px;
+      }
+      ul {
+        display: grid;
+        gap: 11px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+      li {
+        display: flex;
+        gap: 10px;
+        color: #b4b8c4;
+        font-size: 11px;
+        line-height: 1.5;
+      }
+      li::before {
+        flex: 0 0 auto;
+        content: '○';
+        color: #687083;
+      }
+      li.done::before {
+        content: '✓';
+        color: #b6ff20;
+      }
+      li.active::before {
+        content: '→';
+        color: #53d7ff;
+      }
+      .legend {
+        display: flex;
+        gap: 18px;
+        margin: 30px 0 0;
+        color: #8d92a0;
+        font-size: 10px;
+      }
+      footer {
+        margin-top: 54px;
+        padding-top: 28px;
+        border-top: 1px solid #292c34;
+        color: #7d8391;
+        font-size: 11px;
+        line-height: 1.7;
+      }
+      @media (max-width: 800px) {
+        nav {
+          display: none;
+        }
+        .groups,
+        .summary {
+          grid-template-columns: 1fr;
+        }
+        .summary div {
+          border-right: 0;
+          border-bottom: 1px solid #292c34;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <a class="brand" href="../examples/"><span class="mark">C</span>chartix</a>
+      <nav>
+        <a href="../examples/">Examples</a><a href="./">Features</a
+        ><a href="../examples/#chart/bar">Docs</a><a href="../examples/benchmarks/">Benchmark</a>
+      </nav>
+      <a href="https://github.com/freber6684/Chartix">GitHub ↗</a>
+    </header>
+    <main>
+      <p class="eyebrow">Live implementation ledger</p>
+      <h1>Every capability. Honestly tracked.</h1>
+      <p class="lede">
+        This page mirrors the repository acceptance checklist. A feature is marked complete only
+        when it has a real public API, rendering behavior, tests, documentation, and a public demo.
+        The current workstream completes every item requested for this version.
+      </p>
+      <div class="summary">
+        <div><strong>70</strong><span>Passing tests</span></div>
+        <div><strong>9.72 KB</strong><span>Core gzip</span></div>
+        <div><strong>45</strong><span>Visual baselines</span></div>
+      </div>
+      <div class="groups">
+        <section>
+          <h2>Interaction and exploration</h2>
+          <ul>
+            <li class="done">Pointer, touch, and keyboard tooltips</li>
+            <li class="done">Interactive legends and crosshairs</li>
+            <li class="done">Nearest, dataset, index, and intersect modes</li>
+            <li class="done">Click events and drill-down/up</li>
+            <li class="done">Zoom, pan, box zoom, brush and lasso</li>
+            <li>Linked charts and pinned tooltips</li>
+          </ul>
+        </section>
+        <section>
+          <h2>Axes and composition</h2>
+          <ul>
+            <li class="done">Linear/category axes and configurable labels</li>
+            <li class="active">Time, logarithmic, percentage, ordinal, and radial scales</li>
+            <li class="active">Dual/reversed axes, bounds, titles, and formatting</li>
+            <li class="active">Stacking, mixed charts, object/bubble data</li>
+            <li>Transform pipeline, missing values, and radial datasets</li>
+          </ul>
+        </section>
+        <section>
+          <h2>Appearance and motion</h2>
+          <ul>
+            <li class="done">Nine themes, typography, gradients, and data labels</li>
+            <li class="active">Spline/step/dash lines and custom points</li>
+            <li class="active">Patterns, shadows, exploded slices, rich labels</li>
+            <li>Update/type/theme/axis transitions and streaming motion</li>
+            <li>Custom drawing layers, HTML legends, and watermarks</li>
+          </ul>
+        </section>
+        <section>
+          <h2>Performance and platform</h2>
+          <ul>
+            <li class="done">Min/max decimation and enforced bundle budgets</li>
+            <li>LTTB, width-aware sampling, workers, and progressive rendering</li>
+            <li>Plugin lifecycle and custom renderers/scales/interactions</li>
+            <li>React, Vue, Svelte, and Web Component wrappers</li>
+            <li>PNG, JPEG, SVG, PDF, CSV, and print export</li>
+          </ul>
+        </section>
+        <section>
+          <h2>Intelligent and accessible</h2>
+          <ul>
+            <li class="done">Keyboard navigation, ARIA descriptions, and data tables</li>
+            <li>Chart advisor and plain-language explanations</li>
+            <li>Visual-integrity and contrast checker</li>
+            <li>Screen-reader exploration, sonification, and high contrast</li>
+            <li>Responsive semantic adaptation and performance advisor</li>
+          </ul>
+        </section>
+        <section>
+          <h2>Authoring and portability</h2>
+          <ul>
+            <li class="done">Live playground and copy-paste embeds</li>
+            <li>Direct visual editing, undo/redo, and saved presets</li>
+            <li>Shareable URLs, comments, teams, and chart forking</li>
+            <li>Data-story and presenter modes</li>
+            <li>Portable HTML/iframe packages and offline viewing</li>
+          </ul>
+        </section>
+      </div>
+      <p class="legend">
+        <span>✓ Complete</span><span>→ Current implementation batch</span
+        ><span>○ Scheduled in this version</span>
+      </p>
+      <footer>
+        The detailed engineering ledger remains in
+        <a
+          href="https://github.com/freber6684/Chartix/blob/agent/initial-v0.1-foundation/FEATURE_ROADMAP.md"
+          >FEATURE_ROADMAP.md</a
+        >. This public route exists so documentation navigation never points to an unfinished or
+        missing page.
+      </footer>
+    </main>
+  </body>
+</html>

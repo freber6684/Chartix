@@ -88,3 +88,23 @@ export function findHitRegion(
         : closest;
     }, undefined);
 }
+
+/** Resolve one or more active marks for a configured interaction mode. */
+export function findHitRegions(
+  regions: readonly HitRegion[],
+  x: number,
+  y: number,
+  mode: 'nearest' | 'dataset' | 'index' | 'intersect',
+): HitRegion[] {
+  const primary = findHitRegion(regions, x, y, mode === 'intersect');
+  if (!primary) return [];
+  if (primary.kind === 'legend' || mode === 'nearest' || mode === 'intersect') return [primary];
+  if (mode === 'dataset') {
+    return regions.filter(
+      (region) => region.kind !== 'legend' && region.datasetIndex === primary.datasetIndex,
+    );
+  }
+  return regions.filter(
+    (region) => region.kind !== 'legend' && region.valueIndex === primary.valueIndex,
+  );
+}

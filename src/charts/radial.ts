@@ -23,8 +23,9 @@ function renderRadial(context: ChartRenderContext, defaultInnerRadius: number): 
       options.colors?.[index % options.colors.length] ??
       theme.palette[index % theme.palette.length] ??
       theme.text;
-    const active =
-      context.activeRegion?.datasetIndex === 0 && context.activeRegion.valueIndex === index;
+    const active = context.activeRegions?.some(
+      (region) => region.datasetIndex === 0 && region.valueIndex === index,
+    );
     const activeOuterRadius = active ? outerRadius + 4 : outerRadius;
     renderer.ringSegment(
       center,

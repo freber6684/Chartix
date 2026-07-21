@@ -34,7 +34,11 @@ export function drawHeader(
     });
     y += 30;
   }
-  if (options.showLegend !== false && data.datasets.length > 0) {
+  if (
+    options.showLegend !== false &&
+    data.datasets.length > 0 &&
+    (options.legend?.position ?? 'top') === 'top'
+  ) {
     data.datasets.forEach((dataset, index) => {
       const x = padding + index * 132;
       const color = dataset.color ?? theme.palette[index % theme.palette.length] ?? theme.text;
@@ -80,12 +84,19 @@ export function createPlotArea(
     interactions,
     hiddenDatasets,
   );
-  const left = padding + 44;
+  const legendPosition = options.showLegend === false ? undefined : options.legend?.position;
+  const sideLegendWidth = legendPosition === 'left' || legendPosition === 'right' ? 132 : 0;
+  const left = padding + 44 + (legendPosition === 'left' ? sideLegendWidth : 0);
   const top = Math.max(padding + 10, headerBottom + 10);
-  const right = renderer.width - padding;
+  const right = renderer.width - padding - (legendPosition === 'right' ? sideLegendWidth : 0);
   const xRotation = Math.abs(options.xLabels?.rotation ?? 0);
-  const bottom = renderer.height - padding - 24 - Math.min(34, xRotation * 0.35);
-  return {
+  const bottom =
+    renderer.height -
+    padding -
+    24 -
+    Math.min(34, xRotation * 0.35) -
+    (legendPosition === 'bottom' ? 28 : 0);
+  const plot = {
     left,
     top,
     right,
@@ -93,6 +104,54 @@ export function createPlotArea(
     width: Math.max(1, right - left),
     height: Math.max(1, bottom - top),
   };
+  if (legendPosition && legendPosition !== 'top') {
+    drawPositionedLegend(renderer, data, theme, plot, legendPosition, interactions, hiddenDatasets);
+  }
+  return plot;
+}
+
+function drawPositionedLegend(
+  renderer: Renderer,
+  data: ChartData,
+  theme: ThemeObject,
+  plot: PlotArea,
+  position: 'bottom' | 'left' | 'right' | 'inside',
+  interactions?: InteractionRegistry,
+  hiddenDatasets: ReadonlySet<number> = new Set(),
+): void {
+  data.datasets.forEach((dataset, index) => {
+    const x =
+      position === 'left'
+        ? plot.left - 132
+        : position === 'right'
+          ? plot.right + 12
+          : plot.left + 8 + index * 132;
+    const y =
+      position === 'bottom'
+        ? plot.bottom + 40
+        : position === 'inside'
+          ? plot.top + 10
+          : plot.top + index * 24;
+    const color = dataset.color ?? theme.palette[index % theme.palette.length] ?? theme.text;
+    const markerColor = hiddenDatasets.has(index) ? theme.grid : color;
+    renderer.roundedRect(x, y, 10, 10, 4, markerColor);
+    renderer.text(dataset.label, x + 16, y + 5, {
+      baseline: 'middle',
+      color: hiddenDatasets.has(index) ? theme.grid : theme.mutedText,
+      font: font(500, theme.fontSize.label, theme.fontFamily),
+    });
+    interactions?.add({
+      kind: 'legend',
+      datasetIndex: index,
+      label: dataset.label,
+      datasetLabel: dataset.label,
+      value: 0,
+      color,
+      x: x + 50,
+      y: y + 5,
+      bounds: { x: x - 4, y: y - 6, width: 124, height: 22 },
+    });
+  });
 }
 
 export function drawVerticalFrame(

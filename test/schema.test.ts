@@ -21,6 +21,7 @@ describe('embed JSON Schema', () => {
         'crosshair',
         'dataLabels',
         'decimation',
+        'drilldown',
         'fill',
         'height',
         'horizontal',
@@ -31,6 +32,7 @@ describe('embed JSON Schema', () => {
         'responsive',
         'resizable',
         'scales',
+        'selection',
         'showDataTable',
         'showGrid',
         'showLegend',
@@ -41,6 +43,7 @@ describe('embed JSON Schema', () => {
         'width',
         'xLabels',
         'yLabels',
+        'zoom',
       ].sort(),
     );
   });

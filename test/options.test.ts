@@ -36,4 +36,21 @@ describe('normalizeConfig', () => {
     expect(config.options.colors[0]).toBe('#123456');
     expect(config.options.dataLabels.rotation).toBe(15);
   });
+
+  it('deep-clones drill-down data and gesture options', () => {
+    const config = {
+      type: 'bar',
+      data: { labels: ['A'], datasets: [{ label: 'Main', values: [1] }] },
+      options: {
+        drilldown: { A: { labels: ['A1'], datasets: [{ label: 'Detail', values: [2] }] } },
+        zoom: { enabled: true },
+        selection: { enabled: true as const, mode: 'lasso' as const },
+      },
+    };
+    const normalized = normalizeConfig(config);
+    normalized.options.drilldown!.A!.labels[0] = 'Changed';
+    normalized.options.zoom!.enabled = false;
+    expect(config.options.drilldown.A.labels[0]).toBe('A1');
+    expect(config.options.zoom.enabled).toBe(true);
+  });
 });

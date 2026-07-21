@@ -53,13 +53,22 @@ export function normalizeConfig(config: ChartConfig): ChartConfig & { options: C
         : {}),
       ...(config.options?.crosshair ? { crosshair: { ...config.options.crosshair } } : {}),
       ...(config.options?.dataLabels ? { dataLabels: { ...config.options.dataLabels } } : {}),
+      ...(config.options?.drilldown
+        ? {
+            drilldown: Object.fromEntries(
+              Object.entries(config.options.drilldown).map(([key, data]) => [key, cloneData(data)]),
+            ),
+          }
+        : {}),
       decimation: { ...defaultOptions.decimation, ...config.options?.decimation },
       interaction: { ...defaultOptions.interaction, ...config.options?.interaction },
       legend: { ...defaultOptions.legend, ...config.options?.legend },
+      ...(config.options?.selection ? { selection: { ...config.options.selection } } : {}),
       tooltip: { ...defaultOptions.tooltip, ...config.options?.tooltip },
       ...(config.options?.typography ? { typography: { ...config.options.typography } } : {}),
       ...(config.options?.xLabels ? { xLabels: { ...config.options.xLabels } } : {}),
       ...(config.options?.yLabels ? { yLabels: { ...config.options.yLabels } } : {}),
+      ...(config.options?.zoom ? { zoom: { ...config.options.zoom } } : {}),
       animation:
         config.options?.animation === false
           ? false

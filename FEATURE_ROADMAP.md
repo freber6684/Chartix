@@ -12,10 +12,13 @@ delivered in stable releases so partially implemented features never appear prod
 - [x] Accessible tooltips and keyboard navigation between marks.
 - [x] Interactive legends for showing and hiding datasets.
 - [x] Active point/slice emphasis and optional Cartesian crosshairs.
-- [ ] Multi-series/index tooltips, custom tooltip templates, and pinned tooltips.
-- [ ] Selection, brushing, lasso selection, and linked charts.
-- [ ] Wheel/pinch zoom, drag pan, reset controls, and navigator overview.
-- [ ] Drill-down/up, data-point actions, and configurable event callbacks.
+- [x] Nearest, dataset, index, and intersect grouped tooltips.
+- [ ] Custom tooltip templates and pinned tooltips.
+- [x] Brush and lasso selection with portable events.
+- [ ] Linked charts and a navigator overview.
+- [x] Wheel/keyboard zoom, drag pan, box zoom, and reset controls.
+- [ ] Pinch zoom.
+- [x] Drill-down/up and data-point click events.
 - [ ] Editable marks with undo/redo and change-history output.
 
 ## Scales, axes, and layout

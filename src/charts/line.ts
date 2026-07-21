@@ -39,9 +39,9 @@ export const LineChart: ChartModule = {
       renderer.line(points, color, 2.5);
       points.forEach((point, index) => {
         const valueIndex = visibleIndexes[index] ?? index;
-        const active =
-          context.activeRegion?.datasetIndex === datasetIndex &&
-          context.activeRegion.valueIndex === valueIndex;
+        const active = context.activeRegions?.some(
+          (region) => region.datasetIndex === datasetIndex && region.valueIndex === valueIndex,
+        );
         renderer.circle(point, active ? 5.5 : 3.5, color, theme.background);
         const value = dataset.values[valueIndex];
         if (value !== undefined) {

@@ -39,6 +39,7 @@ theme color.
 | `responsive`           | `true`                        | Follow container changes using `ResizeObserver`.                     |
 | `resizable`            | `false`                       | Add a native user drag-resize handle to the container.               |
 | `scales.y.beginAtZero` | `true`                        | Include zero in Cartesian numeric domains.                           |
+| `selection`            | disabled                      | Brush or lasso selection with portable events.                       |
 | `showDataTable`        | `true`                        | Add a visually hidden accessible data table.                         |
 | `showGrid`             | `true`                        | Draw subtle Cartesian grid lines.                                    |
 | `showLegend`           | `true`                        | Draw the dataset legend.                                             |
@@ -47,6 +48,8 @@ theme color.
 | `tooltip`              | enabled                       | Accessible floating value card and its colors.                       |
 | `typography`           | theme tokens                  | Shared font family and title/label/tick sizes.                       |
 | `xLabels`, `yLabels`   | `LabelOptions`                | Axis label styling.                                                  |
+| `zoom`                 | disabled                      | Wheel/keyboard zoom, drag pan, box zoom, and reset.                  |
+| `drilldown`            | unset                         | Detail data keyed by point index or label.                           |
 
 ## Label options
 
@@ -58,11 +61,21 @@ theme color.
 
 - `interaction.enabled` disables all pointer and keyboard behavior when false.
 - `interaction.keyboard` controls focus/arrow-key navigation.
-- `interaction.intersect` selects only a directly intersected mark when true, or the nearest mark
-  when false.
+- `interaction.mode` accepts `nearest`, `dataset`, `index`, or `intersect`; the older `intersect`
+  boolean remains a compatible shortcut.
 - `tooltip.enabled`, `backgroundColor`, and `color` style the accessible DOM tooltip.
 - `crosshair.enabled`, `color`, and `width` style active Cartesian guides.
 - `legend.interactive` controls click/Enter/Space dataset toggling.
+- `legend.position` accepts `top`, `bottom`, `left`, `right`, or `inside`.
+
+## Zoom, selection, and drill-down
+
+Set `zoom.enabled` for wheel or `+`/`−` zoom, drag pan, Shift+drag box zoom, and the generated reset
+button. The `0` key or `chart.resetZoom()` restores all data. Enable `selection` with `brush` or
+`lasso`; results are emitted through `chartix:selection`.
+
+Every mark activation emits `chartix:click`. Matching JSON `drilldown` data is rendered and emits
+`chartix:drilldown`; `chart.drillUp()` restores the prior level.
 
 ## Annotations and large data
 
@@ -80,6 +93,8 @@ source point must be painted.
 - `chart.update({ labels?, datasets? })` immutably updates data and re-renders.
 - `chart.resize()` measures and redraws.
 - `chart.destroy()` removes observers, events, tooltips, and generated accessibility markup.
+- `chart.resetZoom()` restores the complete viewport.
+- `chart.drillUp()` restores the previous drill-down level.
 
 ## JSON Schema
 

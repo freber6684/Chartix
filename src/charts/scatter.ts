@@ -84,9 +84,9 @@ export const ScatterChart: ChartModule = {
       dataset.values.forEach((value, index) => {
         if (index >= Math.ceil(dataset.values.length * progress)) return;
         const point = { x: xScale.project(xValues[index] ?? index + 1), y: yScale.project(value) };
-        const active =
-          context.activeRegion?.datasetIndex === datasetIndex &&
-          context.activeRegion.valueIndex === index;
+        const active = context.activeRegions?.some(
+          (region) => region.datasetIndex === datasetIndex && region.valueIndex === index,
+        );
         renderer.circle(point, active ? 7 : 5, color, theme.background);
         context.interactions.add({
           kind: 'point',

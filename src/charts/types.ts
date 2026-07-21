@@ -23,6 +23,7 @@ export interface ChartRenderContext {
   interactions: InteractionRegistry;
   hiddenDatasets: ReadonlySet<number>;
   activeRegion?: HitRegion;
+  activeRegions?: readonly HitRegion[];
 }
 
 /** A self-contained, registrable Chartix chart implementation. */

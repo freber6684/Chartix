@@ -25,6 +25,18 @@ function renderVertical(context: ChartRenderContext): void {
       const y = Math.min(baseline, animatedY);
       const height = Math.abs(animatedY - baseline);
       const fill = renderer.gradient(x, y, x, Math.max(y + height, y + 1), color);
+      const active = context.activeRegions?.some(
+        (region) => region.datasetIndex === datasetIndex && region.valueIndex === valueIndex,
+      );
+      if (active)
+        renderer.roundedRect(
+          x - 2,
+          y - 2,
+          Math.max(1, barWidth + 1),
+          height + 4,
+          theme.radius + 2,
+          `${color}55`,
+        );
       renderer.roundedRect(x, y, Math.max(1, barWidth - 3), height, theme.radius, fill);
       context.interactions.add({
         kind: 'bar',
@@ -139,6 +151,18 @@ function renderHorizontal(context: ChartRenderContext): void {
         datasetIndex * barHeight;
       const width = Math.abs(animatedX - baseline);
       const fill = renderer.gradient(x, y, Math.max(x + width, x + 1), y, color);
+      const active = context.activeRegions?.some(
+        (region) => region.datasetIndex === datasetIndex && region.valueIndex === valueIndex,
+      );
+      if (active)
+        renderer.roundedRect(
+          x - 2,
+          y - 2,
+          width + 4,
+          Math.max(1, barHeight + 1),
+          theme.radius + 2,
+          `${color}55`,
+        );
       renderer.roundedRect(x, y, width, Math.max(1, barHeight - 3), theme.radius, fill);
       context.interactions.add({
         kind: 'bar',
