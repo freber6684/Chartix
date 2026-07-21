@@ -102,11 +102,11 @@ formatting, lint, strict types, unit tests, production bundles, and the 25 KB gz
 ## Latest validation
 
 - Formatting, ESLint, and strict TypeScript: passed with no warnings or errors.
-- Unit tests: 11 passed across 5 test files.
+- Unit tests: 19 passed across 7 test files.
 - Production build: ESM, CJS, standalone embed ESM, browser IIFE, minified browser IIFE, and TypeScript declarations generated.
-- Minified embed bundle: 5.21 KB gzipped (25 KB budget).
-- Browser check: animated and reduced-motion demos rendered two charts with no page errors or framework overlay.
-- Accessibility check: both canvases had `role="img"` and generated labels; two data tables were exposed in the accessibility tree.
+- Minified embed bundle: 7.39 KB gzipped (25 KB budget).
+- Browser check: the public demo rendered bar, line, pie, doughnut, and scatter charts without page errors.
+- Accessibility check: all five canvases had generated `role="img"` labels and matching data tables.
 - GitHub-hosted CI: push and pull-request checks completed successfully.
 - GitHub Pages: deployment completed successfully at `https://freber6684.github.io/Chartix/`.
-- Public URL check: both charts rendered with no browser errors, two accessible canvas labels, and two data tables.
+- Public URL check: all five chart examples and their customization styles rendered successfully.

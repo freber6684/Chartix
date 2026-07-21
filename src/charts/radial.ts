@@ -38,7 +38,7 @@ function renderRadial(context: ChartRenderContext, defaultInnerRadius: number): 
       const y = center.y + Math.sin(middle) * radius;
       const label = data.labels[index] ?? `Slice ${index + 1}`;
       const percent = formatTick((value / total) * 100);
-      renderer.text(`${label} ${percent}%`, x, y, {
+      renderer.text(position === 'outside' ? `${label} ${percent}%` : `${percent}%`, x, y, {
         align: position === 'outside' ? (Math.cos(middle) >= 0 ? 'left' : 'right') : 'center',
         baseline: 'middle',
         color: labels.color ?? (position === 'outside' ? theme.text : theme.background),
