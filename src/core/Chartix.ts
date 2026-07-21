@@ -1,5 +1,8 @@
 import { animate } from './Animator.js';
 import { CanvasRenderer } from './Renderer.js';
+import { EventManager } from './EventManager.js';
+import { Tooltip } from './Tooltip.js';
+import type { HitRegion } from './interactions.js';
 import { describeChart, updateDataTable } from './accessibility.js';
 import { resolveTheme } from './theme.js';
 import { createPlotArea } from '../charts/cartesian.js';
@@ -9,14 +12,19 @@ import { cloneData, normalizeConfig } from '../utils/options.js';
 
 const validOptionKeys = new Set<keyof ChartOptions>([
   'animation',
+  'annotations',
   'ariaLabel',
   'backgroundColor',
   'colors',
+  'crosshair',
   'dataLabels',
+  'decimation',
   'fill',
   'height',
   'horizontal',
   'innerRadius',
+  'interaction',
+  'legend',
   'padding',
   'responsive',
   'resizable',
@@ -27,6 +35,7 @@ const validOptionKeys = new Set<keyof ChartOptions>([
   'startAngle',
   'title',
   'typography',
+  'tooltip',
   'width',
   'xLabels',
   'yLabels',
@@ -67,6 +76,11 @@ export class Chartix {
   private resizeObserver?: ResizeObserver;
   private cancelAnimation?: () => void;
   private dataTable: HTMLTableElement | undefined;
+  private readonly eventManager: EventManager;
+  private readonly tooltip: Tooltip;
+  private regions: HitRegion[] = [];
+  private activeRegion: HitRegion | undefined;
+  private readonly hiddenDatasets = new Set<number>();
   private destroyed = false;
 
   /** Register one or more tree-shakeable chart modules. */
@@ -90,6 +104,13 @@ export class Chartix {
     }
     this.config = normalizeConfig(config);
     this.renderer = new CanvasRenderer(canvas);
+    this.tooltip = new Tooltip(canvas);
+    this.eventManager = new EventManager(canvas, {
+      regions: () => this.regions,
+      intersect: () => this.config.options.interaction?.intersect !== false,
+      onActive: (region) => this.setActiveRegion(region),
+      onActivate: (region) => this.activateRegion(region),
+    });
     this.applyContainerSizing();
     this.applyAccessibility();
     this.resize();
@@ -139,9 +160,12 @@ export class Chartix {
     if (this.destroyed) return;
     this.cancelAnimation?.();
     this.resizeObserver?.disconnect();
+    this.eventManager.destroy();
+    this.tooltip.destroy();
     this.dataTable?.remove();
     this.canvas.removeAttribute('role');
     this.canvas.removeAttribute('aria-label');
+    this.canvas.removeAttribute('tabindex');
     this.destroyed = true;
   }
 
@@ -175,7 +199,20 @@ export class Chartix {
       },
     };
     this.renderer.clear(theme.background);
-    const plot = createPlotArea(this.renderer, this.config.data, this.config.options, theme);
+    this.regions = [];
+    const interactions = {
+      add: (region: HitRegion): void => {
+        this.regions.push(region);
+      },
+    };
+    const plot = createPlotArea(
+      this.renderer,
+      this.config.data,
+      this.config.options,
+      theme,
+      interactions,
+      this.hiddenDatasets,
+    );
     module.render({
       renderer: this.renderer,
       data: this.config.data,
@@ -183,7 +220,31 @@ export class Chartix {
       theme,
       plot,
       progress,
+      interactions,
+      hiddenDatasets: this.hiddenDatasets,
+      ...(this.activeRegion ? { activeRegion: this.activeRegion } : {}),
     });
+    const active = this.activeRegion;
+    if (this.config.options.crosshair?.enabled && active && active.kind !== 'legend') {
+      const color = this.config.options.crosshair.color ?? theme.mutedText;
+      const width = this.config.options.crosshair.width ?? 1;
+      this.renderer.line(
+        [
+          { x: active.x, y: plot.top },
+          { x: active.x, y: plot.bottom },
+        ],
+        color,
+        width,
+      );
+      this.renderer.line(
+        [
+          { x: plot.left, y: active.y },
+          { x: plot.right, y: active.y },
+        ],
+        color,
+        width,
+      );
+    }
   }
 
   private resolveAnimation(): Required<AnimationOptions> | null {
@@ -203,6 +264,14 @@ export class Chartix {
       'aria-label',
       this.config.options.ariaLabel ?? describeChart(this.config.type, this.config.data),
     );
+    if (
+      this.config.options.interaction?.enabled !== false &&
+      this.config.options.interaction?.keyboard !== false
+    ) {
+      this.canvas.tabIndex = 0;
+    } else {
+      this.canvas.removeAttribute('tabindex');
+    }
     this.dataTable?.remove();
     this.dataTable = this.config.options.showDataTable
       ? (updateDataTable(this.canvas, this.config.data) ?? undefined)
@@ -211,6 +280,32 @@ export class Chartix {
 
   private assertActive(): void {
     if (this.destroyed) throw new Error('Chartix: this chart has been destroyed.');
+  }
+
+  private setActiveRegion(region: HitRegion | undefined): void {
+    if (this.config.options.interaction?.enabled === false) return;
+    this.activeRegion = region;
+    if (region && region.kind !== 'legend' && this.config.options.tooltip?.enabled !== false) {
+      this.tooltip.show(region, this.config.options.tooltip);
+    } else {
+      this.tooltip.hide();
+    }
+    this.draw(1);
+  }
+
+  private activateRegion(region: HitRegion): void {
+    if (
+      region.kind !== 'legend' ||
+      this.config.options.legend?.interactive === false ||
+      this.config.options.showLegend === false
+    )
+      return;
+    if (this.hiddenDatasets.has(region.datasetIndex))
+      this.hiddenDatasets.delete(region.datasetIndex);
+    else this.hiddenDatasets.add(region.datasetIndex);
+    this.activeRegion = undefined;
+    this.tooltip.hide();
+    this.draw(1);
   }
 
   private applyContainerSizing(): void {

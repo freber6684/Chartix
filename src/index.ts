@@ -19,14 +19,22 @@ export { parseEmbedConfig, renderEmbed, scanEmbeds, startAutoEmbed } from './emb
 /** Public configuration types. */
 export type {
   AnimationOptions,
+  AnnotationOptions,
   AxisOptions,
   ChartConfig,
   ChartData,
   ChartDataset,
   ChartOptions,
+  CrosshairOptions,
+  DecimationOptions,
+  InteractionOptions,
   LabelOptions,
+  LegendOptions,
   ScaleOptions,
   ThemeName,
   ThemeObject,
   TypographyOptions,
+  TooltipOptions,
 } from './types/options.js';
+/** Interaction hit-region types for custom chart modules. */
+export type { Bounds, HitRegion, InteractionRegistry } from './core/interactions.js';

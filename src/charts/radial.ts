@@ -5,6 +5,7 @@ function renderRadial(context: ChartRenderContext, defaultInnerRadius: number): 
   const { data, options, plot, progress, renderer, theme } = context;
   const dataset = data.datasets[0];
   if (!dataset) return;
+  if (context.hiddenDatasets.has(0)) return;
   const values = dataset.values.map((value) => Math.max(0, value));
   const total = values.reduce((sum, value) => sum + value, 0);
   if (total <= 0) return;
@@ -22,11 +23,39 @@ function renderRadial(context: ChartRenderContext, defaultInnerRadius: number): 
       options.colors?.[index % options.colors.length] ??
       theme.palette[index % theme.palette.length] ??
       theme.text;
-    renderer.ringSegment(center, innerRadius, outerRadius, angle, end, color, theme.background);
+    const active =
+      context.activeRegion?.datasetIndex === 0 && context.activeRegion.valueIndex === index;
+    const activeOuterRadius = active ? outerRadius + 4 : outerRadius;
+    renderer.ringSegment(
+      center,
+      innerRadius,
+      activeOuterRadius,
+      angle,
+      end,
+      color,
+      theme.background,
+    );
+    const middle = angle + sweep / 2;
+    context.interactions.add({
+      kind: 'slice',
+      datasetIndex: 0,
+      valueIndex: index,
+      label: data.labels[index] ?? `Slice ${index + 1}`,
+      datasetLabel: dataset.label,
+      value,
+      color,
+      x: center.x + Math.cos(middle) * ((innerRadius + outerRadius) / 2),
+      y: center.y + Math.sin(middle) * ((innerRadius + outerRadius) / 2),
+      centerX: center.x,
+      centerY: center.y,
+      innerRadius,
+      outerRadius: activeOuterRadius,
+      startAngle: angle,
+      endAngle: end,
+    });
 
     const labels = options.dataLabels;
     if (labels?.show && sweep > 0.05) {
-      const middle = angle + sweep / 2;
       const position = labels.position ?? 'outside';
       const radius =
         position === 'outside'

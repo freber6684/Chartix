@@ -36,6 +36,70 @@ export interface ScaleOptions {
   y?: AxisOptions;
 }
 
+/** Pointer, touch, and keyboard navigation behavior. */
+export interface InteractionOptions {
+  /** Enable chart interactions. */
+  enabled?: boolean;
+  /** Let arrow keys move between chart marks. */
+  keyboard?: boolean;
+  /** Require the pointer to intersect a mark instead of selecting the nearest mark. */
+  intersect?: boolean;
+}
+
+/** Floating value-card behavior. */
+export interface TooltipOptions {
+  /** Show tooltips for focused or pointed-at marks. */
+  enabled?: boolean;
+  /** Tooltip panel background. */
+  backgroundColor?: string;
+  /** Tooltip text color. */
+  color?: string;
+}
+
+/** Crosshair styling for Cartesian charts. */
+export interface CrosshairOptions {
+  /** Draw guides through the active mark. */
+  enabled?: boolean;
+  /** CSS guide color. */
+  color?: string;
+  /** Guide width in CSS pixels. */
+  width?: number;
+}
+
+/** Dataset legend behavior. */
+export interface LegendOptions {
+  /** Let users click or keyboard-activate a series to show or hide it. */
+  interactive?: boolean;
+}
+
+/** A horizontal reference line or highlighted numeric range. */
+export interface AnnotationOptions {
+  /** Annotation shape. */
+  type: 'line' | 'band';
+  /** Value used by a line annotation. */
+  value?: number;
+  /** Lower value used by a band annotation. */
+  from?: number;
+  /** Upper value used by a band annotation. */
+  to?: number;
+  /** Optional reference label. */
+  label?: string;
+  /** CSS line or fill color. */
+  color?: string;
+  /** Line width in CSS pixels. */
+  width?: number;
+}
+
+/** Large line-series sampling behavior. */
+export interface DecimationOptions {
+  /** Reduce very large line series before drawing. */
+  enabled?: boolean;
+  /** Number of source points that triggers sampling. */
+  threshold?: number;
+  /** Approximate maximum number of rendered points. */
+  samples?: number;
+}
+
 /** Built-in color themes shipped with Chartix. */
 export type ThemeName =
   'light' | 'dark' | 'minimal' | 'vibrant' | 'corporate' | 'ocean' | 'forest' | 'sunset' | 'rose';
@@ -76,6 +140,8 @@ export interface LabelOptions {
 
 /** Runtime options shared by built-in charts. */
 export interface ChartOptions {
+  /** Reference lines and highlighted numeric ranges. */
+  annotations?: AnnotationOptions[];
   /** Accessible label applied to the canvas. */
   ariaLabel?: string;
   /** Entrance animation settings, or `false` to disable animation. */
@@ -84,8 +150,12 @@ export interface ChartOptions {
   backgroundColor?: string;
   /** Override the theme palette for all datasets or slices. */
   colors?: string[];
+  /** Guides drawn through an active Cartesian mark. */
+  crosshair?: CrosshairOptions;
   /** Values displayed on or near marks such as bars, points, and slices. */
   dataLabels?: LabelOptions;
+  /** Automatic sampling for large line datasets. */
+  decimation?: DecimationOptions;
   /** Fill the area below a line. */
   fill?: boolean;
   /** Render bars horizontally. */
@@ -94,6 +164,10 @@ export interface ChartOptions {
   height?: number;
   /** Doughnut hole ratio from 0 to 0.9. */
   innerRadius?: number;
+  /** Pointer, touch, and keyboard navigation behavior. */
+  interaction?: InteractionOptions;
+  /** Dataset legend behavior. */
+  legend?: LegendOptions;
   /** Internal chart padding in CSS pixels. */
   padding?: number;
   /** Resize the chart with its container. */
@@ -114,6 +188,8 @@ export interface ChartOptions {
   title?: string;
   /** Global typography overrides. */
   typography?: TypographyOptions;
+  /** Floating value-card behavior. */
+  tooltip?: TooltipOptions;
   /** Explicit chart width in CSS pixels. */
   width?: number;
   /** Category or x-axis label styling. */

@@ -12,6 +12,7 @@ function renderVertical(context: ChartRenderContext): void {
   const barWidth = Math.max(2, groupWidth / data.datasets.length);
 
   data.datasets.forEach((dataset, datasetIndex) => {
+    if (context.hiddenDatasets.has(datasetIndex)) return;
     const color = dataset.color ?? theme.palette[datasetIndex % theme.palette.length] ?? theme.text;
     dataset.values.forEach((value, valueIndex) => {
       const targetY = scale.project(value);
@@ -25,6 +26,18 @@ function renderVertical(context: ChartRenderContext): void {
       const height = Math.abs(animatedY - baseline);
       const fill = renderer.gradient(x, y, x, Math.max(y + height, y + 1), color);
       renderer.roundedRect(x, y, Math.max(1, barWidth - 3), height, theme.radius, fill);
+      context.interactions.add({
+        kind: 'bar',
+        datasetIndex,
+        valueIndex,
+        label: data.labels[valueIndex] ?? '',
+        datasetLabel: dataset.label,
+        value,
+        color,
+        x: x + Math.max(1, barWidth - 3) / 2,
+        y,
+        bounds: { x, y, width: Math.max(1, barWidth - 3), height: Math.max(1, height) },
+      });
       const labels = options.dataLabels;
       if (labels?.show) {
         const inside = labels.position === 'inside' || labels.position === 'center';
@@ -113,6 +126,7 @@ function renderHorizontal(context: ChartRenderContext): void {
     );
   });
   data.datasets.forEach((dataset, datasetIndex) => {
+    if (context.hiddenDatasets.has(datasetIndex)) return;
     const color = dataset.color ?? theme.palette[datasetIndex % theme.palette.length] ?? theme.text;
     dataset.values.forEach((value, valueIndex) => {
       const targetX = scale.project(value);
@@ -126,6 +140,18 @@ function renderHorizontal(context: ChartRenderContext): void {
       const width = Math.abs(animatedX - baseline);
       const fill = renderer.gradient(x, y, Math.max(x + width, x + 1), y, color);
       renderer.roundedRect(x, y, width, Math.max(1, barHeight - 3), theme.radius, fill);
+      context.interactions.add({
+        kind: 'bar',
+        datasetIndex,
+        valueIndex,
+        label: data.labels[valueIndex] ?? '',
+        datasetLabel: dataset.label,
+        value,
+        color,
+        x: x + width,
+        y: y + Math.max(1, barHeight - 3) / 2,
+        bounds: { x, y, width: Math.max(1, width), height: Math.max(1, barHeight - 3) },
+      });
       const labels = options.dataLabels;
       if (labels?.show) {
         const inside = labels.position === 'inside' || labels.position === 'center';

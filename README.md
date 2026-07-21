@@ -5,6 +5,9 @@ TypeScript-first API, accessible output, and copy-paste embedding. The current a
 line/area, pie, doughnut, and scatter charts; nine themes; responsive and user-resizable Canvas
 rendering; animations; detailed label styling; and declarative `data-*` embeds.
 
+Project progress is tracked in [STATUS.md](./STATUS.md), with the complete requested feature ledger in
+[FEATURE_ROADMAP.md](./FEATURE_ROADMAP.md).
+
 > Chartix is under active development. Use the pinned alpha version while the v0.1 API settles.
 
 ## Live Demo

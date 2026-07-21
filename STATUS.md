@@ -34,11 +34,13 @@ changes so the next session can resume without reconstructing history.
       gallery, per-chart playground, live visual controls, generated embed code, and chart guides.
 - [x] Add GitHub Actions CI for formatting, linting, strict types, tests, and production builds.
 - [x] Add a GitHub Pages workflow that publishes the verified demo and browser bundle.
+- [x] Add pointer/touch-compatible tooltips, keyboard mark navigation, and active-mark emphasis.
+- [x] Add clickable and keyboard-activatable legends for showing and hiding datasets.
+- [x] Add optional Cartesian crosshairs and horizontal line/range annotations.
+- [x] Add automatic min/max downsampling for line series above a configurable threshold.
 
 ## Remaining for v0.1
 
-- [ ] Add large-line-dataset downsampling.
-- [ ] Add pointer/keyboard tooltips and interactive legends.
 - [ ] Add visual regression tests for every chart/theme combination.
 - [ ] Capture Chart.js, ApexCharts, and Recharts comparison images in `examples/benchmarks/`.
 - [ ] Complete per-option API reference documentation and an embed JSON Schema.
@@ -104,7 +106,7 @@ formatting, lint, strict types, unit tests, production bundles, and the 25 KB gz
 ## Latest validation
 
 - Formatting, ESLint, and strict TypeScript: passed with no warnings or errors.
-- Unit tests: 19 passed across 7 test files.
+- Unit tests: 22 passed across 9 test files.
 - Production build: ESM, CJS, standalone embed ESM, browser IIFE, minified browser IIFE, and TypeScript declarations generated.
 - Minified embed bundle: 7.39 KB gzipped (25 KB budget).
 - Browser check: the public demo rendered bar, line, pie, doughnut, and scatter charts without page errors.

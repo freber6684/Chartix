@@ -1,4 +1,5 @@
 import type { Renderer } from '../core/Renderer.js';
+import type { HitRegion, InteractionRegistry } from '../core/interactions.js';
 import type { ChartData, ChartOptions, ThemeObject } from '../types/options.js';
 
 /** Computed chart drawing bounds. */
@@ -19,6 +20,9 @@ export interface ChartRenderContext {
   theme: ThemeObject;
   plot: PlotArea;
   progress: number;
+  interactions: InteractionRegistry;
+  hiddenDatasets: ReadonlySet<number>;
+  activeRegion?: HitRegion;
 }
 
 /** A self-contained, registrable Chartix chart implementation. */

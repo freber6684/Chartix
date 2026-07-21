@@ -5,7 +5,8 @@ import type { ChartModule } from './types.js';
 /** Built-in scatter chart. Numeric labels are x values; dataset values are y values. */
 export const ScatterChart: ChartModule = {
   id: 'scatter',
-  render({ data, options, plot, progress, renderer, theme }) {
+  render(context) {
+    const { data, options, plot, progress, renderer, theme } = context;
     const xValues = data.labels.map((label, index) => {
       const value = Number(label);
       return Number.isFinite(value) ? value : index + 1;
@@ -77,12 +78,28 @@ export const ScatterChart: ChartModule = {
     });
 
     data.datasets.forEach((dataset, datasetIndex) => {
+      if (context.hiddenDatasets.has(datasetIndex)) return;
       const color =
         dataset.color ?? theme.palette[datasetIndex % theme.palette.length] ?? theme.text;
       dataset.values.forEach((value, index) => {
         if (index >= Math.ceil(dataset.values.length * progress)) return;
         const point = { x: xScale.project(xValues[index] ?? index + 1), y: yScale.project(value) };
-        renderer.circle(point, 5, color, theme.background);
+        const active =
+          context.activeRegion?.datasetIndex === datasetIndex &&
+          context.activeRegion.valueIndex === index;
+        renderer.circle(point, active ? 7 : 5, color, theme.background);
+        context.interactions.add({
+          kind: 'point',
+          datasetIndex,
+          valueIndex: index,
+          label: data.labels[index] ?? '',
+          datasetLabel: dataset.label,
+          value,
+          color,
+          x: point.x,
+          y: point.y,
+          radius: 11,
+        });
         const labels = options.dataLabels;
         if (labels?.show) {
           renderer.text(formatTick(value), point.x, point.y - 11 - (labels.offset ?? 0), {

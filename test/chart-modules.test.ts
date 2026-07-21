@@ -41,6 +41,8 @@ function context(renderer: Renderer): ChartRenderContext {
     theme: lightTheme,
     plot: { left: 64, top: 40, right: 616, bottom: 360, width: 552, height: 320 },
     progress: 1,
+    interactions: { add() {} },
+    hiddenDatasets: new Set(),
   };
 }
 

@@ -151,6 +151,8 @@ const controls = {
   labels: document.querySelector('#control-labels'),
   position: document.querySelector('#control-position'),
   angle: document.querySelector('#control-angle'),
+  tooltips: document.querySelector('#control-tooltips'),
+  crosshair: document.querySelector('#control-crosshair'),
 };
 
 function deepClone(value) {
@@ -221,6 +223,8 @@ function resetControls() {
   controls.angle.value = '0';
   controls.labels.checked = Boolean(chart.options.dataLabels?.show);
   controls.position.value = chart.options.dataLabels?.position ?? 'outside';
+  controls.tooltips.checked = true;
+  controls.crosshair.checked = chart.family === 'cartesian';
   updateOutputs();
   renderPlayground();
 }
@@ -252,6 +256,13 @@ function currentConfig() {
     fontSize: Number(controls.labelSize.value),
     fontFamily: controls.font.value,
   };
+  config.options.tooltip = { enabled: controls.tooltips.checked };
+  config.options.crosshair = { enabled: controls.crosshair.checked, color: '#94a3b888' };
+  if (state.selected.type === 'line') {
+    config.options.annotations = [
+      { type: 'line', value: 300, label: 'Target', color: controls.accent.value, width: 1.5 },
+    ];
+  }
   return config;
 }
 
@@ -286,6 +297,9 @@ function renderDocumentation() {
       <li><code>colors</code> replaces the categorical palette.</li>
       <li><code>dataLabels</code> controls visibility, placement, fonts, angles, and color.</li>
       <li><code>responsive</code> follows the container; <code>resizable</code> adds a drag handle.</li>
+      <li><code>tooltip</code>, <code>crosshair</code>, and <code>interaction</code> configure pointer, touch, and keyboard exploration.</li>
+      <li><code>annotations</code> adds reference lines or highlighted numeric ranges.</li>
+      <li>Click or keyboard-activate a legend item to show or hide a dataset.</li>
       ${chart.type === 'doughnut' ? '<li><code>innerRadius</code> controls the center opening.</li>' : ''}
       ${chart.type === 'bar' ? '<li><code>horizontal</code> switches between vertical and horizontal layouts.</li>' : ''}
       ${chart.type === 'line' ? '<li><code>fill</code> turns a line chart into an area chart.</li>' : ''}

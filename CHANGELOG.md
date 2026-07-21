@@ -4,6 +4,14 @@ All notable Chartix changes are documented here. The project follows semantic ve
 
 ## Unreleased
 
+### Added
+
+- Pointer, touch-compatible, and keyboard chart exploration with accessible DOM tooltips.
+- Clickable and keyboard-activatable legends that show or hide datasets.
+- Optional Cartesian crosshairs, line/range annotations, and active-mark emphasis.
+- Automatic min/max decimation for line series over 1,000 values.
+- Public playground switches and documentation for the new interaction features.
+
 ## 0.1.0-alpha.2 - 2026-07-21
 
 ### Added
