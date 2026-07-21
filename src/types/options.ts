@@ -296,6 +296,8 @@ export interface ChartOptions {
   plugins?: string[];
   /** Resize the chart with its container. */
   responsive?: boolean;
+  /** Enable semantic layout changes at compact breakpoints. */
+  responsiveMode?: 'fixed' | 'adaptive';
   /** Let a user drag-resize the chart container in supporting browsers. */
   resizable?: boolean;
   /** Cartesian scale settings. */

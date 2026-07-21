@@ -32,6 +32,7 @@ describe('embed JSON Schema', () => {
         'performance',
         'plugins',
         'responsive',
+        'responsiveMode',
         'resizable',
         'scales',
         'selection',

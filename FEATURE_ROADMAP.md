@@ -62,8 +62,9 @@ delivered in stable releases so partially implemented features never appear prod
 - [x] Generated canvas descriptions, focusable charts, reduced motion, and hidden data tables.
 - [ ] Screen-reader summaries, sonification, high-contrast/pattern modes, and focus-region narration.
 - [ ] WCAG automated audits, color-blind simulation, contrast repair, and keyboard help overlay.
-- [ ] Locale-aware text/dates/numbers, RTL scripts, vertical text, and translation hooks.
-- [ ] Data provenance, transformation history, uncertainty display, and misleading-chart warnings.
+- [ ] Locale-aware dates/numbers are complete; RTL scripts, vertical text, and translation hooks remain.
+- [ ] Misleading-chart, accessibility, contrast, color-vision, and performance audits are complete;
+      provenance, transformation history, and uncertainty display remain.
 
 ## Export, sharing, and developer platform
 
@@ -85,10 +86,11 @@ playground example before being marked complete.
 
 ## Chartix-only differentiators
 
-- [ ] Intent-based API that recommends a chart from the user's question and data shape.
-- [ ] Explain-this-chart summaries with plain-language insights and accessible narration.
-- [ ] Automatic chart-quality review for distortion, clutter, accessibility, and statistical risk.
-- [ ] Constraint-based responsive composition that changes layout without changing meaning.
+- [x] Local data-shape advisor recommends a chart with confidence, explanation, and suggestions.
+- [x] Explain-this-chart generates plain-language range and direction summaries.
+- [ ] Quality review covers distortion, clutter, accessibility, contrast, and common statistical risk;
+      deeper statistical validation remains.
+- [x] Constraint-based responsive composition changes layout without changing source data.
 - [ ] Collaborative annotations, comments, approvals, and version comparison.
 - [ ] Reproducible data lineage embedded with exports and shared links.
 - [ ] Privacy-aware local analytics and redaction before sharing/export.

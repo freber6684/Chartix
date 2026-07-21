@@ -41,6 +41,7 @@ gaps. Scatter and bubble datasets may additionally use `points: [{x, y, r?}]`. D
 | `padding`              | `24`                          | Internal CSS-pixel spacing.                                           |
 | `performance`          | auto optimized                | Animation threshold and completed-render telemetry.                   |
 | `responsive`           | `true`                        | Follow container changes using `ResizeObserver`.                      |
+| `responsiveMode`       | `fixed`                       | Use `adaptive` for semantic compact-layout changes.                   |
 | `resizable`            | `false`                       | Add a native user drag-resize handle to the container.                |
 | `scales`               | linear/category               | Configure x, y, and y1 scale types, domains, ticks, titles and grids. |
 | `selection`            | disabled                      | Brush or lasso selection with portable events.                        |
@@ -136,3 +137,9 @@ can power IDE completion, form generation, saved-config validation, and no-code 
 drawing, and destruction. `options.plugins` can select plugin IDs per chart. Custom continuous
 scales and hit-testing modes use `Chartix.registerScale()` and `Chartix.registerInteractionMode()`.
 All registries have matching unregister methods. See [plugins and frameworks](plugins-and-frameworks.md).
+
+## Intelligence and audits
+
+`recommendChart`, `auditChart`, `summarizeChart`, `simulateColorVision`, and `adaptChartConfig`
+provide local-only advice, integrity/accessibility checks, summaries, simulation, and adaptive
+layout. See [chart intelligence](chart-intelligence.md).

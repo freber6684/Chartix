@@ -78,3 +78,14 @@ export { createReactChartix } from './adapters/react.js';
 export { createVueChartix } from './adapters/vue.js';
 export { chartix as svelteChartix } from './adapters/svelte.js';
 export { defineChartixElement } from './adapters/web-component.js';
+/** Local-only chart advice, integrity, accessibility, and responsive intelligence. */
+export {
+  auditChart,
+  recommendChart,
+  summarizeChart,
+  type ChartAdvice,
+  type ChartAudit,
+  type ChartAuditIssue,
+} from './intelligence/advisor.js';
+export { adaptChartConfig } from './intelligence/responsive.js';
+export { simulateColorVision, type ColorVisionMode } from './intelligence/color-vision.js';

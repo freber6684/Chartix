@@ -22,6 +22,7 @@ import type {
 import { cloneData, normalizeConfig } from '../utils/options.js';
 import { applyDataTransforms } from '../utils/transforms.js';
 import { chartConfigToHTML, chartDataToCSV } from '../utils/export.js';
+import { adaptChartConfig } from '../intelligence/responsive.js';
 import type { ChartPlugin, PluginContext } from './Plugin.js';
 import { registerScale, unregisterScale, type ScaleFactory } from './Scale.js';
 
@@ -48,6 +49,7 @@ const validOptionKeys = new Set<keyof ChartOptions>([
   'performance',
   'plugins',
   'responsive',
+  'responsiveMode',
   'resizable',
   'scales',
   'selection',
@@ -367,14 +369,17 @@ export class Chartix {
     const startedAt = performance.now();
     const module = Chartix.modules.get(this.config.type);
     if (!module) throw new Error(`Chartix: chart type "${this.config.type}" is not registered.`);
-    const baseTheme = resolveTheme(this.config.theme);
-    const typography = this.config.options.typography;
+    const renderConfig =
+      this.config.options.responsiveMode === 'adaptive'
+        ? adaptChartConfig(this.config, this.renderer.width, this.renderer.height)
+        : this.config;
+    const drawOptions = renderConfig.options ?? this.config.options;
+    const baseTheme = resolveTheme(renderConfig.theme);
+    const typography = drawOptions.typography;
     const theme = {
       ...baseTheme,
-      background: this.config.options.backgroundColor ?? baseTheme.background,
-      palette: this.config.options.colors
-        ? [...this.config.options.colors]
-        : [...baseTheme.palette],
+      background: drawOptions.backgroundColor ?? baseTheme.background,
+      palette: drawOptions.colors ? [...drawOptions.colors] : [...baseTheme.palette],
       fontFamily: typography?.fontFamily ?? baseTheme.fontFamily,
       fontSize: {
         title: typography?.titleSize ?? baseTheme.fontSize.title,
@@ -394,7 +399,7 @@ export class Chartix {
     const plot = createPlotArea(
       this.renderer,
       renderData,
-      this.config.options,
+      drawOptions,
       theme,
       interactions,
       this.hiddenDatasets,
@@ -404,7 +409,7 @@ export class Chartix {
     module.render({
       renderer: this.renderer,
       data: renderData,
-      options: this.config.options,
+      options: drawOptions,
       theme,
       plot,
       progress,
@@ -415,9 +420,9 @@ export class Chartix {
     });
     this.runPlugins('afterDatasets', { theme, plot, progress });
     const active = this.activeRegion;
-    if (this.config.options.crosshair?.enabled && active && active.kind !== 'legend') {
-      const color = this.config.options.crosshair.color ?? theme.mutedText;
-      const width = this.config.options.crosshair.width ?? 1;
+    if (drawOptions.crosshair?.enabled && active && active.kind !== 'legend') {
+      const color = drawOptions.crosshair.color ?? theme.mutedText;
+      const width = drawOptions.crosshair.width ?? 1;
       this.renderer.line(
         [
           { x: active.x, y: plot.top },
