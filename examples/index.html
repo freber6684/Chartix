@@ -3,130 +3,287 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Chartix alpha preview</title>
-    <style>
-      :root {
-        color: #172033;
-        background: #f4f6fa;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      }
-      body {
-        margin: 0;
-        padding: 48px 24px;
-      }
-      main {
-        width: min(1180px, 100%);
-        margin: 0 auto;
-      }
-      header {
-        display: flex;
-        justify-content: space-between;
-        align-items: end;
-        gap: 24px;
-        margin-bottom: 24px;
-      }
-      h1,
-      p {
-        margin: 0;
-      }
-      h1 {
-        font-size: clamp(32px, 5vw, 52px);
-        letter-spacing: -0.04em;
-      }
-      header p {
-        max-width: 520px;
-        color: #64748b;
-        line-height: 1.55;
-      }
-      .grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(min(100%, 440px), 1fr));
-        gap: 20px;
-      }
-      .card {
-        min-width: 0;
-        border: 1px solid #e3e8ef;
-        border-radius: 18px;
-        background: #fff;
-        box-shadow: 0 14px 40px rgb(31 41 55 / 8%);
-      }
-      .dark {
-        border-color: #263246;
-        background: #111827;
-      }
-      [data-chartix] {
-        position: relative;
-        width: 100%;
-      }
-      .hint {
-        padding: 12px 20px;
-        border-top: 1px solid #e3e8ef;
-        color: #64748b;
-        font-size: 13px;
-      }
-      @media (max-width: 700px) {
-        body {
-          padding: 28px 14px;
-        }
-        header {
-          display: block;
-        }
-        header p {
-          margin-top: 12px;
-        }
-      }
-    </style>
+    <meta
+      name="description"
+      content="Explore Chartix charts, customize every detail, and copy production-ready embed code."
+    />
+    <title>Chartix — Modern charts, beautifully simple</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
     <script src="../dist/chartix.min.js" defer></script>
+    <script src="./app.js" defer></script>
   </head>
   <body>
+    <header class="site-header">
+      <a class="brand" href="#" aria-label="Chartix home">
+        <span class="brand-mark" aria-hidden="true">C</span>
+        <span>chartix</span>
+      </a>
+      <nav class="primary-nav" aria-label="Primary navigation">
+        <a href="#gallery">Examples</a>
+        <a href="#features">Features</a>
+        <a href="#chart/bar">Docs</a>
+      </nav>
+      <a class="button button-quiet header-cta" href="https://github.com/freber6684/Chartix">
+        GitHub <span aria-hidden="true">↗</span>
+      </a>
+    </header>
+
     <main>
-      <header>
-        <h1>Chartix alpha</h1>
-        <p>
-          Five chart types, nine themes, accessible output, responsive Canvas rendering, and
-          configurable colors, fonts, labels, and sizing.
-        </p>
-      </header>
-      <section class="grid" aria-label="Chart examples">
-        <article class="card">
-          <div
-            data-chartix
-            data-type="bar"
-            data-labels="Jan,Feb,Mar,Apr,May,Jun"
-            data-values="120,190,164,245,278,338"
-            data-label="Revenue"
-            data-title="Revenue momentum"
-            data-theme="light"
-            data-height="410"
-          ></div>
-        </article>
-        <article class="card dark">
-          <div
-            data-chartix
-            data-height="410"
-            data-config='{"type":"line","theme":"dark","data":{"labels":["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],"datasets":[{"label":"Active users","values":[180,248,221,310,365,342,430]},{"label":"New users","values":[96,122,108,158,174,168,210]}]},"options":{"title":"Weekly audience","fill":true,"animation":{"duration":480,"easing":"easeOutCubic"},"showDataTable":true,"xLabels":{"rotation":-18,"color":"#c4b5fd"}}}'
-          ></div>
-        </article>
-        <article class="card">
-          <div
-            data-chartix
-            data-config='{"type":"pie","theme":"sunset","data":{"labels":["Product","Services","Support","Other"],"datasets":[{"label":"Revenue mix","values":[48,27,17,8]}]},"options":{"title":"Revenue mix","height":410,"dataLabels":{"show":true,"position":"outside","fontSize":11,"backgroundColor":"#ffffffcc"},"startAngle":-90}}'
-          ></div>
-        </article>
-        <article class="card">
-          <div
-            data-chartix
-            data-config='{"type":"doughnut","theme":"ocean","data":{"labels":["Organic","Search","Social","Email"],"datasets":[{"label":"Traffic","values":[42,31,18,9]}]},"options":{"title":"Traffic sources","height":410,"innerRadius":0.62,"dataLabels":{"show":true,"position":"inside","fontSize":11},"colors":["#023e8a","#0077b6","#00b4d8","#90e0ef"]}}'
-          ></div>
-        </article>
-        <article class="card">
-          <div
-            data-chartix
-            data-config='{"type":"scatter","theme":"forest","data":{"labels":["12","18","27","35","43","56"],"datasets":[{"label":"Campaign A","values":[24,38,32,57,63,82]},{"label":"Campaign B","values":[18,29,46,48,71,76]}]},"options":{"title":"Spend vs conversions","height":410,"resizable":true,"dataLabels":{"show":true,"position":"outside","fontSize":10,"color":"#1e392a"},"xLabels":{"rotation":-25},"typography":{"fontFamily":"Georgia, serif","titleSize":18}}}'
-          ></div>
-          <p class="hint">Drag the lower-right edge to resize this chart.</p>
-        </article>
+      <div id="overview-view">
+        <section class="hero" aria-labelledby="hero-title">
+          <div class="hero-copy">
+            <p class="eyebrow"><span class="status-dot"></span> Open-source · v0.1 alpha</p>
+            <h1 id="hero-title">Charts that look considered.</h1>
+            <p class="hero-lede">
+              A small, accessible charting library with polished defaults and deep customization.
+              Explore every chart, tune it live, then copy the exact code.
+            </p>
+            <div class="hero-actions">
+              <a class="button button-primary" href="#gallery">Explore charts <span>↓</span></a>
+              <button class="button button-secondary" type="button" data-open-chart="bar">
+                Open playground <span>→</span>
+              </button>
+            </div>
+          </div>
+          <div class="hero-console" aria-label="Chartix code example">
+            <div class="console-toolbar">
+              <span><i></i><i></i><i></i></span>
+              <span>revenue-chart.js</span>
+              <span class="console-live">LIVE</span>
+            </div>
+            <pre><code><span class="code-muted">import</span> { Chartix, BarChart } <span class="code-muted">from</span> <span class="code-green">'chartix'</span>;
+
+Chartix.register(BarChart);
+
+<span class="code-muted">new</span> Chartix(canvas, {
+  type: <span class="code-green">'bar'</span>,
+  theme: <span class="code-green">'minimal'</span>,
+  data: revenue,
+  options: {
+    responsive: <span class="code-blue">true</span>,
+    animation: { duration: <span class="code-orange">420</span> }
+  }
+});</code></pre>
+            <div class="console-chart" aria-hidden="true">
+              <span style="--bar: 38%"></span><span style="--bar: 62%"></span
+              ><span style="--bar: 48%"></span><span style="--bar: 77%"></span
+              ><span style="--bar: 92%"></span>
+            </div>
+          </div>
+        </section>
+
+        <section class="trust-strip" aria-label="Library highlights">
+          <div><strong>7.39 KB</strong><span>Gzipped bundle</span></div>
+          <div><strong>9</strong><span>Curated themes</span></div>
+          <div><strong>0</strong><span>Runtime dependencies</span></div>
+          <div><strong>19/19</strong><span>Tests passing</span></div>
+        </section>
+
+        <section class="gallery-section" id="gallery" aria-labelledby="gallery-title">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Chart gallery</p>
+              <h2 id="gallery-title">Choose a starting point.</h2>
+              <p>Every example opens into an interactive playground with documentation and code.</p>
+            </div>
+            <div class="filter-group" role="group" aria-label="Filter chart examples">
+              <button class="filter is-active" type="button" data-filter="all">All</button>
+              <button class="filter" type="button" data-filter="cartesian">Cartesian</button>
+              <button class="filter" type="button" data-filter="radial">Radial</button>
+            </div>
+          </div>
+          <div class="chart-grid" id="chart-grid"></div>
+        </section>
+
+        <section class="features-section" id="features" aria-labelledby="features-title">
+          <div class="section-heading compact-heading">
+            <div>
+              <p class="eyebrow">Designed for real products</p>
+              <h2 id="features-title">Small API. Serious control.</h2>
+            </div>
+          </div>
+          <div class="feature-grid">
+            <article>
+              <span class="feature-number">01</span>
+              <h3>Accessible by default</h3>
+              <p>
+                Canvas visuals include useful screen-reader labels and matching semantic data
+                tables.
+              </p>
+            </article>
+            <article>
+              <span class="feature-number">02</span>
+              <h3>One config everywhere</h3>
+              <p>
+                Use the same JSON configuration in TypeScript, a site builder, or a copy-paste
+                embed.
+              </p>
+            </article>
+            <article>
+              <span class="feature-number">03</span>
+              <h3>Made to become yours</h3>
+              <p>
+                Control fonts, palettes, backgrounds, labels, angles, sizing, motion, and themes.
+              </p>
+            </article>
+          </div>
+        </section>
+
+        <section class="cta-panel">
+          <div>
+            <p class="eyebrow light-eyebrow">Start with a chart. Leave with your chart.</p>
+            <h2>Build the exact visual your product needs.</h2>
+          </div>
+          <button class="button button-light" type="button" data-open-chart="line">
+            Launch playground <span>→</span>
+          </button>
+        </section>
+      </div>
+
+      <section id="detail-view" class="detail-view" hidden aria-labelledby="detail-title">
+        <div class="detail-topbar">
+          <button class="back-button" type="button" id="back-to-gallery">
+            <span aria-hidden="true">←</span> All examples
+          </button>
+          <div class="detail-breadcrumb">
+            <span>Examples</span><b>/</b><strong id="detail-crumb"></strong>
+          </div>
+          <span class="alpha-pill">ALPHA</span>
+        </div>
+
+        <div class="detail-heading">
+          <div>
+            <p class="eyebrow" id="detail-category"></p>
+            <h1 id="detail-title"></h1>
+            <p id="detail-summary"></p>
+          </div>
+          <div class="detail-tabs" role="tablist" aria-label="Chart resources">
+            <button class="detail-tab is-active" type="button" role="tab" data-tab="playground">
+              Playground
+            </button>
+            <button class="detail-tab" type="button" role="tab" data-tab="code">Code</button>
+            <button class="detail-tab" type="button" role="tab" data-tab="docs">Docs</button>
+          </div>
+        </div>
+
+        <div class="studio">
+          <aside class="chart-nav" aria-label="Chart examples">
+            <p class="aside-label">Examples</p>
+            <div id="detail-chart-list"></div>
+          </aside>
+
+          <div class="preview-column">
+            <div class="preview-card">
+              <div class="preview-toolbar">
+                <div><span class="preview-dot"></span><strong>Live preview</strong></div>
+                <span id="preview-size">Responsive</span>
+              </div>
+              <div class="playground-canvas" id="playground-canvas"></div>
+            </div>
+            <div class="tip-bar">
+              <span>TIP</span>
+              Changes are applied instantly. Resize the browser to test responsive behavior.
+            </div>
+          </div>
+
+          <aside class="inspector">
+            <section class="tab-panel" data-panel="playground">
+              <div class="inspector-header">
+                <div><span class="panel-icon">✦</span><strong>Customize</strong></div>
+                <button class="text-button" type="button" id="reset-controls">Reset</button>
+              </div>
+              <form id="chart-controls">
+                <fieldset>
+                  <legend>Appearance</legend>
+                  <label>Theme<select id="control-theme"></select></label>
+                  <div class="control-pair">
+                    <label>Primary<input id="control-primary" type="color" /></label>
+                    <label>Accent<input id="control-accent" type="color" /></label>
+                  </div>
+                  <label>Background<input id="control-background" type="color" /></label>
+                </fieldset>
+                <fieldset>
+                  <legend>Typography</legend>
+                  <label>
+                    Font family
+                    <select id="control-font">
+                      <option value="'Space Mono', monospace">Space Mono</option>
+                      <option value="Inter, sans-serif">Inter</option>
+                      <option value="system-ui, sans-serif">System UI</option>
+                      <option value="Georgia, serif">Editorial serif</option>
+                    </select>
+                  </label>
+                  <label class="range-label"
+                    >Title size <output id="title-size-value"></output>
+                    <input id="control-title-size" type="range" min="13" max="28" value="17" />
+                  </label>
+                  <label class="range-label"
+                    >Label size <output id="label-size-value"></output>
+                    <input id="control-label-size" type="range" min="9" max="18" value="11" />
+                  </label>
+                </fieldset>
+                <fieldset>
+                  <legend>Labels</legend>
+                  <label class="toggle-row"
+                    >Show data labels<input id="control-labels" type="checkbox" /><span></span
+                  ></label>
+                  <label
+                    >Position
+                    <select id="control-position">
+                      <option value="outside">Outside</option>
+                      <option value="inside">Inside</option>
+                      <option value="center">Center</option>
+                    </select>
+                  </label>
+                  <label class="range-label"
+                    >X-axis angle <output id="angle-value"></output>
+                    <input id="control-angle" type="range" min="-60" max="60" value="0" />
+                  </label>
+                </fieldset>
+              </form>
+            </section>
+
+            <section class="tab-panel" data-panel="code" hidden>
+              <div class="inspector-header">
+                <div>
+                  <span class="panel-icon">&lt;/&gt;</span><strong>Copy-paste embed</strong>
+                </div>
+                <button class="copy-button" type="button" id="copy-code">Copy</button>
+              </div>
+              <p class="panel-intro">This snippet includes your current playground settings.</p>
+              <pre class="generated-code"><code id="generated-code"></code></pre>
+              <p class="copy-status" id="copy-status" aria-live="polite"></p>
+            </section>
+
+            <section class="tab-panel docs-panel" data-panel="docs" hidden>
+              <div class="inspector-header">
+                <div><span class="panel-icon">Aa</span><strong>Chart guide</strong></div>
+              </div>
+              <div id="chart-documentation"></div>
+            </section>
+          </aside>
+        </div>
       </section>
     </main>
+
+    <footer class="site-footer">
+      <a class="brand footer-brand" href="#"
+        ><span class="brand-mark">C</span><span>chartix</span></a
+      >
+      <p>Beautiful, accessible charts for the modern web.</p>
+      <div>
+        <a href="https://github.com/freber6684/Chartix">GitHub</a
+        ><a
+          href="https://github.com/freber6684/Chartix/blob/agent/initial-v0.1-foundation/STATUS.md"
+          >Roadmap</a
+        >
+      </div>
+    </footer>
   </body>
 </html>

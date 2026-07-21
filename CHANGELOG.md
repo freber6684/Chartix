@@ -17,6 +17,9 @@ All notable Chartix changes are documented here. The project follows semantic ve
 ### Changed
 
 - The Canvas renderer now supports ring segments and rotated text with label backgrounds.
+- Replaced the basic demo grid with a responsive Space Mono documentation experience featuring a
+  compact chart gallery, dedicated playgrounds, live controls, generated embed code, and per-chart
+  usage guidance.
 
 ## 0.1.0-alpha.1 - 2026-07-20
 

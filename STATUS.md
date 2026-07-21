@@ -30,6 +30,8 @@ changes so the next session can resume without reconstructing history.
 - [x] Add simple `data-*`, full JSON embed parsing, auto-scan, and `MutationObserver` support.
 - [x] Add unit tests for scales, options, easing, and embed parsing.
 - [x] Add a local browser demo and public-facing README/Quick Start/Quick Embed documentation.
+- [x] Replace the basic demo grid with a responsive Space Mono documentation site, compact chart
+      gallery, per-chart playground, live visual controls, generated embed code, and chart guides.
 - [x] Add GitHub Actions CI for formatting, linting, strict types, tests, and production builds.
 - [x] Add a GitHub Pages workflow that publishes the verified demo and browser bundle.
 
