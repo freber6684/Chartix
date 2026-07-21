@@ -9,6 +9,7 @@ import { createPlotArea } from '../charts/cartesian.js';
 import type { ChartModule, PlotArea } from '../charts/types.js';
 import type { AnimationOptions, ChartConfig, ChartData, ChartOptions } from '../types/options.js';
 import { cloneData, normalizeConfig } from '../utils/options.js';
+import { applyDataTransforms } from '../utils/transforms.js';
 
 const validOptionKeys = new Set<keyof ChartOptions>([
   'animation',
@@ -21,6 +22,9 @@ const validOptionKeys = new Set<keyof ChartOptions>([
   'decimation',
   'drilldown',
   'fill',
+  'stacked',
+  'stackMode',
+  'spanGaps',
   'height',
   'horizontal',
   'innerRadius',
@@ -38,6 +42,7 @@ const validOptionKeys = new Set<keyof ChartOptions>([
   'title',
   'typography',
   'tooltip',
+  'transforms',
   'width',
   'xLabels',
   'yLabels',
@@ -60,8 +65,11 @@ function validateConfig(config: ChartConfig): void {
         `Chartix: dataset "${dataset.label}" has ${dataset.values.length} values for ${config.data.labels.length} labels.`,
       );
     }
-    if (dataset.values.some((value) => !Number.isFinite(value))) {
+    if (dataset.values.some((value) => value !== null && !Number.isFinite(value))) {
       throw new Error(`Chartix: dataset "${dataset.label}" contains a non-finite value.`);
+    }
+    if (dataset.points?.some((point) => point.y !== null && !Number.isFinite(point.y))) {
+      throw new Error(`Chartix: dataset "${dataset.label}" contains an invalid point.`);
     }
   });
   Object.keys(config.options ?? {}).forEach((key) => {
@@ -113,6 +121,10 @@ export class Chartix {
       throw new Error(`Chartix: chart type "${config.type}" is not registered.`);
     }
     this.config = normalizeConfig(config);
+    this.config = {
+      ...this.config,
+      data: applyDataTransforms(this.config.data, this.config.options.transforms),
+    };
     this.renderer = new CanvasRenderer(canvas);
     this.tooltip = new Tooltip(canvas);
     this.resetZoomButton = this.createResetZoomButton();
@@ -149,7 +161,10 @@ export class Chartix {
         : cloneData(this.config.data).datasets,
     };
     validateConfig({ ...this.config, data: nextData });
-    this.config = { ...this.config, data: nextData };
+    this.config = {
+      ...this.config,
+      data: applyDataTransforms(nextData, this.config.options.transforms),
+    };
     this.applyAccessibility();
     this.render();
   }
@@ -398,6 +413,9 @@ export class Chartix {
       datasets: this.config.data.datasets.map((dataset) => ({
         ...dataset,
         values: dataset.values.slice(this.viewport!.start, this.viewport!.end),
+        ...(dataset.points
+          ? { points: dataset.points.slice(this.viewport!.start, this.viewport!.end) }
+          : {}),
       })),
     };
   }

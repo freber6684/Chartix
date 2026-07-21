@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { DoughnutChart, PieChart } from '../src/charts/radial.js';
 import { ScatterChart } from '../src/charts/scatter.js';
+import { BubbleChart } from '../src/charts/scatter.js';
+import { BarChart } from '../src/charts/bar.js';
+import { ComboChart } from '../src/charts/combo.js';
 import type { ChartRenderContext } from '../src/charts/types.js';
 import type { Renderer } from '../src/core/Renderer.js';
 import { lightTheme } from '../src/core/theme.js';
@@ -11,6 +14,7 @@ class RecordingRenderer implements Renderer {
   public segments = 0;
   public circles = 0;
   public labels: string[] = [];
+  public rectangles = 0;
   public clear(): void {}
   public gradient(): CanvasGradient {
     return {} as CanvasGradient;
@@ -23,7 +27,9 @@ class RecordingRenderer implements Renderer {
   public ringSegment(): void {
     this.segments += 1;
   }
-  public roundedRect(): void {}
+  public roundedRect(): void {
+    this.rectangles += 1;
+  }
   public text(value: string): void {
     this.labels.push(value);
   }
@@ -59,5 +65,40 @@ describe('built-in chart modules', () => {
     ScatterChart.render(context(renderer));
     expect(renderer.circles).toBe(3);
     expect(renderer.labels).toContain('12');
+  });
+
+  it('renders null values as gaps and object-form bubble points', () => {
+    const renderer = new RecordingRenderer();
+    const value = context(renderer);
+    value.data.datasets[0] = {
+      label: 'Objects',
+      values: [10, null, 30],
+      points: [
+        { x: 1, y: 10, r: 8 },
+        { x: 2, y: null },
+        { x: 3, y: 30, r: 12 },
+      ],
+    };
+    BubbleChart.render(value);
+    expect(renderer.circles).toBe(2);
+  });
+
+  it('renders stacked and mixed series', () => {
+    const stackedRenderer = new RecordingRenderer();
+    const stacked = context(stackedRenderer);
+    stacked.options = { stacked: true, stackMode: 'percent' };
+    stacked.data.datasets.push({ label: 'Second', values: [8, 6, 12] });
+    BarChart.render(stacked);
+    expect(stackedRenderer.rectangles).toBe(6);
+
+    const comboRenderer = new RecordingRenderer();
+    const combo = context(comboRenderer);
+    combo.data.datasets = [
+      { label: 'Volume', type: 'bar', values: [12, 24, 18] },
+      { label: 'Price', type: 'line', yAxisId: 'y1', values: [2, 5, 4] },
+    ];
+    ComboChart.render(combo);
+    expect(comboRenderer.rectangles).toBe(3);
+    expect(comboRenderer.circles).toBe(3);
   });
 });

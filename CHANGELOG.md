@@ -18,6 +18,11 @@ All notable Chartix changes are documented here. The project follows semantic ve
 - Four interaction modes, grouped tooltips, mark click events, and JSON drill-down/up.
 - Five legend positions, wheel/keyboard/box zoom, pan, reset controls, brush, and lasso selection.
 - A real public `/features/` implementation ledger replacing the missing route.
+- Advanced time/log/percentage/band/radial scales, dual axes, custom domains, titles, formatting,
+  tick density, custom grids, minor ticks, reversal, inside labels, and axis breaks.
+- Stacked and 100%-stacked bars, mixed per-dataset combo charts, bubble points, null gaps, and
+  object-form Cartesian data.
+- Immutable sort, filter, aggregate, and normalize transformation pipelines.
 
 ## 0.1.0-alpha.2 - 2026-07-21
 

@@ -1,7 +1,8 @@
 import { BarChart } from './charts/bar.js';
 import { LineChart } from './charts/line.js';
+import { ComboChart } from './charts/combo.js';
 import { DoughnutChart, PieChart } from './charts/radial.js';
-import { ScatterChart } from './charts/scatter.js';
+import { BubbleChart, ScatterChart } from './charts/scatter.js';
 import { Chartix } from './core/Chartix.js';
 import { startAutoEmbed } from './embed/autoload.js';
 
@@ -11,7 +12,15 @@ declare global {
   }
 }
 
-Chartix.register(BarChart, LineChart, PieChart, DoughnutChart, ScatterChart);
+Chartix.register(
+  BarChart,
+  LineChart,
+  PieChart,
+  DoughnutChart,
+  ScatterChart,
+  BubbleChart,
+  ComboChart,
+);
 window.Chartix = Chartix;
 
 if (document.readyState === 'loading') {

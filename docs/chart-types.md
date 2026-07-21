@@ -1,5 +1,9 @@
 # Chart types
 
+The public gallery now includes vertical, horizontal, grouped, stacked/100%-stacked, line, area,
+pie, doughnut, scatter, bubble, dual-axis combo, and time/logarithmic examples. `BubbleChart` uses
+`points: [{ x, y, r }]`; `ComboChart` uses per-dataset `type` and optional `yAxisId`.
+
 ## Available in `0.1.0-alpha.2`
 
 | Type           | `type` value | Notes                                                            |

@@ -27,7 +27,12 @@ export const defaultOptions: Required<
 export function cloneData(data: ChartData): ChartData {
   return {
     labels: [...data.labels],
-    datasets: data.datasets.map((dataset) => ({ ...dataset, values: [...dataset.values] })),
+    datasets: data.datasets.map((dataset) => ({
+      ...dataset,
+      values: [...dataset.values],
+      ...(dataset.radii ? { radii: [...dataset.radii] } : {}),
+      ...(dataset.points ? { points: dataset.points.map((point) => ({ ...point })) } : {}),
+    })),
   };
 }
 
@@ -46,6 +51,8 @@ export function normalizeConfig(config: ChartConfig): ChartConfig & { options: C
           ...defaultOptions.scales?.y,
           ...config.options?.scales?.y,
         },
+        ...(config.options?.scales?.x ? { x: { ...config.options.scales.x } } : {}),
+        ...(config.options?.scales?.y1 ? { y1: { ...config.options.scales.y1 } } : {}),
       },
       ...(config.options?.colors ? { colors: [...config.options.colors] } : {}),
       ...(config.options?.annotations
@@ -66,6 +73,9 @@ export function normalizeConfig(config: ChartConfig): ChartConfig & { options: C
       ...(config.options?.selection ? { selection: { ...config.options.selection } } : {}),
       tooltip: { ...defaultOptions.tooltip, ...config.options?.tooltip },
       ...(config.options?.typography ? { typography: { ...config.options.typography } } : {}),
+      ...(config.options?.transforms
+        ? { transforms: config.options.transforms.map((transform) => ({ ...transform })) }
+        : {}),
       ...(config.options?.xLabels ? { xLabels: { ...config.options.xLabels } } : {}),
       ...(config.options?.yLabels ? { yLabels: { ...config.options.yLabels } } : {}),
       ...(config.options?.zoom ? { zoom: { ...config.options.zoom } } : {}),

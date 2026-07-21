@@ -6,14 +6,34 @@ export interface ChartData {
   datasets: ChartDataset[];
 }
 
+/** Object-form Cartesian point used by scatter and bubble charts. */
+export interface ChartPoint {
+  /** Horizontal numeric, date, or category value. */
+  x: number | string | Date;
+  /** Vertical value; null creates an intentional gap. */
+  y: number | null;
+  /** Optional bubble radius. */
+  r?: number;
+}
+
 /** A named series of numeric values. */
 export interface ChartDataset {
   /** Human-readable series name. */
   label: string;
   /** Values aligned by index with `ChartData.labels`. */
-  values: number[];
+  values: Array<number | null>;
   /** Optional CSS color used instead of the theme palette. */
   color?: string;
+  /** Renderer used for this series in a mixed chart. */
+  type?: 'bar' | 'line' | 'area' | 'scatter';
+  /** Stack group identifier. Series with the same key share a stack. */
+  stack?: string;
+  /** Optional secondary-axis identifier. */
+  yAxisId?: 'y' | 'y1';
+  /** Optional radius values for bubble marks. */
+  radii?: number[];
+  /** Optional object-form coordinates for scatter and bubble charts. */
+  points?: ChartPoint[];
 }
 
 /** Animation settings for chart entrance transitions. */
@@ -28,12 +48,48 @@ export interface AnimationOptions {
 export interface AxisOptions {
   /** Include zero in the numeric domain. */
   beginAtZero?: boolean;
+  /** Scale transformation. */
+  type?: 'linear' | 'logarithmic' | 'time' | 'percentage' | 'category';
+  /** Explicit lower domain bound. */
+  min?: number;
+  /** Explicit upper domain bound. */
+  max?: number;
+  /** Reverse the visual direction of the axis. */
+  reverse?: boolean;
+  /** Human-readable axis title. */
+  title?: string;
+  /** Approximate number of ticks. */
+  tickCount?: number;
+  /** Tick-label formatter preset. */
+  format?: 'auto' | 'number' | 'compact' | 'currency' | 'percent' | 'date';
+  /** BCP 47 locale used by Intl formatters. */
+  locale?: string;
+  /** ISO 4217 currency code used by currency formatting. */
+  currency?: string;
+  /** Display every nth category label. `auto` adapts to the available width. */
+  tickSkip?: number | 'auto';
+  /** Axis placement. */
+  position?: 'left' | 'right' | 'top' | 'bottom' | 'inside';
+  /** Draw tick labels inside the plot. */
+  labelsInside?: boolean;
+  /** Runtime-only formatter callback. JSON embeds should use `format`. */
+  tickFormatter?: (value: number, index: number) => string;
+  /** Grid-line appearance. */
+  grid?: { color?: string; width?: number; dash?: number };
+  /** Draw a lighter tick between each pair of major ticks. */
+  minorTicks?: boolean;
+  /** Numeric ranges removed from a linear axis. */
+  breaks?: Array<{ from: number; to: number }>;
 }
 
 /** Scale options for Cartesian charts. */
 export interface ScaleOptions {
+  /** Category or numeric x-axis configuration. */
+  x?: AxisOptions;
   /** Numeric y-axis configuration. */
   y?: AxisOptions;
+  /** Optional secondary numeric y-axis configuration. */
+  y1?: AxisOptions;
 }
 
 /** Pointer, touch, and keyboard navigation behavior. */
@@ -128,6 +184,13 @@ export interface SelectionOptions {
   color?: string;
 }
 
+/** Declarative, JSON-safe data preparation performed before rendering. */
+export type DataTransform =
+  | { type: 'sort'; by?: 'label' | 'value'; datasetIndex?: number; direction?: 'asc' | 'desc' }
+  | { type: 'filter'; datasetIndex?: number; min?: number; max?: number; labels?: string[] }
+  | { type: 'aggregate'; operation: 'sum' | 'average' | 'min' | 'max'; groupSize: number }
+  | { type: 'normalize'; mode?: 'percent' | 'max' };
+
 /** Built-in color themes shipped with Chartix. */
 export type ThemeName =
   'light' | 'dark' | 'minimal' | 'vibrant' | 'corporate' | 'ocean' | 'forest' | 'sunset' | 'rose';
@@ -188,6 +251,12 @@ export interface ChartOptions {
   drilldown?: Record<string, ChartData>;
   /** Fill the area below a line. */
   fill?: boolean;
+  /** Stack bar/area series that share the same category. */
+  stacked?: boolean;
+  /** Normalize stacked values to 100 percent. */
+  stackMode?: 'normal' | 'percent';
+  /** Connect line segments across null values instead of leaving gaps. */
+  spanGaps?: boolean;
   /** Render bars horizontally. */
   horizontal?: boolean;
   /** Explicit chart height in CSS pixels. */
@@ -222,6 +291,8 @@ export interface ChartOptions {
   typography?: TypographyOptions;
   /** Floating value-card behavior. */
   tooltip?: TooltipOptions;
+  /** Ordered, non-mutating data transformation pipeline. */
+  transforms?: DataTransform[];
   /** Explicit chart width in CSS pixels. */
   width?: number;
   /** Category or x-axis label styling. */

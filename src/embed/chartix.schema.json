@@ -37,8 +37,25 @@
       "required": ["label", "values"],
       "properties": {
         "label": { "type": "string", "minLength": 1 },
-        "values": { "type": "array", "minItems": 1, "items": { "type": "number" } },
-        "color": { "$ref": "#/$defs/color" }
+        "values": { "type": "array", "minItems": 1, "items": { "type": ["number", "null"] } },
+        "color": { "$ref": "#/$defs/color" },
+        "type": { "enum": ["bar", "line", "area", "scatter"] },
+        "stack": { "type": "string" },
+        "yAxisId": { "enum": ["y", "y1"] },
+        "radii": { "type": "array", "items": { "type": "number", "minimum": 0 } },
+        "points": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["x", "y"],
+            "properties": {
+              "x": { "type": ["number", "string"] },
+              "y": { "type": ["number", "null"] },
+              "r": { "type": "number", "minimum": 0 }
+            }
+          }
+        }
       }
     },
     "data": {
@@ -63,6 +80,44 @@
         "rotation": { "type": "number" },
         "position": { "enum": ["auto", "inside", "outside", "center"] },
         "offset": { "type": "number" }
+      }
+    },
+    "axisOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "beginAtZero": { "type": "boolean" },
+        "type": { "enum": ["linear", "logarithmic", "time", "percentage", "category"] },
+        "min": { "type": "number" },
+        "max": { "type": "number" },
+        "reverse": { "type": "boolean" },
+        "title": { "type": "string" },
+        "tickCount": { "type": "integer", "minimum": 2 },
+        "format": { "enum": ["auto", "number", "compact", "currency", "percent", "date"] },
+        "locale": { "type": "string" },
+        "currency": { "type": "string" },
+        "tickSkip": { "oneOf": [{ "type": "integer", "minimum": 1 }, { "const": "auto" }] },
+        "position": { "enum": ["left", "right", "top", "bottom", "inside"] },
+        "labelsInside": { "type": "boolean" },
+        "minorTicks": { "type": "boolean" },
+        "grid": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "color": { "$ref": "#/$defs/color" },
+            "width": { "type": "number", "exclusiveMinimum": 0 },
+            "dash": { "type": "number", "minimum": 0 }
+          }
+        },
+        "breaks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["from", "to"],
+            "properties": { "from": { "type": "number" }, "to": { "type": "number" } }
+          }
+        }
       }
     },
     "options": {
@@ -122,6 +177,9 @@
           }
         },
         "fill": { "type": "boolean" },
+        "stacked": { "type": "boolean" },
+        "stackMode": { "enum": ["normal", "percent"] },
+        "spanGaps": { "type": "boolean" },
         "horizontal": { "type": "boolean" },
         "height": { "type": "number", "exclusiveMinimum": 0 },
         "innerRadius": { "type": "number", "minimum": 0, "maximum": 0.9 },
@@ -154,11 +212,9 @@
           "type": "object",
           "additionalProperties": false,
           "properties": {
-            "y": {
-              "type": "object",
-              "additionalProperties": false,
-              "properties": { "beginAtZero": { "type": "boolean" } }
-            }
+            "x": { "$ref": "#/$defs/axisOptions" },
+            "y": { "$ref": "#/$defs/axisOptions" },
+            "y1": { "$ref": "#/$defs/axisOptions" }
           }
         },
         "selection": {
@@ -182,6 +238,55 @@
             "enabled": { "type": "boolean" },
             "backgroundColor": { "$ref": "#/$defs/color" },
             "color": { "$ref": "#/$defs/color" }
+          }
+        },
+        "transforms": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["type"],
+                "properties": {
+                  "type": { "const": "sort" },
+                  "by": { "enum": ["label", "value"] },
+                  "datasetIndex": { "type": "integer", "minimum": 0 },
+                  "direction": { "enum": ["asc", "desc"] }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["type"],
+                "properties": {
+                  "type": { "const": "filter" },
+                  "datasetIndex": { "type": "integer", "minimum": 0 },
+                  "min": { "type": "number" },
+                  "max": { "type": "number" },
+                  "labels": { "type": "array", "items": { "type": "string" } }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["type", "operation", "groupSize"],
+                "properties": {
+                  "type": { "const": "aggregate" },
+                  "operation": { "enum": ["sum", "average", "min", "max"] },
+                  "groupSize": { "type": "integer", "minimum": 1 }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["type"],
+                "properties": {
+                  "type": { "const": "normalize" },
+                  "mode": { "enum": ["percent", "max"] }
+                }
+              }
+            ]
           }
         },
         "typography": {

@@ -1,18 +1,132 @@
-import { createLinearScale, type LinearScale } from '../core/Scale.js';
+import {
+  createLinearScale,
+  createLogScale,
+  createPercentageScale,
+  createTimeScale,
+  type LinearScale,
+} from '../core/Scale.js';
 import type { Renderer } from '../core/Renderer.js';
 import type { InteractionRegistry } from '../core/interactions.js';
-import type { ChartData, ChartOptions, ThemeObject } from '../types/options.js';
+import type { AxisOptions, ChartData, ChartOptions, ThemeObject } from '../types/options.js';
 import type { PlotArea } from './types.js';
 
 export function font(weight: number, size: number, family: string): string {
   return `${weight} ${size}px ${family}`;
 }
 
-export function formatTick(value: number): string {
-  return new Intl.NumberFormat(undefined, {
-    notation: Math.abs(value) >= 10_000 ? 'compact' : 'standard',
+/** Remove intentional gaps before calculating a numeric domain. */
+export function numericValues(values: readonly (number | null)[]): number[] {
+  return values.filter((value): value is number => value !== null);
+}
+
+export function formatTick(value: number, axis: AxisOptions = {}): string {
+  if (axis.tickFormatter) return axis.tickFormatter(value, 0);
+  if (axis.format === 'date' || axis.type === 'time') {
+    return new Intl.DateTimeFormat(axis.locale, {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    }).format(value);
+  }
+  const format = axis.format ?? 'auto';
+  return new Intl.NumberFormat(axis.locale, {
+    notation:
+      format === 'compact' || (format === 'auto' && Math.abs(value) >= 10_000)
+        ? 'compact'
+        : 'standard',
+    style:
+      format === 'currency'
+        ? 'currency'
+        : format === 'percent' || axis.type === 'percentage'
+          ? 'percent'
+          : 'decimal',
+    currency: axis.currency ?? 'USD',
     maximumFractionDigits: 2,
-  }).format(value);
+  }).format(format === 'percent' || axis.type === 'percentage' ? value / 100 : value);
+}
+
+/** Resolve an axis configuration to a continuous scale. */
+export function createAxisScale(
+  values: number[],
+  outputStart: number,
+  outputEnd: number,
+  axis: AxisOptions = {},
+): LinearScale {
+  const options = {
+    desiredTicks: axis.tickCount ?? 5,
+    ...(axis.min !== undefined ? { min: axis.min } : {}),
+    ...(axis.max !== undefined ? { max: axis.max } : {}),
+    ...(axis.reverse !== undefined ? { reverse: axis.reverse } : {}),
+  };
+  const base =
+    axis.type === 'logarithmic'
+      ? createLogScale(values, outputStart, outputEnd, options)
+      : axis.type === 'time'
+        ? createTimeScale(values, outputStart, outputEnd, options)
+        : axis.type === 'percentage'
+          ? createPercentageScale(values, outputStart, outputEnd, options)
+          : createLinearScale(
+              values,
+              outputStart,
+              outputEnd,
+              axis.beginAtZero ?? true,
+              axis.tickCount ?? 5,
+              options,
+            );
+  if (!axis.breaks?.length || axis.type === 'logarithmic') return base;
+  const breaks = axis.breaks
+    .map(({ from, to }) => ({
+      from: Math.max(base.min, Math.min(from, to)),
+      to: Math.min(base.max, Math.max(from, to)),
+    }))
+    .filter(({ from, to }) => to > from)
+    .sort((a, b) => a.from - b.from);
+  const removed = breaks.reduce((sum, item) => sum + item.to - item.from, 0);
+  const available = base.max - base.min - removed;
+  if (available <= 0) throw new Error('Chartix: axis breaks cannot remove the complete domain.');
+  return {
+    ...base,
+    ticks: base.ticks.filter((tick) => !breaks.some((item) => tick > item.from && tick < item.to)),
+    project(value) {
+      let adjusted = value - base.min;
+      breaks.forEach((item) => {
+        adjusted -= Math.max(0, Math.min(value, item.to) - item.from);
+      });
+      const ratio = adjusted / available;
+      return outputStart + (axis.reverse ? 1 - ratio : ratio) * (outputEnd - outputStart);
+    },
+  };
+}
+
+function drawHorizontalGrid(
+  renderer: Renderer,
+  plot: PlotArea,
+  y: number,
+  axis: AxisOptions,
+  fallback: string,
+): void {
+  const color = axis.grid?.color ?? fallback;
+  const width = axis.grid?.width ?? 1;
+  const dash = axis.grid?.dash ?? 0;
+  if (dash <= 0)
+    return renderer.line(
+      [
+        { x: plot.left, y },
+        { x: plot.right, y },
+      ],
+      color,
+      width,
+    );
+  for (let x = plot.left; x < plot.right; x += dash * 2) {
+    renderer.line(
+      [
+        { x, y },
+        { x: Math.min(plot.right, x + dash), y },
+      ],
+      color,
+      width,
+    );
+  }
 }
 
 export function drawHeader(
@@ -162,38 +276,69 @@ export function drawVerticalFrame(
   options: ChartOptions,
   theme: ThemeObject,
 ): LinearScale {
-  const scale = createLinearScale(
-    values,
-    plot.bottom,
-    plot.top,
-    options.scales?.y?.beginAtZero ?? true,
-  );
-  scale.ticks.forEach((tick) => {
+  const axis = options.scales?.y ?? {};
+  const scale = createAxisScale(values, plot.bottom, plot.top, axis);
+  scale.ticks.forEach((tick, tickIndex) => {
     const y = scale.project(tick);
-    if (options.showGrid !== false)
-      renderer.line(
-        [
-          { x: plot.left, y },
-          { x: plot.right, y },
-        ],
-        theme.grid,
-        1,
-      );
+    if (options.showGrid !== false) drawHorizontalGrid(renderer, plot, y, axis, theme.grid);
     const labels = options.yLabels;
     if (labels?.show === false) return;
-    renderer.text(formatTick(tick), plot.left - 10 - (labels?.offset ?? 0), y, {
-      align: 'right',
-      baseline: 'middle',
-      color: labels?.color ?? theme.mutedText,
-      backgroundColor: labels?.backgroundColor,
-      rotation: labels?.rotation,
-      font: font(
-        labels?.fontWeight ?? 450,
-        labels?.fontSize ?? theme.fontSize.tick,
-        labels?.fontFamily ?? theme.fontFamily,
-      ),
-    });
+    const rightAxis = axis.position === 'right';
+    renderer.text(
+      axis.tickFormatter?.(tick, tickIndex) ?? formatTick(tick, axis),
+      (rightAxis
+        ? plot.right + (axis.labelsInside ? -10 : 10)
+        : plot.left + (axis.labelsInside ? 10 : -10)) +
+        (rightAxis ? 1 : -1) * (labels?.offset ?? 0),
+      y,
+      {
+        align: rightAxis
+          ? axis.labelsInside
+            ? 'right'
+            : 'left'
+          : axis.labelsInside
+            ? 'left'
+            : 'right',
+        baseline: 'middle',
+        color: labels?.color ?? theme.mutedText,
+        backgroundColor: labels?.backgroundColor,
+        rotation: labels?.rotation,
+        font: font(
+          labels?.fontWeight ?? 450,
+          labels?.fontSize ?? theme.fontSize.tick,
+          labels?.fontFamily ?? theme.fontFamily,
+        ),
+      },
+    );
   });
+  if (axis.minorTicks) {
+    scale.ticks.slice(1).forEach((tick, index) => {
+      const previous = scale.ticks[index];
+      if (previous === undefined) return;
+      drawHorizontalGrid(
+        renderer,
+        plot,
+        scale.project((previous + tick) / 2),
+        { ...axis, grid: { ...axis.grid, width: (axis.grid?.width ?? 1) * 0.5 } },
+        theme.grid,
+      );
+    });
+  }
+  if (axis.title) {
+    const rightAxis = axis.position === 'right';
+    renderer.text(
+      axis.title,
+      rightAxis ? plot.right + 34 : plot.left - 42,
+      plot.top + plot.height / 2,
+      {
+        align: 'center',
+        baseline: 'middle',
+        color: theme.mutedText,
+        rotation: rightAxis ? 90 : -90,
+        font: font(600, theme.fontSize.label, theme.fontFamily),
+      },
+    );
+  }
   options.annotations?.forEach((annotation) => {
     const color = annotation.color ?? theme.mutedText;
     if (
@@ -232,7 +377,12 @@ export function drawVerticalFrame(
     }
   });
   const step = plot.width / Math.max(1, labels.length);
+  const skip =
+    options.scales?.x?.tickSkip === 'auto'
+      ? Math.max(1, Math.ceil(labels.length / Math.max(1, Math.floor(plot.width / 72))))
+      : Math.max(1, options.scales?.x?.tickSkip ?? 1);
   labels.forEach((label, index) => {
+    if (index % skip !== 0) return;
     const labelOptions = options.xLabels;
     if (labelOptions?.show === false) return;
     renderer.text(
@@ -253,5 +403,13 @@ export function drawVerticalFrame(
       },
     );
   });
+  if (options.scales?.x?.title) {
+    renderer.text(options.scales.x.title, plot.left + plot.width / 2, plot.bottom + 38, {
+      align: 'center',
+      baseline: 'middle',
+      color: theme.mutedText,
+      font: font(600, theme.fontSize.label, theme.fontFamily),
+    });
+  }
   return scale;
 }

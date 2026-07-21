@@ -6,7 +6,7 @@ function renderRadial(context: ChartRenderContext, defaultInnerRadius: number): 
   const dataset = data.datasets[0];
   if (!dataset) return;
   if (context.hiddenDatasets.has(0)) return;
-  const values = dataset.values.map((value) => Math.max(0, value));
+  const values = dataset.values.map((value) => Math.max(0, value ?? 0));
   const total = values.reduce((sum, value) => sum + value, 0);
   if (total <= 0) return;
 

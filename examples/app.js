@@ -83,6 +83,51 @@ const charts = [
     ],
   },
   {
+    id: 'stacked-bar',
+    name: '100% stacked bar',
+    type: 'bar',
+    family: 'cartesian',
+    tag: 'Composition',
+    theme: 'corporate',
+    summary: 'Compare each category as a normalized part-to-whole stack.',
+    bestFor: 'Market mix, survey responses, portfolio allocation, and category composition.',
+    options: {
+      stacked: true,
+      stackMode: 'percent',
+      scales: {
+        y: { type: 'percentage', format: 'percent', title: 'Share' },
+        x: { tickSkip: 'auto', title: 'Quarter' },
+      },
+    },
+    labels: ['Q1', 'Q2', 'Q3', 'Q4'],
+    datasets: [
+      { label: 'Product', values: [44, 51, 48, 56] },
+      { label: 'Services', values: [35, 31, 34, 29] },
+      { label: 'Support', values: [21, 18, 18, 15] },
+    ],
+  },
+  {
+    id: 'combo',
+    name: 'Dual-axis combo',
+    type: 'combo',
+    family: 'cartesian',
+    tag: 'Composition',
+    theme: 'ocean',
+    summary: 'Place bar and line datasets on independent axes in one coordinated view.',
+    bestFor: 'Revenue versus margin, price and volume, weather, and operational dashboards.',
+    options: {
+      scales: {
+        y: { title: 'Orders', format: 'compact' },
+        y1: { title: 'Conversion', type: 'percentage', format: 'percent' },
+      },
+    },
+    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+    datasets: [
+      { label: 'Orders', type: 'bar', values: [420, 510, 490, 620, 680, 760] },
+      { label: 'Conversion', type: 'line', yAxisId: 'y1', values: [42, 48, 46, 55, 61, 68] },
+    ],
+  },
+  {
     id: 'area',
     name: 'Area',
     type: 'line',
@@ -136,6 +181,48 @@ const charts = [
       { label: 'Campaign A', values: [24, 38, 32, 57, 63, 82] },
       { label: 'Campaign B', values: [18, 29, 46, 48, 71, 76] },
     ],
+  },
+  {
+    id: 'bubble',
+    name: 'Bubble',
+    type: 'bubble',
+    family: 'cartesian',
+    tag: 'Relationship',
+    theme: 'vibrant',
+    summary: 'Encode a third numeric measure through point size.',
+    bestFor: 'Portfolio maps, market analysis, experiment results, and multivariable comparisons.',
+    options: { scales: { x: { title: 'Reach', min: 0 }, y: { title: 'Impact', reverse: false } } },
+    labels: ['A', 'B', 'C', 'D'],
+    datasets: [
+      {
+        label: 'Campaigns',
+        values: [24, 58, null, 74],
+        points: [
+          { x: 12, y: 24, r: 7 },
+          { x: 28, y: 58, r: 13 },
+          { x: 44, y: null, r: 9 },
+          { x: 61, y: 74, r: 18 },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'time-log',
+    name: 'Time + log scale',
+    type: 'scatter',
+    family: 'cartesian',
+    tag: 'Advanced axes',
+    theme: 'dark',
+    summary: 'Use real dates horizontally and logarithmic magnitudes vertically.',
+    bestFor: 'Growth across orders of magnitude, scientific readings, and long-range metrics.',
+    options: {
+      scales: {
+        x: { type: 'time', format: 'date', tickCount: 4 },
+        y: { type: 'logarithmic', title: 'Magnitude', minorTicks: true, grid: { dash: 5 } },
+      },
+    },
+    labels: ['2026-01-01', '2026-02-01', '2026-03-01', '2026-04-01'],
+    datasets: [{ label: 'Scale', values: [1, 10, 100, 1000] }],
   },
 ];
 
@@ -329,6 +416,8 @@ function renderDocumentation() {
       <li><code>responsive</code> follows the container; <code>resizable</code> adds a drag handle.</li>
       <li><code>tooltip</code>, <code>crosshair</code>, and <code>interaction</code> configure pointer, touch, and keyboard exploration.</li>
       <li><code>annotations</code> adds reference lines or highlighted numeric ranges.</li>
+      <li><code>scales</code> supports time, logarithmic, percentage, reversed, bounded, dual, formatted, and discontinuous axes.</li>
+      <li><code>stacked</code>, per-dataset <code>type</code>, object points, null gaps, and <code>transforms</code> cover advanced composition.</li>
       <li>Click or keyboard-activate a legend item to show or hide a dataset.</li>
       ${chart.type === 'doughnut' ? '<li><code>innerRadius</code> controls the center opening.</li>' : ''}
       ${chart.type === 'bar' ? '<li><code>horizontal</code> switches between vertical and horizontal layouts.</li>' : ''}

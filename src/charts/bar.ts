@@ -1,29 +1,81 @@
-import { createLinearScale } from '../core/Scale.js';
-import { drawVerticalFrame, font, formatTick } from './cartesian.js';
+import {
+  createAxisScale,
+  drawVerticalFrame,
+  font,
+  formatTick,
+  numericValues,
+} from './cartesian.js';
 import type { ChartModule, ChartRenderContext } from './types.js';
+
+function stackedValue(
+  context: ChartRenderContext,
+  datasetIndex: number,
+  valueIndex: number,
+): number {
+  const value = context.data.datasets[datasetIndex]?.values[valueIndex] ?? 0;
+  if (context.options.stackMode !== 'percent') return value;
+  const total = context.data.datasets.reduce(
+    (sum, dataset, index) =>
+      sum + (context.hiddenDatasets.has(index) ? 0 : Math.abs(dataset.values[valueIndex] ?? 0)),
+    0,
+  );
+  return total === 0 ? 0 : (value / total) * 100;
+}
+
+function stackDomain(context: ChartRenderContext): number[] {
+  return context.data.labels.flatMap((_, valueIndex) => {
+    let positive = 0;
+    let negative = 0;
+    context.data.datasets.forEach((_, datasetIndex) => {
+      if (context.hiddenDatasets.has(datasetIndex)) return;
+      const value = stackedValue(context, datasetIndex, valueIndex);
+      if (value >= 0) positive += value;
+      else negative += value;
+    });
+    return [negative, positive];
+  });
+}
 
 function renderVertical(context: ChartRenderContext): void {
   const { data, options, plot, progress, renderer, theme } = context;
-  const allValues = data.datasets.flatMap((dataset) => dataset.values);
+  const allValues = options.stacked
+    ? stackDomain(context)
+    : numericValues(data.datasets.flatMap((dataset) => dataset.values));
   const scale = drawVerticalFrame(renderer, allValues, data.labels, plot, options, theme);
   const baseline = scale.project(Math.max(scale.min, Math.min(0, scale.max)));
   const categoryWidth = plot.width / data.labels.length;
   const groupWidth = categoryWidth * 0.68;
-  const barWidth = Math.max(2, groupWidth / data.datasets.length);
+  const barWidth = Math.max(2, options.stacked ? groupWidth : groupWidth / data.datasets.length);
+  const positiveOffsets = new Array<number>(data.labels.length).fill(0);
+  const negativeOffsets = new Array<number>(data.labels.length).fill(0);
 
   data.datasets.forEach((dataset, datasetIndex) => {
     if (context.hiddenDatasets.has(datasetIndex)) return;
     const color = dataset.color ?? theme.palette[datasetIndex % theme.palette.length] ?? theme.text;
-    dataset.values.forEach((value, valueIndex) => {
-      const targetY = scale.project(value);
-      const animatedY = baseline + (targetY - baseline) * progress;
+    dataset.values.forEach((rawValue, valueIndex) => {
+      if (rawValue === null) return;
+      const value = options.stacked ? stackedValue(context, datasetIndex, valueIndex) : rawValue;
+      const startValue = options.stacked
+        ? value >= 0
+          ? (positiveOffsets[valueIndex] ?? 0)
+          : (negativeOffsets[valueIndex] ?? 0)
+        : 0;
+      const endValue = startValue + value;
+      if (options.stacked) {
+        if (value >= 0) positiveOffsets[valueIndex] = endValue;
+        else negativeOffsets[valueIndex] = endValue;
+      }
+      const animatedStart = startValue * progress;
+      const animatedEnd = endValue * progress;
+      const startY = options.stacked ? scale.project(animatedStart) : baseline;
+      const targetY = scale.project(animatedEnd);
       const x =
         plot.left +
         valueIndex * categoryWidth +
         (categoryWidth - groupWidth) / 2 +
-        datasetIndex * barWidth;
-      const y = Math.min(baseline, animatedY);
-      const height = Math.abs(animatedY - baseline);
+        (options.stacked ? 0 : datasetIndex * barWidth);
+      const y = Math.min(startY, targetY);
+      const height = Math.abs(targetY - startY);
       const fill = renderer.gradient(x, y, x, Math.max(y + height, y + 1), color);
       const active = context.activeRegions?.some(
         (region) => region.datasetIndex === datasetIndex && region.valueIndex === valueIndex,
@@ -44,7 +96,7 @@ function renderVertical(context: ChartRenderContext): void {
         valueIndex,
         label: data.labels[valueIndex] ?? '',
         datasetLabel: dataset.label,
-        value,
+        value: rawValue,
         color,
         x: x + Math.max(1, barWidth - 3) / 2,
         y,
@@ -59,18 +111,23 @@ function renderVertical(context: ChartRenderContext): void {
             : inside
               ? y + 12 + (labels.offset ?? 0)
               : y - 8 - (labels.offset ?? 0);
-        renderer.text(formatTick(value), x + Math.max(1, barWidth - 3) / 2, labelY, {
-          align: 'center',
-          baseline: 'middle',
-          color: labels.color ?? (inside ? theme.background : theme.text),
-          backgroundColor: labels.backgroundColor,
-          rotation: labels.rotation,
-          font: font(
-            labels.fontWeight ?? 600,
-            labels.fontSize ?? theme.fontSize.label,
-            labels.fontFamily ?? theme.fontFamily,
-          ),
-        });
+        renderer.text(
+          formatTick(value, options.scales?.y),
+          x + Math.max(1, barWidth - 3) / 2,
+          labelY,
+          {
+            align: 'center',
+            baseline: 'middle',
+            color: labels.color ?? (inside ? theme.background : theme.text),
+            backgroundColor: labels.backgroundColor,
+            rotation: labels.rotation,
+            font: font(
+              labels.fontWeight ?? 600,
+              labels.fontSize ?? theme.fontSize.label,
+              labels.fontFamily ?? theme.fontFamily,
+            ),
+          },
+        );
       }
     });
   });
@@ -78,13 +135,10 @@ function renderVertical(context: ChartRenderContext): void {
 
 function renderHorizontal(context: ChartRenderContext): void {
   const { data, options, plot, progress, renderer, theme } = context;
-  const allValues = data.datasets.flatMap((dataset) => dataset.values);
-  const scale = createLinearScale(
-    allValues,
-    plot.left,
-    plot.right,
-    options.scales?.y?.beginAtZero ?? true,
-  );
+  const allValues = options.stacked
+    ? stackDomain(context)
+    : numericValues(data.datasets.flatMap((dataset) => dataset.values));
+  const scale = createAxisScale(allValues, plot.left, plot.right, options.scales?.y);
   const baseline = scale.project(Math.max(scale.min, Math.min(0, scale.max)));
   scale.ticks.forEach((tick) => {
     const x = scale.project(tick);
@@ -99,23 +153,30 @@ function renderHorizontal(context: ChartRenderContext): void {
       );
     const labels = options.xLabels;
     if (labels?.show === false) return;
-    renderer.text(formatTick(tick), x, plot.bottom + 16 + (labels?.offset ?? 0), {
-      align: 'center',
-      baseline: 'middle',
-      color: labels?.color ?? theme.mutedText,
-      backgroundColor: labels?.backgroundColor,
-      rotation: labels?.rotation,
-      font: font(
-        labels?.fontWeight ?? 450,
-        labels?.fontSize ?? theme.fontSize.tick,
-        labels?.fontFamily ?? theme.fontFamily,
-      ),
-    });
+    renderer.text(
+      formatTick(tick, options.scales?.y),
+      x,
+      plot.bottom + 16 + (labels?.offset ?? 0),
+      {
+        align: 'center',
+        baseline: 'middle',
+        color: labels?.color ?? theme.mutedText,
+        backgroundColor: labels?.backgroundColor,
+        rotation: labels?.rotation,
+        font: font(
+          labels?.fontWeight ?? 450,
+          labels?.fontSize ?? theme.fontSize.tick,
+          labels?.fontFamily ?? theme.fontFamily,
+        ),
+      },
+    );
   });
 
   const categoryHeight = plot.height / data.labels.length;
   const groupHeight = categoryHeight * 0.64;
-  const barHeight = Math.max(2, groupHeight / data.datasets.length);
+  const barHeight = Math.max(2, options.stacked ? groupHeight : groupHeight / data.datasets.length);
+  const positiveOffsets = new Array<number>(data.labels.length).fill(0);
+  const negativeOffsets = new Array<number>(data.labels.length).fill(0);
   data.labels.forEach((label, index) => {
     const labels = options.yLabels;
     if (labels?.show === false) return;
@@ -140,16 +201,28 @@ function renderHorizontal(context: ChartRenderContext): void {
   data.datasets.forEach((dataset, datasetIndex) => {
     if (context.hiddenDatasets.has(datasetIndex)) return;
     const color = dataset.color ?? theme.palette[datasetIndex % theme.palette.length] ?? theme.text;
-    dataset.values.forEach((value, valueIndex) => {
-      const targetX = scale.project(value);
-      const animatedX = baseline + (targetX - baseline) * progress;
-      const x = Math.min(baseline, animatedX);
+    dataset.values.forEach((rawValue, valueIndex) => {
+      if (rawValue === null) return;
+      const value = options.stacked ? stackedValue(context, datasetIndex, valueIndex) : rawValue;
+      const startValue = options.stacked
+        ? value >= 0
+          ? (positiveOffsets[valueIndex] ?? 0)
+          : (negativeOffsets[valueIndex] ?? 0)
+        : 0;
+      const endValue = startValue + value;
+      if (options.stacked) {
+        if (value >= 0) positiveOffsets[valueIndex] = endValue;
+        else negativeOffsets[valueIndex] = endValue;
+      }
+      const startX = options.stacked ? scale.project(startValue * progress) : baseline;
+      const targetX = scale.project(endValue * progress);
+      const x = Math.min(startX, targetX);
       const y =
         plot.top +
         valueIndex * categoryHeight +
         (categoryHeight - groupHeight) / 2 +
-        datasetIndex * barHeight;
-      const width = Math.abs(animatedX - baseline);
+        (options.stacked ? 0 : datasetIndex * barHeight);
+      const width = Math.abs(targetX - startX);
       const fill = renderer.gradient(x, y, Math.max(x + width, x + 1), y, color);
       const active = context.activeRegions?.some(
         (region) => region.datasetIndex === datasetIndex && region.valueIndex === valueIndex,
@@ -170,7 +243,7 @@ function renderHorizontal(context: ChartRenderContext): void {
         valueIndex,
         label: data.labels[valueIndex] ?? '',
         datasetLabel: dataset.label,
-        value,
+        value: rawValue,
         color,
         x: x + width,
         y: y + Math.max(1, barHeight - 3) / 2,
@@ -185,18 +258,23 @@ function renderHorizontal(context: ChartRenderContext): void {
             : inside
               ? x + width - 8 - (labels.offset ?? 0)
               : x + width + 8 + (labels.offset ?? 0);
-        renderer.text(formatTick(value), labelX, y + Math.max(1, barHeight - 3) / 2, {
-          align: labels.position === 'center' ? 'center' : inside ? 'right' : 'left',
-          baseline: 'middle',
-          color: labels.color ?? (inside ? theme.background : theme.text),
-          backgroundColor: labels.backgroundColor,
-          rotation: labels.rotation,
-          font: font(
-            labels.fontWeight ?? 600,
-            labels.fontSize ?? theme.fontSize.label,
-            labels.fontFamily ?? theme.fontFamily,
-          ),
-        });
+        renderer.text(
+          formatTick(value, options.scales?.y),
+          labelX,
+          y + Math.max(1, barHeight - 3) / 2,
+          {
+            align: labels.position === 'center' ? 'center' : inside ? 'right' : 'left',
+            baseline: 'middle',
+            color: labels.color ?? (inside ? theme.background : theme.text),
+            backgroundColor: labels.backgroundColor,
+            rotation: labels.rotation,
+            font: font(
+              labels.fontWeight ?? 600,
+              labels.fontSize ?? theme.fontSize.label,
+              labels.fontFamily ?? theme.fontFamily,
+            ),
+          },
+        );
       }
     });
   });

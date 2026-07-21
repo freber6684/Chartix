@@ -25,8 +25,8 @@ delivered in stable releases so partially implemented features never appear prod
 
 - [x] Responsive sizing, explicit sizing, and user drag-resizing.
 - [x] Linear numeric scales and category axes with rotated/styled labels.
-- [ ] Time, logarithmic, symlog, power, radial, quantile, threshold, and band scales.
-- [ ] Multiple/linked axes, axis inversion, custom domains, custom ticks, and broken axes.
+- [x] Time, logarithmic, percentage, radial, and band scale primitives.
+- [x] Multiple y axes, independent dataset axes, inversion, domains, custom ticks, and broken axes.
 - [ ] Automatic collision avoidance, label wrapping/truncation, and smart legend layout.
 - [ ] Facets/small multiples, synchronized dashboards, polar layouts, and RTL layout.
 
@@ -35,7 +35,7 @@ delivered in stable releases so partially implemented features never appear prod
 - [x] Themes, custom palettes/backgrounds, typography, gradients, rounded marks, and labels.
 - [x] Reduced-motion support and entrance animation easing.
 - [ ] Per-mark conditional styling, patterns, textures, shadows, borders, and CSS variables.
-- [ ] Line curves, steps, dashes, point symbols, stacked marks, and mixed series.
+- [ ] Line curves, steps, dashes, and point symbols. Stacked marks and mixed series are complete.
 - [ ] Update/exit transitions, staggered animation, motion-path morphing, and timeline controls.
 - [ ] Theme designer, brand-token import, dark-mode auto switching, and style presets.
 
@@ -43,8 +43,8 @@ delivered in stable releases so partially implemented features never appear prod
 
 - [x] Immutable JSON data/config and automatic min/max line decimation above 1,000 points.
 - [ ] CSV/TSV/JSON/Google Sheets connectors and schema/type inference.
-- [ ] Sort, filter, group, bin, stack, aggregate, window, normalize, and pivot transforms.
-- [ ] Missing-value strategies, date parsing, units, locale, and number formatting.
+- [ ] Sort, filter, stack, aggregate, and normalize are complete; group, bin, window, and pivot remain.
+- [ ] Null gaps, date parsing, locale, currency, percentage, and number formatting are complete; units remain.
 - [ ] Streaming/ring-buffer data, WebSocket/SSE adapters, and incremental rendering.
 - [ ] WebGL renderer, OffscreenCanvas workers, virtualization, spatial indexes, and profiling tools.
 

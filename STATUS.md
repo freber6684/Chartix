@@ -41,6 +41,10 @@ changes so the next session can resume without reconstructing history.
 - [x] Add four interaction modes, grouped tooltips, mark click events, and JSON drill-down/up.
 - [x] Add five legend positions, wheel/keyboard/box zoom, drag pan, reset, brush, and lasso.
 - [x] Add and deploy a real public Features route instead of a navigation 404.
+- [x] Add time, logarithmic, percentage, band, radial, reversed, bounded, formatted, and broken scales.
+- [x] Add axis titles, automatic tick skipping, minor ticks, custom grids, inside labels, and dual axes.
+- [x] Add stacked/100%-stacked bars, mixed per-dataset charts, bubble points, null gaps, and object data.
+- [x] Add immutable sort, filter, aggregation, and normalization transforms.
 
 ## Remaining for v0.1
 
@@ -58,10 +62,10 @@ appearing to work while producing incorrect graphics.
 
 ### v0.2: common comparisons and combinations
 
-- [ ] Stacked and 100% stacked bar/column charts.
-- [ ] Mixed/combo charts with independent series renderers and dual axes.
+- [x] Stacked and 100% stacked bar/column charts.
+- [x] Mixed/combo charts with independent series renderers and dual axes.
 - [ ] Step, spline, stacked-area, and streamgraph charts.
-- [ ] Bubble, lollipop, bullet, waterfall, funnel, and pyramid charts.
+- [ ] Bubble is complete; lollipop, bullet, waterfall, funnel, and pyramid remain.
 - [ ] Gauge, solid gauge, radial bar, polar area, and radar charts.
 
 ### v0.3: statistical, financial, and matrix charts
@@ -109,7 +113,7 @@ formatting, lint, strict types, unit tests, production bundles, and the 25 KB gz
 ## Latest validation
 
 - Formatting, ESLint, and strict TypeScript: passed with no warnings or errors.
-- Unit tests: 70 passed across 11 test files, including 45 chart/theme visual baselines.
+- Unit tests: 76 passed across 12 test files, including 45 chart/theme visual baselines.
 - Production build: ESM, CJS, standalone embed ESM, browser IIFE, minified browser IIFE, and TypeScript declarations generated.
 - Minified core bundle: 9.72 KB gzipped (15 KB budget).
 - Minified full embed bundle: 9.63 KB gzipped (25 KB budget).
