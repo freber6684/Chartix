@@ -38,7 +38,8 @@ delivered in stable releases so partially implemented features never appear prod
 - [x] Line curves, steps, dashes, point symbols, stacked marks, and mixed series.
 - [ ] Update transitions and pause/resume/seek/delay/loop controls are complete; exit transitions,
       staggering, and motion-path morphing remain.
-- [ ] Theme designer, brand-token import, dark-mode auto switching, and style presets.
+- [ ] CSS/Figma token import, brand palettes, approved-color locks, theme pairing, and versioned
+      presets are complete; visual theme designer and automatic OS switching remain.
 
 ## Data, transformation, and performance
 
@@ -98,8 +99,8 @@ playground example before being marked complete.
       deeper statistical validation remains.
 - [x] Constraint-based responsive composition changes layout without changing source data.
 - [x] Portable comments, approvals, forking, and deterministic version comparison.
-- [ ] Reproducible data lineage embedded with exports and shared links.
-- [ ] Privacy-aware local analytics and redaction before sharing/export.
+- [x] Reproducible SHA-256 data/config lineage embedded with portable manifests.
+- [x] Privacy-aware local analytics and redaction before sharing/export.
 - [ ] Natural-language editing that emits deterministic, reviewable JSON patches.
 - [x] Dashboard story mode with guided scenes, highlights, and presentation playback.
 - [ ] Test-data generator and edge-case simulator for every chart configuration.

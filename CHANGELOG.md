@@ -40,6 +40,8 @@ All notable Chartix changes are documented here. The project follows semantic ve
   lifecycle callbacks, pause, resume, and seek controls.
 - URL-safe chart sharing, local preset storage, chart forking and version comparison, portable
   comments/approvals, and guided story presentation playback.
+- CSS/Figma design-token import, generated and locked brand palettes, theme pairing/versioning,
+  brand audits, privacy redaction, and SHA-256 portable-manifest fingerprints.
 
 ## 0.1.0-alpha.2 - 2026-07-21
 

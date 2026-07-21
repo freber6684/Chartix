@@ -183,3 +183,14 @@ remixing and deterministic reviews, while `ChartReview` manages targeted comment
 `StoryPlayer` presents a `ChartStory` as timed or manually navigated scenes. Each scene owns a full
 chart configuration, optional narration, focus marks, and duration; applications can subscribe to
 scene changes to render presenter controls in any framework.
+
+## Design systems and portable trust
+
+`themeFromCSSVariables` and `themeFromDesignTokens` import brand tokens; `generateBrandPalette` and
+`createThemePair` derive coordinated palettes and light/dark themes. `ThemeLibrary` versions shared
+themes, while `auditBrandCompliance` checks chart colors against an approved organization palette.
+
+`redactChartData` removes sensitive labels/names and controls numeric precision before sharing.
+`fingerprintChart` generates a reproducible SHA-256 data/config digest, and
+`createPortableManifest` packages that fingerprint with normalized config, accessibility text,
+documentation, and creation metadata.

@@ -132,3 +132,19 @@ export {
   type StoryListener,
   type StoryScene,
 } from './authoring/story.js';
+export {
+  auditBrandCompliance,
+  createThemePair,
+  generateBrandPalette,
+  themeFromCSSVariables,
+  themeFromDesignTokens,
+  ThemeLibrary,
+  type BrandAudit,
+  type VersionedTheme,
+} from './design-system/index.js';
+export {
+  createPortableManifest,
+  fingerprintChart,
+  redactChartData,
+  type PortableManifest,
+} from './authoring/portable.js';
