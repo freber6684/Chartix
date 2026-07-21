@@ -265,6 +265,24 @@ export { VisualEditor, type VisualSelection } from './authoring/visual-editor.js
 export { interpolateChartData, interpolateColor } from './core/transitions.js';
 export { createSmallMultiples, type FacetChart } from './intelligence/facets.js';
 export {
+  controlLimits,
+  detectChangePoints,
+  findExtrema,
+  trackGoal,
+  validateStatistics,
+  type ControlLimits,
+  type Extremum,
+  type GoalProgress,
+  type StatisticalWarning,
+} from './analytics/advanced.js';
+export {
+  createPerformanceOverlay,
+  inspectChart,
+  type ChartInspection,
+  type CompatibilityReport,
+} from './intelligence/inspector.js';
+export { TransformPipeline, type TransformRecord } from './data/pipeline.js';
+export {
   assessPublicationQuality,
   repairChartContrast,
   type PublicationQualityReport,

@@ -69,6 +69,8 @@ All notable Chartix changes are documented here. The project follows semantic ve
 - Vertical-line, box, point, callout, arrow, and freeform annotations in Cartesian charts.
 - Axis label wrapping/truncation, formatted units, RTL category mirroring, localized generated UI,
   automatic accessibility textures, and immutable small-multiple configuration generation.
+- Statistical control limits, extrema, change-point and goal analytics, deeper risk validation,
+  auditable transformation lineage, deployment inspection, compatibility reports, and a live overlay.
 
 ## 0.1.0-alpha.2 - 2026-07-21
 

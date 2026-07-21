@@ -85,6 +85,8 @@ changes so the next session can resume without reconstructing history.
 - [x] Add vertical-line, box, point, callout, arrow, and freeform annotation rendering.
 - [x] Add label wrapping/truncation, units, RTL mirroring, localized UI strings, automatic texture
       mode, and immutable dataset/category small multiples.
+- [x] Add control limits, extrema, change points, goal tracking, deeper statistical validation,
+      transformation lineage, a deployment inspector, compatibility report, and live overlay.
 
 ## Remaining for v0.1
 
@@ -153,7 +155,7 @@ formatting, lint, strict types, unit tests, production bundles, and the 25 KB gz
 ## Latest validation
 
 - Formatting, ESLint, and strict TypeScript: passed with no warnings or errors.
-- Unit tests: 132 passed across 33 test files, including 45 chart/theme visual baselines.
+- Unit tests: 135 passed across 34 test files, including 45 chart/theme visual baselines.
 - Production build: ESM, CJS, standalone embed ESM, browser IIFE, minified browser IIFE, and TypeScript declarations generated.
 - Minified core bundle: 9.72 KB gzipped (15 KB budget).
 - Minified full embed bundle: 9.63 KB gzipped (25 KB budget).

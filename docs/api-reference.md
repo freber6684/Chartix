@@ -262,3 +262,13 @@ Axis formatters accept `locale`, `currency`, and `unit`. Label options add `maxW
 Set `direction: 'rtl'` to mirror category order and `messages` to translate generated reset/help
 text. Accessibility `automaticPatterns` adds distinct textures to filled series. Use
 `createSmallMultiples(config, 'dataset' | 'category', columns)` to generate immutable facet grids.
+
+## Analytics lineage and deployment inspection
+
+`controlLimits`, `findExtrema`, `detectChangePoints`, and `trackGoal` generate deterministic
+analytical results that can feed annotations. `validateStatistics` flags very small samples and
+extreme outliers. `TransformPipeline` applies existing transforms while retaining before/after
+snapshots and timestamps.
+
+`inspectChart` combines visual/a11y integrity, performance planning, and a runtime compatibility
+matrix. `createPerformanceOverlay(canvas)` adds a removable live duration/mark-count/backend panel.

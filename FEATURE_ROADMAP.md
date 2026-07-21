@@ -58,10 +58,8 @@ delivered in stable releases so partially implemented features never appear prod
 - [x] Horizontal reference lines and highlighted numeric bands.
 - [ ] Vertical lines, boxes, points, callouts, arrows, and freeform drawing are complete; image
       annotations remain.
-- [ ] Trend lines, regression, confidence intervals, forecasts, and moving averages are complete;
-      control limits remain.
-- [ ] Outlier/anomaly detection is complete; peak/valley labels, change-point detection, and goal
-      tracking remain.
+- [x] Trend lines, regression, confidence intervals, forecasts, moving averages, and control limits.
+- [x] Outlier/anomaly, peak/valley, change-point, and goal-tracking analytics.
 - [ ] Annotation editor with snapping, collision avoidance, and responsive repositioning.
 
 ## Accessibility, internationalization, and trust
@@ -71,8 +69,8 @@ delivered in stable releases so partially implemented features never appear prod
       automatic pattern mode.
 - [x] Accessibility audits, color-vision simulation, contrast warnings/repair, and keyboard help.
 - [x] Locale-aware dates/numbers/units, RTL mirroring, rotated text, and UI translation hooks.
-- [ ] Misleading-chart, accessibility, contrast, color-vision, performance, provenance, and
-      uncertainty audits/display are complete; transformation history remains.
+- [x] Misleading-chart, accessibility, contrast, color-vision, performance, provenance,
+      uncertainty, statistical-risk, and transformation-history audits/display.
 
 ## Export, sharing, and developer platform
 
@@ -83,7 +81,8 @@ delivered in stable releases so partially implemented features never appear prod
 - [x] Dependency-free React, Vue, Svelte, Web Component, and portable server-HTML adapters.
 - [x] Stable drawing lifecycle and dedicated chart, scale, interaction, transform, annotation,
       theme, tooltip, and export extension registries.
-- [ ] Developer inspector, performance overlay, pixel-level browser regression, and compatibility matrix.
+- [ ] Developer inspector, performance overlay, command-level regression, and compatibility matrix
+      are complete; pixel-level browser snapshots remain.
 - [x] Deterministic renderer-command regression suite for all 45 MVP chart/theme combinations.
 
 ## Chart catalog
@@ -101,8 +100,8 @@ join primitives. These feed custom Canvas/SVG/hybrid modules through the public 
 
 - [x] Local data-shape advisor recommends a chart with confidence, explanation, and suggestions.
 - [x] Explain-this-chart generates plain-language range and direction summaries.
-- [ ] Quality review covers distortion, clutter, accessibility, contrast, and common statistical risk;
-      deeper statistical validation remains.
+- [x] Quality review covers distortion, clutter, accessibility, contrast, sample size, extreme
+      outliers, and common statistical risk.
 - [x] Constraint-based responsive composition changes layout without changing source data.
 - [x] Portable comments, approvals, forking, and deterministic version comparison.
 - [x] Reproducible SHA-256 data/config lineage embedded with portable manifests.
