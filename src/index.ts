@@ -178,3 +178,13 @@ export {
   redactChartData,
   type PortableManifest,
 } from './authoring/portable.js';
+export {
+  detectRenderingCapabilities,
+  planChartPerformance,
+  progressiveBatches,
+  SpatialIndex,
+  viewportData,
+  type PerformancePlan,
+  type RenderingBackend,
+  type SpatialItem,
+} from './performance/optimizer.js';

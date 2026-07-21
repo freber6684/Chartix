@@ -215,3 +215,10 @@ overlap. `backgroundImage` and `backgroundImageOpacity` place an image below cha
 outputs. Chart instances expose `toSVG`, `toPDF`, `toIframe`, `copyToClipboard`, `print`, and the
 expanded `download` formats. Dedicated typed registries are exported for transforms, annotations,
 themes, tooltips, and exporters, alongside the chart/scale/interaction/plugin APIs.
+
+## Performance planning
+
+`planChartPerformance` estimates cost and recommends SVG, Canvas, OffscreenCanvas, or WebGL plus
+sampling, animation, and progressive-render settings. `progressiveBatches` and `viewportData`
+support incremental/virtualized rendering; `SpatialIndex` accelerates large-scatter hit testing;
+`detectRenderingCapabilities` reports optional browser acceleration.

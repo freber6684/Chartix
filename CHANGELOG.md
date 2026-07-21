@@ -48,6 +48,8 @@ All notable Chartix changes are documented here. The project follows semantic ve
   segments, generated HTML legends, and automatic radial-label collision avoidance.
 - Accessible SVG, printable PDF, iframe, clipboard, and print exports plus dedicated transform,
   annotation, theme, tooltip, and export extension registries.
+- Self-optimizing complexity scores, backend/sampling recommendations, progressive batches,
+  viewport virtualization, scatter spatial indexing, and browser acceleration detection.
 
 ## 0.1.0-alpha.2 - 2026-07-21
 

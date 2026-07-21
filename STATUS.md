@@ -69,6 +69,8 @@ changes so the next session can resume without reconstructing history.
       doughnut segments, HTML legends, and automatic outside-label collision avoidance.
 - [x] Add accessible SVG, printable PDF, clipboard, print, and iframe exports plus dedicated
       transform/annotation/theme/tooltip/export registries.
+- [x] Add automatic complexity/cost scoring, backend and sampling recommendations, viewport
+      virtualization, progressive batches, spatial indexing, and acceleration detection.
 
 ## Remaining for v0.1
 
@@ -137,7 +139,7 @@ formatting, lint, strict types, unit tests, production bundles, and the 25 KB gz
 ## Latest validation
 
 - Formatting, ESLint, and strict TypeScript: passed with no warnings or errors.
-- Unit tests: 110 passed across 23 test files, including 45 chart/theme visual baselines.
+- Unit tests: 113 passed across 24 test files, including 45 chart/theme visual baselines.
 - Production build: ESM, CJS, standalone embed ESM, browser IIFE, minified browser IIFE, and TypeScript declarations generated.
 - Minified core bundle: 9.72 KB gzipped (15 KB budget).
 - Minified full embed bundle: 9.63 KB gzipped (25 KB budget).

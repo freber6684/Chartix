@@ -51,8 +51,9 @@ delivered in stable releases so partially implemented features never appear prod
 - [x] Sort, filter, stack, aggregate, normalize, group, bin, window, and pivot transforms.
 - [ ] Null gaps, date parsing, locale, currency, percentage, and number formatting are complete; units remain.
 - [ ] Bounded streaming buffers and immediate incremental updates are complete; WebSocket/SSE adapters remain.
-- [ ] Width-aware min/max/LTTB sampling, auto animation limits, and render telemetry are complete;
-      WebGL, workers, virtualization, and spatial indexes remain.
+- [ ] Width-aware sampling, animation limits, telemetry, backend/cost planning, viewport
+      virtualization, progressive batching, OffscreenCanvas detection, and spatial indexing are
+      complete; bundled WebGL/worker render adapters remain.
 
 ## Annotations and analytics
 
