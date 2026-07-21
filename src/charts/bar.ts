@@ -1,6 +1,7 @@
 import {
   createAxisScale,
   drawVerticalFrame,
+  fitAxisLabel,
   font,
   formatTick,
   numericValues,
@@ -187,7 +188,12 @@ function renderHorizontal(context: ChartRenderContext): void {
     const labels = options.yLabels;
     if (labels?.show === false) return;
     renderer.text(
-      label,
+      fitAxisLabel(
+        label,
+        labels?.maxWidth ?? Math.max(40, plot.left - 20),
+        labels?.fontSize ?? theme.fontSize.tick,
+        labels?.overflow ?? 'truncate',
+      ),
       plot.left - 10 - (labels?.offset ?? 0),
       plot.top + categoryHeight * (index + 0.5),
       {

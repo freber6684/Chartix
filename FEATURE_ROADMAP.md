@@ -27,9 +27,8 @@ delivered in stable releases so partially implemented features never appear prod
 - [x] Linear numeric scales and category axes with rotated/styled labels.
 - [x] Time, logarithmic, percentage, radial, and band scale primitives.
 - [x] Multiple y axes, independent dataset axes, inversion, domains, custom ticks, and broken axes.
-- [ ] Automatic radial label collision avoidance and HTML legend layout are complete; general axis
-      wrapping/truncation remains.
-- [ ] Facets/small multiples, synchronized dashboards, polar layouts, and RTL layout.
+- [x] Automatic radial/axis label collision handling, wrapping/truncation, and HTML legend layout.
+- [x] Facets/small multiples, synchronized dashboards, polar layouts, and RTL layout.
 
 ## Styling, marks, and animation
 
@@ -48,7 +47,7 @@ delivered in stable releases so partially implemented features never appear prod
 - [x] Immutable JSON data/config and automatic min/max line decimation above 1,000 points.
 - [x] CSV/TSV/JSON/remote-fetch connectors, schema/type inference, and public Google Sheets helper.
 - [x] Sort, filter, stack, aggregate, normalize, group, bin, window, and pivot transforms.
-- [ ] Null gaps, date parsing, locale, currency, percentage, and number formatting are complete; units remain.
+- [x] Null gaps, date parsing, locale, currency, percentage, number, and unit formatting.
 - [x] Bounded streaming buffers, immediate updates, and cleanup-safe WebSocket/SSE adapters.
 - [ ] Width-aware sampling, animation limits, telemetry, backend/cost planning, viewport
       virtualization, progressive batching, OffscreenCanvas detection, and spatial indexing are
@@ -68,10 +67,10 @@ delivered in stable releases so partially implemented features never appear prod
 ## Accessibility, internationalization, and trust
 
 - [x] Generated canvas descriptions, focusable charts, reduced motion, and hidden data tables.
-- [ ] Screen-reader summaries, sonification, high contrast, Braille text, and focus narration are
-      complete; automatic pattern mode remains.
+- [x] Screen-reader summaries, sonification, high contrast, Braille text, focus narration, and
+      automatic pattern mode.
 - [x] Accessibility audits, color-vision simulation, contrast warnings/repair, and keyboard help.
-- [ ] Locale-aware dates/numbers are complete; RTL scripts, vertical text, and translation hooks remain.
+- [x] Locale-aware dates/numbers/units, RTL mirroring, rotated text, and UI translation hooks.
 - [ ] Misleading-chart, accessibility, contrast, color-vision, performance, provenance, and
       uncertainty audits/display are complete; transformation history remains.
 

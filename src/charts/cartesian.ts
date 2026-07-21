@@ -30,7 +30,7 @@ export function formatTick(value: number, axis: AxisOptions = {}): string {
     }).format(value);
   }
   const format = axis.format ?? 'auto';
-  return new Intl.NumberFormat(axis.locale, {
+  const formatted = new Intl.NumberFormat(axis.locale, {
     notation:
       format === 'compact' || (format === 'auto' && Math.abs(value) >= 10_000)
         ? 'compact'
@@ -44,6 +44,26 @@ export function formatTick(value: number, axis: AxisOptions = {}): string {
     currency: axis.currency ?? 'USD',
     maximumFractionDigits: 2,
   }).format(format === 'percent' || axis.type === 'percentage' ? value / 100 : value);
+  return axis.unit ? `${formatted} ${axis.unit}` : formatted;
+}
+
+export function fitAxisLabel(
+  value: string,
+  maxWidth: number | undefined,
+  fontSize: number,
+  overflow: 'wrap' | 'truncate' | 'show' = 'show',
+): string {
+  if (!maxWidth || overflow === 'show') return value;
+  const limit = Math.max(3, Math.floor(maxWidth / Math.max(1, fontSize * 0.62)));
+  if (value.length <= limit) return value;
+  if (overflow === 'truncate') return `${value.slice(0, Math.max(1, limit - 1))}…`;
+  const lines: string[] = [];
+  value.split(/\s+/).forEach((word) => {
+    const current = lines.at(-1) ?? '';
+    if (!current || `${current} ${word}`.length > limit) lines.push(word);
+    else lines[lines.length - 1] = `${current} ${word}`;
+  });
+  return lines.join('\n');
 }
 
 /** Resolve an axis configuration to a continuous scale. */
@@ -484,7 +504,12 @@ export function drawVerticalFrame(
     const labelOptions = options.xLabels;
     if (labelOptions?.show === false) return;
     renderer.text(
-      label,
+      fitAxisLabel(
+        label,
+        labelOptions?.maxWidth ?? step * 0.9,
+        labelOptions?.fontSize ?? theme.fontSize.tick,
+        labelOptions?.overflow ?? (options.scales?.x?.tickSkip === 'auto' ? 'truncate' : 'show'),
+      ),
       plot.left + step * (index + 0.5),
       plot.bottom + 16 + (labelOptions?.offset ?? 0),
       {

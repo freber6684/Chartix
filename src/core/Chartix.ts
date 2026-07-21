@@ -40,6 +40,7 @@ const validOptionKeys = new Set<keyof ChartOptions>([
   'colors',
   'crosshair',
   'dataLabels',
+  'direction',
   'decimation',
   'drilldown',
   'editable',
@@ -52,6 +53,7 @@ const validOptionKeys = new Set<keyof ChartOptions>([
   'innerRadius',
   'interaction',
   'legend',
+  'messages',
   'padding',
   'performance',
   'plugins',
@@ -730,9 +732,29 @@ export class Chartix {
       },
     };
     const visibleData = this.visibleData();
-    const renderData = this.transitionFrom
+    let renderData = this.transitionFrom
       ? interpolateChartData(this.transitionFrom, visibleData, progress)
       : visibleData;
+    if (drawOptions.direction === 'rtl') {
+      renderData = {
+        labels: [...renderData.labels].reverse(),
+        datasets: renderData.datasets.map((dataset) => ({
+          ...dataset,
+          values: [...dataset.values].reverse(),
+          ...(dataset.points ? { points: [...dataset.points].reverse() } : {}),
+        })),
+      };
+    }
+    if (drawOptions.accessibility?.automaticPatterns) {
+      const patterns = ['diagonal', 'dots', 'crosshatch'] as const;
+      renderData = {
+        ...renderData,
+        datasets: renderData.datasets.map((dataset, index) => ({
+          ...dataset,
+          pattern: dataset.pattern ?? patterns[index % patterns.length]!,
+        })),
+      };
+    }
     const plot = createPlotArea(
       this.renderer,
       renderData,
@@ -895,6 +917,7 @@ export class Chartix {
       const help = document.createElement('p');
       help.id = `chartix-help-${Math.random().toString(36).slice(2)}`;
       help.textContent =
+        this.config.options.messages?.keyboardHelp ??
         'Use arrow keys to explore marks, Enter to activate, plus or minus to zoom, zero to reset, and Escape to clear focus.';
       help.style.cssText =
         'position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)';
@@ -1128,7 +1151,7 @@ export class Chartix {
     if (!parent) return undefined;
     const button = document.createElement('button');
     button.type = 'button';
-    button.textContent = 'Reset zoom';
+    button.textContent = this.config.options.messages?.resetZoom ?? 'Reset zoom';
     button.hidden = true;
     button.className = 'chartix-reset-zoom';
     button.style.cssText =

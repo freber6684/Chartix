@@ -123,7 +123,9 @@
         "fontWeight": { "type": "number", "minimum": 1, "maximum": 1000 },
         "rotation": { "type": "number" },
         "position": { "enum": ["auto", "inside", "outside", "center"] },
-        "offset": { "type": "number" }
+        "offset": { "type": "number" },
+        "maxWidth": { "type": "number", "exclusiveMinimum": 0 },
+        "overflow": { "enum": ["wrap", "truncate", "show"] }
       }
     },
     "axisOptions": {
@@ -140,6 +142,7 @@
         "format": { "enum": ["auto", "number", "compact", "currency", "percent", "date"] },
         "locale": { "type": "string" },
         "currency": { "type": "string" },
+        "unit": { "type": "string" },
         "tickSkip": { "oneOf": [{ "type": "integer", "minimum": 1 }, { "const": "auto" }] },
         "position": { "enum": ["left", "right", "top", "bottom", "inside"] },
         "labelsInside": { "type": "boolean" },
@@ -176,7 +179,8 @@
             "highContrast": { "type": "boolean" },
             "dyslexiaFriendly": { "type": "boolean" },
             "keyboardHelp": { "type": "boolean" },
-            "explorationMode": { "type": "boolean" }
+            "explorationMode": { "type": "boolean" },
+            "automaticPatterns": { "type": "boolean" }
           }
         },
         "annotations": {
@@ -249,6 +253,7 @@
           }
         },
         "dataLabels": { "$ref": "#/$defs/labelOptions" },
+        "direction": { "enum": ["ltr", "rtl"] },
         "decimation": {
           "type": "object",
           "additionalProperties": false,
@@ -284,6 +289,14 @@
             "interactive": { "type": "boolean" },
             "position": { "enum": ["top", "bottom", "left", "right", "inside"] },
             "html": { "type": "boolean" }
+          }
+        },
+        "messages": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "resetZoom": { "type": "string" },
+            "keyboardHelp": { "type": "string" }
           }
         },
         "drilldown": {

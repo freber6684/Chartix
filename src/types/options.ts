@@ -114,6 +114,8 @@ export interface AxisOptions {
   locale?: string;
   /** ISO 4217 currency code used by currency formatting. */
   currency?: string;
+  /** Unit suffix appended after locale-aware numeric formatting. */
+  unit?: string;
   /** Display every nth category label. `auto` adapts to the available width. */
   tickSkip?: number | 'auto';
   /** Axis placement. */
@@ -264,6 +266,8 @@ export interface AccessibilityOptions {
   keyboardHelp?: boolean;
   /** Announce focused marks through an ARIA live region. */
   explorationMode?: boolean;
+  /** Add distinct textures so color is never the only cue. */
+  automaticPatterns?: boolean;
 }
 
 /** Wheel, drag-pan, and box-zoom behavior. */
@@ -343,6 +347,10 @@ export interface LabelOptions {
   position?: 'auto' | 'inside' | 'outside' | 'center';
   /** Extra distance from the default position in CSS pixels. */
   offset?: number;
+  /** Approximate maximum line width used by automatic wrapping or truncation. */
+  maxWidth?: number;
+  /** Resolve long labels without custom measurement code. */
+  overflow?: 'wrap' | 'truncate' | 'show';
 }
 
 /** Runtime options shared by built-in charts. */
@@ -367,6 +375,8 @@ export interface ChartOptions {
   crosshair?: CrosshairOptions;
   /** Values displayed on or near marks such as bars, points, and slices. */
   dataLabels?: LabelOptions;
+  /** Mirror category order for right-to-left scripts. */
+  direction?: 'ltr' | 'rtl';
   /** Automatic sampling for large line datasets. */
   decimation?: DecimationOptions;
   /** Point-specific drill-down data keyed by `datasetIndex:valueIndex` or label. */
@@ -449,6 +459,8 @@ export interface ChartOptions {
   yLabels?: LabelOptions;
   /** Wheel, drag-pan, and box-zoom behavior. */
   zoom?: ZoomOptions;
+  /** Localized strings for generated controls and keyboard instructions. */
+  messages?: { resetZoom?: string; keyboardHelp?: string };
 }
 
 /** Theme tokens used by all Chartix renderers. */

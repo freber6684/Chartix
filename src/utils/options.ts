@@ -91,6 +91,7 @@ export function normalizeConfig(config: ChartConfig): ChartConfig & { options: C
       decimation: { ...defaultOptions.decimation, ...config.options?.decimation },
       interaction: { ...defaultOptions.interaction, ...config.options?.interaction },
       legend: { ...defaultOptions.legend, ...config.options?.legend },
+      ...(config.options?.messages ? { messages: { ...config.options.messages } } : {}),
       ...(config.options?.selection ? { selection: { ...config.options.selection } } : {}),
       tooltip: { ...defaultOptions.tooltip, ...config.options?.tooltip },
       ...(config.options?.typography ? { typography: { ...config.options.typography } } : {}),

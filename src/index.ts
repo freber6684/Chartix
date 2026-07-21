@@ -263,6 +263,7 @@ export { specializedCharts } from './charts/specialized.js';
 export * from './charts/specialized.js';
 export { VisualEditor, type VisualSelection } from './authoring/visual-editor.js';
 export { interpolateChartData, interpolateColor } from './core/transitions.js';
+export { createSmallMultiples, type FacetChart } from './intelligence/facets.js';
 export {
   assessPublicationQuality,
   repairChartContrast,

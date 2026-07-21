@@ -83,6 +83,8 @@ changes so the next session can resume without reconstructing history.
       dendrogram, network, and parallel-coordinate renderers and gallery examples.
 - [x] Add interpolated data updates and deterministic category/dataset enter/exit transitions.
 - [x] Add vertical-line, box, point, callout, arrow, and freeform annotation rendering.
+- [x] Add label wrapping/truncation, units, RTL mirroring, localized UI strings, automatic texture
+      mode, and immutable dataset/category small multiples.
 
 ## Remaining for v0.1
 
@@ -151,7 +153,7 @@ formatting, lint, strict types, unit tests, production bundles, and the 25 KB gz
 ## Latest validation
 
 - Formatting, ESLint, and strict TypeScript: passed with no warnings or errors.
-- Unit tests: 130 passed across 32 test files, including 45 chart/theme visual baselines.
+- Unit tests: 132 passed across 33 test files, including 45 chart/theme visual baselines.
 - Production build: ESM, CJS, standalone embed ESM, browser IIFE, minified browser IIFE, and TypeScript declarations generated.
 - Minified core bundle: 9.72 KB gzipped (15 KB budget).
 - Minified full embed bundle: 9.63 KB gzipped (25 KB budget).

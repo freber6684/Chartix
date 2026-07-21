@@ -254,3 +254,11 @@ updates.
 
 Annotations accept horizontal `line`/`band`, `vertical-line`, `box`, `point`, `callout`, `arrow`,
 and renderer-space `freeform` paths. Category positions accept either a label or numeric index.
+
+## Internationalized and dense layouts
+
+Axis formatters accept `locale`, `currency`, and `unit`. Label options add `maxWidth` and
+`overflow: 'wrap' | 'truncate' | 'show'`; adaptive ticks truncate automatically when necessary.
+Set `direction: 'rtl'` to mirror category order and `messages` to translate generated reset/help
+text. Accessibility `automaticPatterns` adds distinct textures to filled series. Use
+`createSmallMultiples(config, 'dataset' | 'category', columns)` to generate immutable facet grids.

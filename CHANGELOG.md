@@ -67,6 +67,8 @@ All notable Chartix changes are documented here. The project follows semantic ve
 - Interpolated data changes with deterministic category/dataset enter and exit states, plus reusable
   color interpolation for theme/property transitions.
 - Vertical-line, box, point, callout, arrow, and freeform annotations in Cartesian charts.
+- Axis label wrapping/truncation, formatted units, RTL category mirroring, localized generated UI,
+  automatic accessibility textures, and immutable small-multiple configuration generation.
 
 ## 0.1.0-alpha.2 - 2026-07-21
 
