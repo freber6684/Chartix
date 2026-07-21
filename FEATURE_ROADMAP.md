@@ -95,6 +95,10 @@ comparison, statistical, financial, hierarchy, network, flow, time, geographic, 
 charts. Each type receives its own renderer, accessible representation, tests, documentation, and
 playground example before being marked complete.
 
+The reusable layout platform now includes Web Mercator projection, tree/cluster, treemap, circle
+packing, force/collision, Voronoi, Delaunay, contour-cell, chord, Sankey/alluvial, and keyed data
+join primitives. These feed custom Canvas/SVG/hybrid modules through the public renderer contract.
+
 ## Chartix-only differentiators
 
 - [x] Local data-shape advisor recommends a chart with confidence, explanation, and suggestions.
