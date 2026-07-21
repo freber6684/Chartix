@@ -38,8 +38,8 @@ delivered in stable releases so partially implemented features never appear prod
 - [x] Per-mark colors/sizes/shapes, borders, accessible patterns/textures, shadows/glows, and CSS
       variable design tokens.
 - [x] Line curves, steps, dashes, point symbols, stacked marks, and mixed series.
-- [ ] Update transitions and pause/resume/seek/delay/loop controls are complete; exit transitions,
-      staggering, and motion-path morphing remain.
+- [ ] Data update/enter/exit transitions and pause/resume/seek/delay/loop controls are complete;
+      series staggering and motion-path morphing remain.
 - [ ] CSS/Figma token import, brand palettes, approved-color locks, theme pairing, and versioned
       presets are complete; visual theme designer and automatic OS switching remain.
 
@@ -57,7 +57,8 @@ delivered in stable releases so partially implemented features never appear prod
 ## Annotations and analytics
 
 - [x] Horizontal reference lines and highlighted numeric bands.
-- [ ] Vertical lines, boxes, points, callouts, arrows, images, and freeform drawing.
+- [ ] Vertical lines, boxes, points, callouts, arrows, and freeform drawing are complete; image
+      annotations remain.
 - [ ] Trend lines, regression, confidence intervals, forecasts, and moving averages are complete;
       control limits remain.
 - [ ] Outlier/anomaly detection is complete; peak/valley labels, change-point detection, and goal

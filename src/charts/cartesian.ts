@@ -371,6 +371,13 @@ export function drawVerticalFrame(
   }
   options.annotations?.forEach((annotation) => {
     const color = annotation.color ?? theme.mutedText;
+    const categoryX = (value: number | string | undefined): number => {
+      const index =
+        typeof value === 'string'
+          ? Math.max(0, labels.indexOf(value))
+          : Math.max(0, Math.min(labels.length - 1, value ?? 0));
+      return plot.left + ((index + 0.5) / Math.max(1, labels.length)) * plot.width;
+    };
     if (
       annotation.type === 'band' &&
       annotation.from !== undefined &&
@@ -404,6 +411,67 @@ export function drawVerticalFrame(
           font: font(600, theme.fontSize.label, theme.fontFamily),
         });
       }
+    } else if (annotation.type === 'vertical-line') {
+      const x = categoryX(annotation.x);
+      renderer.line(
+        [
+          { x, y: plot.top },
+          { x, y: plot.bottom },
+        ],
+        color,
+        annotation.width ?? 2,
+      );
+      if (annotation.label)
+        renderer.text(annotation.label, x + 5, plot.top + 5, {
+          baseline: 'top',
+          color,
+          font: font(600, theme.fontSize.label, theme.fontFamily),
+        });
+    } else if (annotation.type === 'box') {
+      const left = categoryX(annotation.x);
+      const right = categoryX(annotation.x2 ?? annotation.x);
+      const top = scale.project(annotation.to ?? annotation.y2 ?? scale.max);
+      const bottom = scale.project(annotation.from ?? annotation.value ?? scale.min);
+      renderer.roundedRect(
+        Math.min(left, right),
+        Math.min(top, bottom),
+        Math.max(2, Math.abs(right - left)),
+        Math.max(2, Math.abs(bottom - top)),
+        3,
+        color,
+      );
+    } else if (annotation.type === 'point' || annotation.type === 'callout') {
+      const x = categoryX(annotation.x);
+      const y = scale.project(annotation.value ?? 0);
+      renderer.circle({ x, y }, Math.max(4, annotation.width ?? 6), color, theme.background);
+      if (annotation.label)
+        renderer.text(annotation.label, x + 9, y - 9, {
+          baseline: 'bottom',
+          color,
+          backgroundColor: annotation.type === 'callout' ? theme.background : undefined,
+          padding: 4,
+          font: font(600, theme.fontSize.label, theme.fontFamily),
+        });
+    } else if (annotation.type === 'arrow') {
+      const start = { x: categoryX(annotation.x), y: scale.project(annotation.value ?? 0) };
+      const end = {
+        x: categoryX(annotation.x2),
+        y: scale.project(annotation.y2 ?? annotation.value ?? 0),
+      };
+      renderer.line([start, end], color, annotation.width ?? 2);
+      const angle = Math.atan2(end.y - start.y, end.x - start.x);
+      const wing = 8;
+      renderer.line(
+        [
+          { x: end.x - Math.cos(angle - 0.55) * wing, y: end.y - Math.sin(angle - 0.55) * wing },
+          end,
+          { x: end.x - Math.cos(angle + 0.55) * wing, y: end.y - Math.sin(angle + 0.55) * wing },
+        ],
+        color,
+        annotation.width ?? 2,
+      );
+    } else if (annotation.type === 'freeform' && annotation.points?.length) {
+      renderer.line(annotation.points, color, annotation.width ?? 2, { interpolation: 'smooth' });
     }
   });
   const step = plot.width / Math.max(1, labels.length);

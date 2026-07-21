@@ -186,13 +186,36 @@
             "additionalProperties": false,
             "required": ["type"],
             "properties": {
-              "type": { "enum": ["line", "band"] },
+              "type": {
+                "enum": [
+                  "line",
+                  "vertical-line",
+                  "band",
+                  "box",
+                  "point",
+                  "callout",
+                  "arrow",
+                  "freeform"
+                ]
+              },
               "value": { "type": "number" },
               "from": { "type": "number" },
               "to": { "type": "number" },
               "label": { "type": "string" },
               "color": { "$ref": "#/$defs/color" },
-              "width": { "type": "number", "exclusiveMinimum": 0 }
+              "width": { "type": "number", "exclusiveMinimum": 0 },
+              "x": { "type": ["number", "string"] },
+              "x2": { "type": ["number", "string"] },
+              "y2": { "type": "number" },
+              "points": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["x", "y"],
+                  "properties": { "x": { "type": "number" }, "y": { "type": "number" } }
+                }
+              }
             }
           }
         },

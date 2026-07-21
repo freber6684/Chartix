@@ -64,6 +64,9 @@ All notable Chartix changes are documented here. The project follows semantic ve
 - Complete requested specialized catalog: streamgraph, bullet, radial/solid gauges, sunburst,
   icicle, Sankey, chord, tree/org/mind-map/flow variants, calendar heatmap, contour, Marimekko,
   pictogram, waffle, word cloud, bump, Pareto, Renko, projected maps, and a 3D surface mesh.
+- Interpolated data changes with deterministic category/dataset enter and exit states, plus reusable
+  color interpolation for theme/property transitions.
+- Vertical-line, box, point, callout, arrow, and freeform annotations in Cartesian charts.
 
 ## 0.1.0-alpha.2 - 2026-07-21
 

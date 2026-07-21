@@ -27,6 +27,7 @@ import { summarizeChart } from '../intelligence/advisor.js';
 import { createSonificationPlan, dataToAccessibleText } from './sonification.js';
 import type { ChartPlugin, PluginContext } from './Plugin.js';
 import { registerScale, unregisterScale, type ScaleFactory } from './Scale.js';
+import { interpolateChartData } from './transitions.js';
 
 const validOptionKeys = new Set<keyof ChartOptions>([
   'animation',
@@ -158,6 +159,7 @@ export class Chartix {
   private backgroundImage?: HTMLImageElement;
   private destroyed = false;
   private animateNextRender = true;
+  private transitionFrom: ChartData | undefined;
   private performanceStats: PerformanceStats = {
     durationMs: 0,
     sourcePoints: 0,
@@ -258,6 +260,7 @@ export class Chartix {
   /** Update labels or datasets and animate the new values. */
   public update(data: Partial<ChartData>, options: { animate?: boolean } = {}): void {
     this.assertActive();
+    const previousData = cloneData(this.config.data);
     const nextData: ChartData = {
       labels: data.labels ? [...data.labels] : [...this.config.data.labels],
       datasets: data.datasets
@@ -269,6 +272,7 @@ export class Chartix {
       ...this.config,
       data: applyDataTransforms(nextData, this.config.options.transforms),
     };
+    this.transitionFrom = options.animate === false ? undefined : previousData;
     this.applyAccessibility();
     this.render(options.animate !== false);
   }
@@ -674,6 +678,7 @@ export class Chartix {
     this.animateNextRender = animateRender;
     const animation = this.resolveAnimation();
     if (!animation) {
+      this.transitionFrom = undefined;
       this.draw(1);
       return;
     }
@@ -724,7 +729,10 @@ export class Chartix {
         this.regions.push(region);
       },
     };
-    const renderData = this.visibleData();
+    const visibleData = this.visibleData();
+    const renderData = this.transitionFrom
+      ? interpolateChartData(this.transitionFrom, visibleData, progress)
+      : visibleData;
     const plot = createPlotArea(
       this.renderer,
       renderData,
@@ -741,7 +749,7 @@ export class Chartix {
       options: drawOptions,
       theme,
       plot,
-      progress,
+      progress: this.transitionFrom ? 1 : progress,
       interactions,
       hiddenDatasets: this.hiddenDatasets,
       ...(this.activeRegion ? { activeRegion: this.activeRegion } : {}),
@@ -771,6 +779,7 @@ export class Chartix {
     }
     this.drawGestureOverlay(theme.mutedText);
     if (progress >= 1) {
+      this.transitionFrom = undefined;
       this.performanceStats = {
         durationMs: Math.max(0, performance.now() - startedAt),
         sourcePoints: this.config.data.datasets.reduce(

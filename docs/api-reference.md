@@ -244,3 +244,13 @@ empty, missing, negative, outlier, long-label, time-series, and large-data fixtu
 
 `googleSheetsCSVURL` creates a public-sheet CSV endpoint. `connectTabularStream` consumes JSON,
 CSV, or TSV over WebSocket or Server-Sent Events and returns an explicit disconnect function.
+
+## Transitions and annotations
+
+Animated `chart.update()` calls interpolate existing values, grow entering categories/datasets from
+zero, and shrink exiting values before removal. `interpolateChartData` and `interpolateColor` are
+also public for custom renderers and framework transitions; pass `{ animate: false }` for immediate
+updates.
+
+Annotations accept horizontal `line`/`band`, `vertical-line`, `box`, `point`, `callout`, `arrow`,
+and renderer-space `freeform` paths. Category positions accept either a label or numeric index.

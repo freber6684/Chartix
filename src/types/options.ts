@@ -198,7 +198,7 @@ export interface LegendOptions {
 /** A horizontal reference line or highlighted numeric range. */
 export interface AnnotationOptions {
   /** Annotation shape. */
-  type: 'line' | 'band';
+  type: 'line' | 'vertical-line' | 'band' | 'box' | 'point' | 'callout' | 'arrow' | 'freeform';
   /** Value used by a line annotation. */
   value?: number;
   /** Lower value used by a band annotation. */
@@ -211,6 +211,14 @@ export interface AnnotationOptions {
   color?: string;
   /** Line width in CSS pixels. */
   width?: number;
+  /** Category label or index used for horizontal placement. */
+  x?: number | string;
+  /** Second category label or index used by boxes/arrows. */
+  x2?: number | string;
+  /** Second vertical value used by boxes/arrows. */
+  y2?: number;
+  /** Renderer-space points used by freeform annotations. */
+  points?: Array<{ x: number; y: number }>;
 }
 
 /** Large line-series sampling behavior. */
