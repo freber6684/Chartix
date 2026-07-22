@@ -109,6 +109,8 @@ changes so the next session can resume without reconstructing history.
       compact neutral drag handles, and a reset-to-default confirmation dialog.
 - [x] Keep live plot layout and drag overlays on one coordinate model, clearing stale hover state so
       tooltips remain aligned after direct manipulation and plot resizing.
+- [x] Load true regular, bold, italic, and bold-italic webfont faces while allowing style synthesis
+      for typefaces that do not publish every combination.
 
 ## Remaining for v0.1
 

@@ -1256,7 +1256,23 @@ function loadFont(font) {
   const link = document.createElement('link');
   link.rel = 'stylesheet';
   link.dataset.chartixFont = font;
-  link.href = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(font).replace(/%20/g, '+')}&display=swap`;
+  const family = encodeURIComponent(font).replace(/%20/g, '+');
+  link.href = `https://fonts.googleapis.com/css2?family=${family}:ital,wght@0,400;0,700;1,400;1,700&display=swap`;
+  link.addEventListener(
+    'error',
+    () => {
+      link.href = `https://fonts.googleapis.com/css2?family=${family}&display=swap`;
+    },
+    { once: true },
+  );
+  link.addEventListener(
+    'load',
+    () => {
+      if (Object.values(state.editor.textStyles).some((style) => style.fontFamily === font))
+        renderPlayground();
+    },
+    { once: true },
+  );
   document.head.append(link);
 }
 
@@ -1623,6 +1639,7 @@ document.addEventListener('click', (event) => {
     if (key === 'fontWeight') style.fontWeight = style.fontWeight >= 700 ? 400 : 700;
     if (key === 'fontStyle') style.fontStyle = style.fontStyle === 'italic' ? 'normal' : 'italic';
     if (key === 'underline') style.underline = !style.underline;
+    if (key === 'fontWeight' || key === 'fontStyle') loadFont(style.fontFamily);
     rerenderFromEditor(true);
   }
   if (event.target.closest('[data-apply-all]')) {

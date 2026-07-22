@@ -2,7 +2,7 @@
   color: #e8e8ed;
   background: #08090b;
   font-family: 'Space Mono', monospace;
-  font-synthesis: none;
+  font-synthesis: weight style;
   --ink: #f3f2f6;
   --muted: #9697a4;
   --subtle: #6f707b;
