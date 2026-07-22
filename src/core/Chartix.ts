@@ -38,6 +38,7 @@ const validOptionKeys = new Set<keyof ChartOptions>([
   'backgroundImage',
   'backgroundImageOpacity',
   'colors',
+  'cornerRadius',
   'crosshair',
   'dataLabels',
   'direction',

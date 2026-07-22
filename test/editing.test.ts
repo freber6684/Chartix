@@ -33,7 +33,7 @@ describe('direct editing history', () => {
     const chart = new Chartix(canvas, {
       type: 'editing-test',
       data: { labels: ['A'], datasets: [{ label: 'Value', values: [1] }] },
-      options: { animation: false, editable: true },
+      options: { animation: false, editable: true, cornerRadius: 12 },
     });
 
     chart.setValue(0, 0, 5);
