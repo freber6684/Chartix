@@ -1360,6 +1360,31 @@ function installDirectEditor(host, canvas) {
   plot.querySelector('.plot-resize').addEventListener('pointerdown', beginResize);
 }
 
+let layoutPreviewFrame = 0;
+
+function previewEditorLayout() {
+  if (layoutPreviewFrame) return;
+  layoutPreviewFrame = window.requestAnimationFrame(() => {
+    layoutPreviewFrame = 0;
+    state.playground?.updateOptions({
+      animation: false,
+      layout: deepClone(state.editor.layout),
+    });
+  });
+}
+
+function commitEditorLayout() {
+  if (layoutPreviewFrame) {
+    window.cancelAnimationFrame(layoutPreviewFrame);
+    layoutPreviewFrame = 0;
+  }
+  state.playground?.updateOptions({
+    animation: false,
+    layout: deepClone(state.editor.layout),
+  });
+  updateGeneratedCode(currentConfig());
+}
+
 function beginDrag(event) {
   if (event.target.closest('.plot-resize')) return;
   event.preventDefault();
@@ -1383,15 +1408,19 @@ function beginDrag(event) {
       x: role === 'plot' ? x - state.editor.padding.left - 54 : x,
       y: role === 'plot' ? y - state.editor.padding.top - 95 - state.editor.plotGap : y,
     };
-    state.playground?.updateOptions({ layout: deepClone(state.editor.layout) });
-    updateGeneratedCode(currentConfig());
+    previewEditorLayout();
   };
   const end = () => {
     handle.removeEventListener('pointermove', move);
     handle.removeEventListener('pointerup', end);
+    handle.removeEventListener('pointercancel', end);
+    handle.classList.remove('is-dragging');
+    commitEditorLayout();
   };
+  handle.classList.add('is-dragging');
   handle.addEventListener('pointermove', move);
   handle.addEventListener('pointerup', end);
+  handle.addEventListener('pointercancel', end);
 }
 
 function beginResize(event) {
@@ -1422,15 +1451,19 @@ function beginResize(event) {
       width /
       Math.max(120, host.clientWidth - state.editor.padding.left - state.editor.padding.right - 70);
     state.editor.layout.plot.heightScale = height / 300;
-    state.playground?.updateOptions({ layout: deepClone(state.editor.layout) });
-    updateGeneratedCode(currentConfig());
+    previewEditorLayout();
   };
   const end = () => {
     handle.removeEventListener('pointermove', move);
     handle.removeEventListener('pointerup', end);
+    handle.removeEventListener('pointercancel', end);
+    plot.classList.remove('is-resizing');
+    commitEditorLayout();
   };
+  plot.classList.add('is-resizing');
   handle.addEventListener('pointermove', move);
   handle.addEventListener('pointerup', end);
+  handle.addEventListener('pointercancel', end);
 }
 
 function showInlineEditor(host, x, y, value, save, type = 'text') {
@@ -1601,7 +1634,19 @@ document.addEventListener('click', (event) => {
 });
 
 document.querySelector('#back-to-gallery').addEventListener('click', closeDetail);
-document.querySelector('#reset-controls').addEventListener('click', resetControls);
+const resetDialog = document.querySelector('#reset-dialog');
+document.querySelector('#reset-controls').addEventListener('click', () => {
+  document.querySelector('#reset-chart-name').textContent = state.selected?.name ?? 'this chart';
+  resetDialog.showModal();
+});
+document.querySelector('#cancel-reset').addEventListener('click', () => resetDialog.close());
+document.querySelector('#confirm-reset').addEventListener('click', () => {
+  resetControls();
+  resetDialog.close();
+});
+resetDialog.addEventListener('click', (event) => {
+  if (event.target === resetDialog) resetDialog.close();
+});
 document.querySelector('#apply-preview-size').addEventListener('click', () => {
   applyPreviewSize(
     Number(document.querySelector('#preview-width-input').value),

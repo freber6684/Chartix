@@ -9,6 +9,7 @@ const context = (): ChartRenderContext => ({
     clear: vi.fn(),
     gradient: vi.fn(() => '#555'),
     line: vi.fn(),
+    polygon: vi.fn(),
     area: vi.fn(),
     areaBetween: vi.fn(),
     circle: vi.fn(),
@@ -47,6 +48,15 @@ const context = (): ChartRenderContext => ({
   progress: 1,
   interactions: { add: vi.fn() },
   hiddenDatasets: new Set(),
+});
+
+describe('world map rendering', () => {
+  it('draws geographic land before plotting locations', () => {
+    const draw = context();
+    specializedCharts.find((chart) => chart.id === 'world-map')?.render(draw);
+    expect(draw.renderer.polygon).toHaveBeenCalledTimes(8);
+    expect(draw.renderer.circle).toHaveBeenCalledTimes(2);
+  });
 });
 
 describe('flow, geographic, and specialized chart catalog', () => {

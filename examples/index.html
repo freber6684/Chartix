@@ -14,9 +14,9 @@
       href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="./styles.css?v=quality-4" />
-    <script src="../dist/chartix.min.js?v=quality-4" defer></script>
-    <script src="./app.js?v=quality-4" defer></script>
+    <link rel="stylesheet" href="./styles.css?v=quality-5" />
+    <script src="../dist/chartix.min.js?v=quality-5" defer></script>
+    <script src="./app.js?v=quality-5" defer></script>
   </head>
   <body>
     <header class="site-header">
@@ -225,7 +225,9 @@ Chartix.register(BarChart);
             <section class="tab-panel" data-panel="playground">
               <div class="inspector-header">
                 <div><span class="panel-icon">✦</span><strong>Customize</strong></div>
-                <button class="text-button" type="button" id="reset-controls">Reset</button>
+                <button class="text-button reset-button" type="button" id="reset-controls">
+                  Reset to default
+                </button>
               </div>
               <form id="chart-controls">
                 <fieldset>
@@ -470,6 +472,26 @@ Chartix.register(BarChart);
         </div>
       </section>
     </main>
+
+    <dialog class="confirm-dialog" id="reset-dialog" aria-labelledby="reset-dialog-title">
+      <form method="dialog" class="confirm-dialog-card">
+        <div class="confirm-dialog-icon" aria-hidden="true">↺</div>
+        <div>
+          <p class="confirm-dialog-eyebrow">Reset customization</p>
+          <h2 id="reset-dialog-title">Reset <span id="reset-chart-name">this chart</span>?</h2>
+          <p>
+            This returns the design, text, layout, size, and interactions to their original
+            defaults. Your source data will stay unchanged.
+          </p>
+        </div>
+        <div class="confirm-dialog-actions">
+          <button class="button button-quiet" type="button" id="cancel-reset">Keep changes</button>
+          <button class="button confirm-reset-button" type="button" id="confirm-reset">
+            Reset chart
+          </button>
+        </div>
+      </form>
+    </dialog>
 
     <footer class="site-footer">
       <a class="brand footer-brand" href="#"

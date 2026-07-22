@@ -105,6 +105,8 @@ changes so the next session can resume without reconstructing history.
       chart-specific bar/column corner roundness.
 - [x] Make bold, italic, underline, and rich text styling consistent across titles, axes, axis
       titles, data labels, and tooltips, with clear pressed-state feedback in the editor.
+- [x] Add a visible dependency-free world basemap, frame-rate-throttled direct manipulation,
+      compact neutral drag handles, and a reset-to-default confirmation dialog.
 
 ## Remaining for v0.1
 
@@ -173,7 +175,7 @@ formatting, lint, strict types, unit tests, production bundles, and separate lea
 ## Latest validation
 
 - Formatting, ESLint, and strict TypeScript: passed with no warnings or errors.
-- Unit tests: 147 passed across 35 test files, including 45 chart/theme visual baselines.
+- Unit tests: 148 passed across 35 test files, including 45 chart/theme visual baselines.
 - Production build: ESM, CJS, standalone embed ESM, browser IIFE, minified browser IIFE, and TypeScript declarations generated.
 - Lean original-family core: measured on every build against a 35 KB gzip budget.
 - Complete library and public embed: measured against 70 KB and 40 KB gzip budgets respectively.

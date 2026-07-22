@@ -40,6 +40,7 @@ export interface Renderer {
     opacity?: number,
   ): void;
   line(points: Point[], color: string, width: number, style?: LineStyle): void;
+  polygon?(points: Point[], fill: Paint, stroke?: string, strokeWidth?: number): void;
   area(points: Point[], baseline: number, fill: Paint): void;
   areaBetween(upper: Point[], lower: Point[], fill: string): void;
   circle(point: Point, radius: number, fill: string, stroke?: string): void;
@@ -272,6 +273,24 @@ export class CanvasRenderer implements Renderer {
     this.context.setLineDash(style.dash ?? []);
     this.context.stroke();
     this.context.setLineDash([]);
+  }
+
+  /** Draw a closed polygon, used by maps and other free-form geometry. */
+  public polygon(points: Point[], fill: Paint, stroke?: string, strokeWidth = 1): void {
+    const first = points[0];
+    if (!first || points.length < 3) return;
+    this.context.beginPath();
+    this.context.moveTo(first.x, first.y);
+    points.slice(1).forEach((point) => this.context.lineTo(point.x, point.y));
+    this.context.closePath();
+    this.context.fillStyle = fill;
+    this.context.fill();
+    if (stroke) {
+      this.context.strokeStyle = stroke;
+      this.context.lineWidth = strokeWidth;
+      this.context.lineJoin = 'round';
+      this.context.stroke();
+    }
   }
 
   /** Fill the area between a polyline and a baseline. */

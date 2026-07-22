@@ -511,7 +511,141 @@ export const RenkoChart: ChartModule = {
   },
 };
 
-function renderGeo(context: ChartRenderContext, routes: boolean): void {
+// Deliberately compact, dependency-free coastlines. Coordinates are longitude/latitude pairs and
+// are detailed enough for a clear world-map context without making every Chartix bundle carry a
+// large GeoJSON payload.
+const WORLD_LANDMASSES: Array<Array<[number, number]>> = [
+  [
+    [-168, 72],
+    [-140, 70],
+    [-125, 60],
+    [-112, 52],
+    [-97, 50],
+    [-83, 45],
+    [-66, 47],
+    [-53, 58],
+    [-60, 72],
+    [-92, 80],
+    [-130, 74],
+  ],
+  [
+    [-82, 12],
+    [-74, 5],
+    [-70, -8],
+    [-62, -18],
+    [-58, -35],
+    [-67, -55],
+    [-76, -42],
+    [-80, -20],
+    [-78, -2],
+  ],
+  [
+    [-12, 36],
+    [4, 45],
+    [20, 58],
+    [42, 67],
+    [70, 72],
+    [105, 65],
+    [130, 55],
+    [154, 60],
+    [170, 48],
+    [145, 38],
+    [122, 22],
+    [105, 8],
+    [80, 20],
+    [58, 27],
+    [42, 34],
+    [28, 40],
+    [15, 36],
+  ],
+  [
+    [-17, 35],
+    [4, 37],
+    [28, 31],
+    [43, 12],
+    [50, -12],
+    [35, -34],
+    [18, -35],
+    [4, -22],
+    [-8, 5],
+  ],
+  [
+    [43, -13],
+    [50, -17],
+    [49, -27],
+    [44, -25],
+  ],
+  [
+    [112, -11],
+    [132, -12],
+    [153, -27],
+    [146, -39],
+    [122, -34],
+    [113, -22],
+  ],
+  [
+    [-52, 60],
+    [-32, 68],
+    [-22, 78],
+    [-45, 82],
+    [-62, 73],
+  ],
+  [
+    [-180, -70],
+    [-130, -75],
+    [-70, -72],
+    [-10, -78],
+    [55, -73],
+    [120, -76],
+    [180, -70],
+  ],
+];
+
+function projectGeo(context: ChartRenderContext, longitude: number, latitude: number) {
+  return geoMercator(longitude, Math.max(-82, Math.min(82, latitude)), {
+    scale: context.plot.width / (Math.PI * 2),
+    translate: [
+      context.plot.left + context.plot.width / 2,
+      context.plot.top + context.plot.height / 2,
+    ],
+  });
+}
+
+function renderWorldBase(context: ChartRenderContext): void {
+  context.renderer.roundedRect(
+    context.plot.left,
+    context.plot.top,
+    context.plot.width,
+    context.plot.height,
+    Math.min(12, context.theme.radius + 4),
+    context.theme.background,
+  );
+  [-120, -60, 0, 60, 120].forEach((longitude) =>
+    context.renderer.line(
+      [projectGeo(context, longitude, -75), projectGeo(context, longitude, 75)],
+      context.theme.grid,
+      0.7,
+    ),
+  );
+  [-60, -30, 0, 30, 60].forEach((latitude) =>
+    context.renderer.line(
+      Array.from({ length: 25 }, (_, index) => projectGeo(context, -180 + index * 15, latitude)),
+      context.theme.grid,
+      0.7,
+    ),
+  );
+  WORLD_LANDMASSES.forEach((landmass) => {
+    const points = landmass.map(([longitude, latitude]) =>
+      projectGeo(context, longitude, latitude),
+    );
+    if (context.renderer.polygon)
+      context.renderer.polygon(points, context.theme.grid, context.theme.mutedText, 0.8);
+    else context.renderer.line([...points, points[0]!], context.theme.mutedText, 1);
+  });
+}
+
+function renderGeo(context: ChartRenderContext, routes: boolean, showWorld = true): void {
+  if (showWorld) renderWorldBase(context);
   const points = context.data.datasets.flatMap((dataset, datasetIndex) =>
     (dataset.points ?? []).flatMap((point, valueIndex) =>
       typeof point.x === 'number' && point.y !== null
@@ -530,13 +664,7 @@ function renderGeo(context: ChartRenderContext, routes: boolean): void {
   );
   const projected = points.map((point) => ({
     ...point,
-    ...geoMercator(point.longitude, point.latitude, {
-      scale: context.plot.width / (Math.PI * 2),
-      translate: [
-        context.plot.left + context.plot.width / 2,
-        context.plot.top + context.plot.height / 2,
-      ],
-    }),
+    ...projectGeo(context, point.longitude, point.latitude),
   }));
   if (routes && projected.length > 1)
     context.renderer.line(projected, context.theme.palette[0] ?? context.theme.text, 2, {
@@ -566,7 +694,10 @@ export const RouteMapChart: ChartModule = {
   id: 'route-map',
   render: (context) => renderGeo(context, true),
 };
-export const WorldMapChart = delegate('world-map', GeoScatterChart);
+export const WorldMapChart: ChartModule = {
+  id: 'world-map',
+  render: (context) => renderGeo(context, false, true),
+};
 export const ChoroplethChart = delegate('choropleth', ContourChart);
 
 export const Surface3DChart: ChartModule = {
