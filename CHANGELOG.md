@@ -6,6 +6,9 @@ All notable Chartix changes are documented here. The project follows semantic ve
 
 ### Added
 
+- Vertical/horizontal bar category-gap and grouped-series spacing controls.
+- Power BI-style automatic, categorical, and continuous dense-axis label modes with adjustable
+  density that preserve every data mark.
 - In-chart CSV, JSON, PNG, JPEG, and copy-image toolbar with configurable visibility and placement.
 - Browser CSV/JSON upload, paste, and API import with inferred category/value field mapping.
 - Optional searchable, sortable, paginated visible data tables below charts.

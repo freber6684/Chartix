@@ -38,6 +38,8 @@ const validOptionKeys = new Set<keyof ChartOptions>([
   'backgroundImage',
   'backgroundImageOpacity',
   'canvas',
+  'barDatasetGap',
+  'barGapRatio',
   'colors',
   'cornerRadius',
   'crosshair',

@@ -18,6 +18,7 @@ class RecordingRenderer implements Renderer {
   public textStyles: Array<Parameters<Renderer['text']>[3]> = [];
   public textPositions: Array<{ value: string; x: number; y: number }> = [];
   public rectangles = 0;
+  public rectangleSizes: Array<{ width: number; height: number }> = [];
   public lines = 0;
   public radii: number[] = [];
   public clear(): void {}
@@ -34,14 +35,9 @@ class RecordingRenderer implements Renderer {
   public ringSegment(): void {
     this.segments += 1;
   }
-  public roundedRect(
-    _x: number,
-    _y: number,
-    _width: number,
-    _height: number,
-    radius: number,
-  ): void {
+  public roundedRect(_x: number, _y: number, width: number, height: number, radius: number): void {
     this.rectangles += 1;
+    this.rectangleSizes.push({ width, height });
     this.radii.push(radius);
   }
   public text(value: string, x: number, y: number, options: Parameters<Renderer['text']>[3]): void {
@@ -191,6 +187,94 @@ describe('built-in chart modules', () => {
       visible.theme,
     );
     expect(titledPlot.bottom).toBeLessThan(untitledPlot.bottom);
+  });
+
+  it('controls category and series spacing for vertical and horizontal bars', () => {
+    const closeRenderer = new RecordingRenderer();
+    const close = context(closeRenderer);
+    close.options = {
+      showLegend: false,
+      dataLabels: { show: false },
+      barGapRatio: 0,
+      barDatasetGap: 0,
+    };
+    BarChart.render(close);
+
+    const spacedRenderer = new RecordingRenderer();
+    const spaced = context(spacedRenderer);
+    spaced.options = {
+      showLegend: false,
+      dataLabels: { show: false },
+      barGapRatio: 0.75,
+      barDatasetGap: 6,
+    };
+    BarChart.render(spaced);
+    expect(Math.max(...closeRenderer.rectangleSizes.map((rect) => rect.width))).toBeGreaterThan(
+      Math.max(...spacedRenderer.rectangleSizes.map((rect) => rect.width)),
+    );
+
+    const closeHorizontalRenderer = new RecordingRenderer();
+    const closeHorizontal = context(closeHorizontalRenderer);
+    closeHorizontal.options = { ...close.options, horizontal: true };
+    BarChart.render(closeHorizontal);
+    const spacedHorizontalRenderer = new RecordingRenderer();
+    const spacedHorizontal = context(spacedHorizontalRenderer);
+    spacedHorizontal.options = { ...spaced.options, horizontal: true };
+    BarChart.render(spacedHorizontal);
+    expect(
+      Math.max(...closeHorizontalRenderer.rectangleSizes.map((rect) => rect.height)),
+    ).toBeGreaterThan(
+      Math.max(...spacedHorizontalRenderer.rectangleSizes.map((rect) => rect.height)),
+    );
+  });
+
+  it('samples dense category labels without removing bars', () => {
+    const labels = Array.from({ length: 30 }, (_, index) => `Category ${index + 1}`);
+    const allRenderer = new RecordingRenderer();
+    const all = context(allRenderer);
+    all.data = {
+      labels,
+      datasets: [{ label: 'Series', values: labels.map((_, index) => index + 1) }],
+    };
+    all.options = {
+      showLegend: false,
+      dataLabels: { show: false },
+      scales: { x: { categoryMode: 'categorical' } },
+    };
+    BarChart.render(all);
+
+    const sampledRenderer = new RecordingRenderer();
+    const sampled = context(sampledRenderer);
+    sampled.data = all.data;
+    sampled.options = {
+      showLegend: false,
+      dataLabels: { show: false },
+      xLabels: { overflow: 'show' },
+      scales: { x: { categoryMode: 'continuous', labelDensity: 0.35 } },
+    };
+    BarChart.render(sampled);
+    const allCategoryLabels = allRenderer.labels.filter((label) => labels.includes(label));
+    const sampledCategoryLabels = sampledRenderer.labels.filter((label) => labels.includes(label));
+    expect(allCategoryLabels).toHaveLength(30);
+    expect(sampledCategoryLabels.length).toBeLessThan(10);
+    expect(sampledCategoryLabels).toEqual(expect.arrayContaining(['Category 1', 'Category 30']));
+    expect(sampledRenderer.rectangleSizes).toHaveLength(30);
+
+    const horizontalRenderer = new RecordingRenderer();
+    const horizontal = context(horizontalRenderer);
+    horizontal.data = all.data;
+    horizontal.options = {
+      horizontal: true,
+      showLegend: false,
+      dataLabels: { show: false },
+      yLabels: { overflow: 'show' },
+      scales: { y: { categoryMode: 'continuous', labelDensity: 0.35 } },
+    };
+    BarChart.render(horizontal);
+    expect(horizontalRenderer.labels.filter((label) => labels.includes(label)).length).toBeLessThan(
+      15,
+    );
+    expect(horizontalRenderer.rectangleSizes).toHaveLength(30);
   });
 
   it('styles the legend container, markers, and text independently', () => {

@@ -21,6 +21,8 @@ describe('embed JSON Schema', () => {
         'backgroundImage',
         'backgroundImageOpacity',
         'canvas',
+        'barDatasetGap',
+        'barGapRatio',
         'colors',
         'cornerRadius',
         'crosshair',

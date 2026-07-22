@@ -1,5 +1,6 @@
 import {
   createAxisScale,
+  categoryTickStep,
   dataLabelRendererStyle,
   drawVerticalFrame,
   fitAxisLabel,
@@ -7,6 +8,7 @@ import {
   horizontalCategoryAxisMetrics,
   numericValues,
   rendererTextStyle,
+  shouldDrawCategoryTick,
   textStyle,
 } from './cartesian.js';
 import type { ChartModule, ChartRenderContext } from './types.js';
@@ -48,6 +50,14 @@ function markRadius(context: ChartRenderContext, width: number, height: number):
   );
 }
 
+function categoryGap(context: ChartRenderContext, fallback: number): number {
+  return Math.max(0, Math.min(0.9, context.options.barGapRatio ?? fallback));
+}
+
+function seriesGap(context: ChartRenderContext, slotSize: number): number {
+  return Math.max(0, Math.min(slotSize - 1, context.options.barDatasetGap ?? 3));
+}
+
 function renderVertical(context: ChartRenderContext): void {
   const { data, options, plot, renderer, theme } = context;
   const allValues = options.stacked
@@ -56,8 +66,13 @@ function renderVertical(context: ChartRenderContext): void {
   const scale = drawVerticalFrame(renderer, allValues, data.labels, plot, options, theme);
   const baseline = scale.project(Math.max(scale.min, Math.min(0, scale.max)));
   const categoryWidth = plot.width / data.labels.length;
-  const groupWidth = categoryWidth * 0.68;
+  const groupWidth =
+    options.barGapRatio === undefined
+      ? categoryWidth * 0.68
+      : categoryWidth * (1 - categoryGap(context, 0.32));
   const barWidth = Math.max(2, options.stacked ? groupWidth : groupWidth / data.datasets.length);
+  const gap = seriesGap(context, barWidth);
+  const gapOffset = options.barDatasetGap === undefined ? 0 : gap / 2;
   const positiveOffsets = new Array<number>(data.labels.length).fill(0);
   const negativeOffsets = new Array<number>(data.labels.length).fill(0);
 
@@ -83,11 +98,12 @@ function renderVertical(context: ChartRenderContext): void {
       const animatedEnd = endValue * datasetProgress;
       const startY = options.stacked ? scale.project(animatedStart) : baseline;
       const targetY = scale.project(animatedEnd);
-      const x =
+      const slotX =
         plot.left +
         valueIndex * categoryWidth +
         (categoryWidth - groupWidth) / 2 +
         (options.stacked ? 0 : datasetIndex * barWidth);
+      const x = slotX + gapOffset;
       const y = Math.min(startY, targetY);
       const height = Math.abs(targetY - startY);
       const fill =
@@ -99,13 +115,13 @@ function renderVertical(context: ChartRenderContext): void {
         context.activeRegions?.some(
           (region) => region.datasetIndex === datasetIndex && region.valueIndex === valueIndex,
         );
-      const drawnWidth = Math.max(1, barWidth - 3);
+      const drawnWidth = Math.max(1, barWidth - gap);
       const radius = markRadius(context, drawnWidth, height);
       if (active)
         renderer.roundedRect(
           x - 2,
           y - 2,
-          Math.max(1, barWidth + 1),
+          drawnWidth + 4,
           height + 4,
           radius + 2,
           `${valueColor}55`,
@@ -121,9 +137,9 @@ function renderVertical(context: ChartRenderContext): void {
         datasetLabel: dataset.label,
         value: rawValue,
         color: valueColor,
-        x: x + Math.max(1, barWidth - 3) / 2,
+        x: x + drawnWidth / 2,
         y,
-        bounds: { x, y, width: Math.max(1, barWidth - 3), height: Math.max(1, height) },
+        bounds: { x, y, width: drawnWidth, height: Math.max(1, height) },
       });
       const labels = options.dataLabels;
       if (labels?.show) {
@@ -134,17 +150,12 @@ function renderVertical(context: ChartRenderContext): void {
             : inside
               ? y + 12 + (labels.offset ?? 0)
               : y - 8 - (labels.offset ?? 0);
-        renderer.text(
-          formatTick(value, options.scales?.y),
-          x + Math.max(1, barWidth - 3) / 2,
-          labelY,
-          {
-            align: 'center',
-            baseline: 'middle',
-            rotation: labels.rotation,
-            ...dataLabelRendererStyle(options, theme, inside ? theme.background : theme.text),
-          },
-        );
+        renderer.text(formatTick(value, options.scales?.y), x + drawnWidth / 2, labelY, {
+          align: 'center',
+          baseline: 'middle',
+          rotation: labels.rotation,
+          ...dataLabelRendererStyle(options, theme, inside ? theme.background : theme.text),
+        });
       }
     });
   });
@@ -195,12 +206,20 @@ function renderHorizontal(context: ChartRenderContext): void {
   });
 
   const categoryHeight = plot.height / data.labels.length;
-  const groupHeight = categoryHeight * 0.64;
+  const groupHeight =
+    options.barGapRatio === undefined
+      ? categoryHeight * 0.64
+      : categoryHeight * (1 - categoryGap(context, 0.36));
   const barHeight = Math.max(2, options.stacked ? groupHeight : groupHeight / data.datasets.length);
+  const gap = seriesGap(context, barHeight);
+  const gapOffset = options.barDatasetGap === undefined ? 0 : gap / 2;
   const positiveOffsets = new Array<number>(data.labels.length).fill(0);
   const negativeOffsets = new Array<number>(data.labels.length).fill(0);
   data.labels.forEach((label, index) => {
     if (options.scales?.y?.display === false) return;
+    const categoryAxisOptions = options.scales?.y ?? {};
+    const skip = categoryTickStep(data.labels.length, plot.height, categoryAxisOptions, 28);
+    if (!shouldDrawCategoryTick(index, data.labels.length, skip, categoryAxisOptions)) return;
     const labels = options.yLabels;
     if (labels?.show === false) return;
     const style = {
@@ -309,11 +328,12 @@ function renderHorizontal(context: ChartRenderContext): void {
       const startX = options.stacked ? scale.project(startValue * datasetProgress) : baseline;
       const targetX = scale.project(endValue * datasetProgress);
       const x = Math.min(startX, targetX);
-      const y =
+      const slotY =
         plot.top +
         valueIndex * categoryHeight +
         (categoryHeight - groupHeight) / 2 +
         (options.stacked ? 0 : datasetIndex * barHeight);
+      const y = slotY + gapOffset;
       const width = Math.abs(targetX - startX);
       const fill =
         dataset.pattern && renderer.pattern
@@ -324,14 +344,14 @@ function renderHorizontal(context: ChartRenderContext): void {
         context.activeRegions?.some(
           (region) => region.datasetIndex === datasetIndex && region.valueIndex === valueIndex,
         );
-      const drawnHeight = Math.max(1, barHeight - 3);
+      const drawnHeight = Math.max(1, barHeight - gap);
       const radius = markRadius(context, width, drawnHeight);
       if (active)
         renderer.roundedRect(
           x - 2,
           y - 2,
           width + 4,
-          Math.max(1, barHeight + 1),
+          drawnHeight + 4,
           radius + 2,
           `${valueColor}55`,
         );
@@ -347,8 +367,8 @@ function renderHorizontal(context: ChartRenderContext): void {
         value: rawValue,
         color: valueColor,
         x: x + width,
-        y: y + Math.max(1, barHeight - 3) / 2,
-        bounds: { x, y, width: Math.max(1, width), height: Math.max(1, barHeight - 3) },
+        y: y + drawnHeight / 2,
+        bounds: { x, y, width: Math.max(1, width), height: drawnHeight },
       });
       const labels = options.dataLabels;
       if (labels?.show) {
@@ -359,17 +379,12 @@ function renderHorizontal(context: ChartRenderContext): void {
             : inside
               ? x + width - 8 - (labels.offset ?? 0)
               : x + width + 8 + (labels.offset ?? 0);
-        renderer.text(
-          formatTick(value, options.scales?.y),
-          labelX,
-          y + Math.max(1, barHeight - 3) / 2,
-          {
-            align: labels.position === 'center' ? 'center' : inside ? 'right' : 'left',
-            baseline: 'middle',
-            rotation: labels.rotation,
-            ...dataLabelRendererStyle(options, theme, inside ? theme.background : theme.text),
-          },
-        );
+        renderer.text(formatTick(value, options.scales?.y), labelX, y + drawnHeight / 2, {
+          align: labels.position === 'center' ? 'center' : inside ? 'right' : 'left',
+          baseline: 'middle',
+          rotation: labels.rotation,
+          ...dataLabelRendererStyle(options, theme, inside ? theme.background : theme.text),
+        });
       }
     });
   });

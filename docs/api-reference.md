@@ -26,6 +26,8 @@ gaps. Scatter and bubble datasets may additionally use `points: [{x, y, r?}]`. D
 | `annotations`          | `AnnotationOptions[]`         | Horizontal reference lines and highlighted value bands.               |
 | `ariaLabel`            | generated string              | Accessible canvas description override.                               |
 | `backgroundColor`      | theme token                   | Canvas background override.                                           |
+| `barGapRatio`          | `0.32`                        | Empty share of each vertical or horizontal bar category slot.         |
+| `barDatasetGap`        | `3`                           | Pixel gap between series inside a grouped bar category.               |
 | `colors`               | `string[]`                    | Dataset or slice palette override.                                    |
 | `cornerRadius`         | theme token                   | Rounded corners for bar, column, and combo-bar marks.                 |
 | `crosshair`            | disabled                      | Optional x, y, or two-axis guides through the active Cartesian mark.  |
@@ -69,7 +71,10 @@ gaps. Scatter and bubble datasets may additionally use `points: [{x, y, r?}]`. D
 
 `scales.x`, `scales.y`, and `scales.y1` accept linear, logarithmic, time, percentage, and category
 types. Configure `min`, `max`, `reverse`, `title`, `tickCount`, automatic/numeric `tickSkip`,
-`labelsInside`, `minorTicks`, dashed/custom-color `grid`, or numeric `breaks`. Formatting presets
+`categoryMode`, `labelDensity`, `labelsInside`, `minorTicks`, dashed/custom-color `grid`, or numeric
+`breaks`. `categoryMode: 'categorical'` displays every category label. `auto` and `continuous`
+preserve every mark while sampling labels to fit the available space; continuous mode also keeps
+both endpoints visible. Formatting presets
 cover automatic, compact, currency, percentage, date, currency code, and locale. JavaScript callers
 can use `tickFormatter`; JSON embeds use the serializable presets. Exported scale primitives include
 linear, log, time, percentage, band, and radial scales.

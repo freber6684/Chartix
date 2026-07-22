@@ -1,6 +1,6 @@
 # Chartix project status
 
-Last updated: 2026-07-21
+Last updated: 2026-07-22
 
 Latest testable version: `0.1.0-alpha.2`
 
@@ -19,6 +19,9 @@ changes so the next session can resume without reconstructing history.
 - [x] Add immutable configuration normalization and clear runtime validation.
 - [x] Add shared light/dark design tokens, readable numeric scales, and reduced-motion support.
 - [x] Implement grouped vertical and horizontal bar charts with rounded gradient bars.
+- [x] Add configurable category and grouped-series spacing to vertical and horizontal bars.
+- [x] Add automatic/categorical/continuous dense-axis modes with adjustable label density while
+      preserving every chart mark.
 - [x] Implement line charts with markers and optional area fills.
 - [x] Implement pie and doughnut charts with configurable holes, angles, slice colors, and labels.
 - [x] Implement scatter charts with multiple datasets and numeric x/y scales.

@@ -950,13 +950,10 @@ export function drawVerticalFrame(
     }
   });
   const step = plot.width / Math.max(1, labels.length);
-  const skip =
-    options.scales?.x?.tickSkip === 'auto'
-      ? Math.max(1, Math.ceil(labels.length / Math.max(1, Math.floor(plot.width / 72))))
-      : Math.max(1, options.scales?.x?.tickSkip ?? 1);
+  const skip = categoryTickStep(labels.length, plot.width, xAxis, 72);
   labels.forEach((label, index) => {
     if (xAxis.display === false) return;
-    if (index % skip !== 0) return;
+    if (!shouldDrawCategoryTick(index, labels.length, skip, xAxis)) return;
     const labelOptions = options.xLabels;
     if (labelOptions?.show === false) return;
     const style = {
@@ -973,7 +970,12 @@ export function drawVerticalFrame(
         label,
         labelOptions?.maxWidth ?? step * 0.9,
         labelOptions?.fontSize ?? theme.fontSize.tick,
-        labelOptions?.overflow ?? (options.scales?.x?.tickSkip === 'auto' ? 'truncate' : 'show'),
+        labelOptions?.overflow ??
+          (xAxis.tickSkip === 'auto' ||
+          xAxis.categoryMode === 'auto' ||
+          xAxis.categoryMode === 'continuous'
+            ? 'truncate'
+            : 'show'),
       ),
       plot.left + step * (index + 0.5),
       (xAxis.position === 'top' ? plot.top - 16 : plot.bottom + 16) +
@@ -1019,4 +1021,30 @@ export function drawVerticalFrame(
     );
   }
   return scale;
+}
+
+/** Resolve readable category-label sampling without removing any chart marks. */
+export function categoryTickStep(
+  labelCount: number,
+  availableSize: number,
+  axis: AxisOptions = {},
+  targetSpacing = 72,
+): number {
+  if (typeof axis.tickSkip === 'number') return Math.max(1, Math.floor(axis.tickSkip));
+  const mode = axis.categoryMode ?? (axis.tickSkip === 'auto' ? 'auto' : 'categorical');
+  if (mode === 'categorical') return 1;
+  const density = Math.max(0.1, Math.min(1, axis.labelDensity ?? 0.7));
+  const visibleLabels = Math.max(2, Math.floor((availableSize / targetSpacing) * density));
+  return Math.max(1, Math.ceil(labelCount / visibleLabels));
+}
+
+/** Keep both ends of a sampled sequence visible, matching continuous-axis navigation. */
+export function shouldDrawCategoryTick(
+  index: number,
+  labelCount: number,
+  step: number,
+  axis: AxisOptions = {},
+): boolean {
+  if (index % step === 0) return true;
+  return axis.categoryMode !== 'categorical' && index === labelCount - 1;
 }

@@ -777,6 +777,7 @@ function chartCapabilities(chart) {
     cartesian: !radial,
     line,
     bar,
+    barSpacing: ['bar', 'column', 'horizontal-bar', 'grouped-bar', 'stacked-bar'].includes(type),
     points,
     doughnut: type === 'doughnut',
     axes: !radial,
@@ -853,6 +854,17 @@ function freshEditor(chart) {
     innerRadius: chart.type === 'doughnut' ? (chart.options.innerRadius ?? 0.58) : 0,
     radialCornerRadius: chart.options.radialCornerRadius ?? 3,
     cornerRadius: chart.options.cornerRadius ?? 8,
+    barGapPercent: Math.round((chart.options.barGapRatio ?? (horizontal ? 0.36 : 0.32)) * 100),
+    barDatasetGap: chart.options.barDatasetGap ?? 3,
+    categoryMode:
+      (horizontal
+        ? chart.options.scales?.y?.categoryMode
+        : chart.options.scales?.x?.categoryMode) ?? 'auto',
+    labelDensity: Math.round(
+      ((horizontal
+        ? chart.options.scales?.y?.labelDensity
+        : chart.options.scales?.x?.labelDensity) ?? 0.7) * 100,
+    ),
     radialGap: chart.options.radialGap ?? 1,
     tooltips: true,
     pinTooltip: false,
@@ -1037,7 +1049,19 @@ function renderControls() {
   const bar = caps.bar
     ? controlSection(
         'Bars',
-        `${toggleControl('Stack datasets', 'stacked', editor.stacked)}${rangeControl('Corner roundness', 'cornerRadius', editor.cornerRadius, 0, 30, 1, 'px')}`,
+        `${toggleControl('Stack datasets', 'stacked', editor.stacked)}${rangeControl('Corner roundness', 'cornerRadius', editor.cornerRadius, 0, 30, 1, 'px')}${
+          caps.barSpacing
+            ? `${rangeControl('Gap between categories', 'barGapPercent', editor.barGapPercent, 0, 90, 1, '%')}${rangeControl('Gap between series', 'barDatasetGap', editor.barDatasetGap, 0, 24, 1, 'px')}<label>Dense-axis display<select data-setting="categoryMode">${selectOptions(
+                [
+                  ['auto', 'Automatic (recommended)'],
+                  ['categorical', 'Categorical — show every label'],
+                  ['continuous', 'Continuous — sample labels evenly'],
+                ],
+                editor.categoryMode,
+              )}</select></label>${editor.categoryMode === 'categorical' ? '' : rangeControl('Label density', 'labelDensity', editor.labelDensity, 10, 100, 5, '%')}<small class="panel-intro">Every bar remains visible. Automatic and continuous modes only reduce crowded axis labels; continuous mode always keeps the first and last label.</small>`
+            : ''
+        }`,
+        caps.barSpacing,
       )
     : '';
   const points = caps.points
@@ -1379,6 +1403,13 @@ function currentConfig() {
       titleOffset: editor.xAxisOffset,
       position: editor.xAxisPosition,
       line: { color: editor.xAxisColor, width: Number(editor.xAxisWidth) },
+      ...(!config.options.horizontal && chartCapabilities(state.selected).barSpacing
+        ? {
+            categoryMode: editor.categoryMode,
+            labelDensity: Number(editor.labelDensity) / 100,
+            tickSkip: editor.categoryMode === 'categorical' ? 1 : 'auto',
+          }
+        : {}),
     },
     y: {
       ...config.options.scales?.y,
@@ -1389,6 +1420,13 @@ function currentConfig() {
       type: editor.yScale,
       reverse: editor.reverseAxis,
       line: { color: editor.yAxisColor, width: Number(editor.yAxisWidth) },
+      ...(config.options.horizontal && chartCapabilities(state.selected).barSpacing
+        ? {
+            categoryMode: editor.categoryMode,
+            labelDensity: Number(editor.labelDensity) / 100,
+            tickSkip: editor.categoryMode === 'categorical' ? 1 : 'auto',
+          }
+        : {}),
     },
     ...(config.options.scales?.y1
       ? {
@@ -1407,6 +1445,13 @@ function currentConfig() {
   config.options.radialGap = Number(editor.radialGap);
   config.options.radialCornerRadius = Number(editor.radialCornerRadius);
   config.options.cornerRadius = Number(editor.cornerRadius);
+  if (chartCapabilities(state.selected).barSpacing) {
+    config.options.barGapRatio = Number(editor.barGapPercent) / 100;
+    config.options.barDatasetGap = Number(editor.barDatasetGap);
+  } else {
+    delete config.options.barGapRatio;
+    delete config.options.barDatasetGap;
+  }
   if (state.selected.type === 'doughnut') config.options.innerRadius = Number(editor.innerRadius);
   else delete config.options.innerRadius;
   config.options.width = state.previewWidth || undefined;

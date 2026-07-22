@@ -122,6 +122,10 @@ export interface AxisOptions {
   unit?: string;
   /** Display every nth category label. `auto` adapts to the available width. */
   tickSkip?: number | 'auto';
+  /** How dense category labels are presented when the axis contains many values. */
+  categoryMode?: 'auto' | 'categorical' | 'continuous';
+  /** Relative category-label density from 0.1 (sparse) to 1 (dense). */
+  labelDensity?: number;
   /** Axis placement. */
   position?: 'left' | 'right' | 'top' | 'bottom' | 'inside';
   /** Draw tick labels inside the plot. */
@@ -542,6 +546,10 @@ export interface ChartOptions {
   colors?: string[];
   /** Corner radius for rectangular marks such as bars and columns. */
   cornerRadius?: number;
+  /** Fraction of each category slot left empty around bars, from 0 to 0.9. */
+  barGapRatio?: number;
+  /** Space between series inside a grouped bar category, in CSS pixels. */
+  barDatasetGap?: number;
   /** Guides drawn through an active Cartesian mark. */
   crosshair?: CrosshairOptions;
   /** Values displayed on or near marks such as bars, points, and slices. */

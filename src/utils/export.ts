@@ -48,16 +48,24 @@ export function chartConfigToSVG(config: ChartConfig, width = 640, height = 400)
     ((value - minimum) / Math.max(1, maximum - minimum)) * (height - padding * 2);
   const palette = config.options?.colors ?? ['#625bf6', '#0f9f8f', '#e78a2f', '#d94f70'];
   const category = (width - padding * 2) / Math.max(1, config.data.labels.length);
+  const gapRatio = Math.max(0, Math.min(0.9, config.options?.barGapRatio ?? 0.32));
+  const groupWidth = category * (1 - gapRatio);
   const bars = config.data.datasets.flatMap((dataset, datasetIndex) =>
     dataset.values.flatMap((value, valueIndex) => {
       if (value === null) return [];
-      const barWidth = (category * 0.7) / config.data.datasets.length;
-      const x = padding + valueIndex * category + category * 0.15 + datasetIndex * barWidth;
+      const barWidth = groupWidth / config.data.datasets.length;
+      const seriesGap = Math.max(0, Math.min(barWidth - 1, config.options?.barDatasetGap ?? 3));
+      const x =
+        padding +
+        valueIndex * category +
+        (category - groupWidth) / 2 +
+        datasetIndex * barWidth +
+        seriesGap / 2;
       const y = projectY(Math.max(0, value));
       const baseline = projectY(Math.min(0, value));
       const color = dataset.color ?? palette[datasetIndex % palette.length] ?? '#625bf6';
       return [
-        `<rect x="${x}" y="${Math.min(y, baseline)}" width="${Math.max(1, barWidth - 2)}" height="${Math.abs(baseline - y)}" rx="4" fill="${escapeXML(color)}"><title>${escapeXML(`${config.data.labels[valueIndex]}: ${dataset.label} ${value}`)}</title></rect>`,
+        `<rect x="${x}" y="${Math.min(y, baseline)}" width="${Math.max(1, barWidth - seriesGap)}" height="${Math.abs(baseline - y)}" rx="4" fill="${escapeXML(color)}"><title>${escapeXML(`${config.data.labels[valueIndex]}: ${dataset.label} ${value}`)}</title></rect>`,
       ];
     }),
   );

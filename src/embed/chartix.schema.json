@@ -188,6 +188,8 @@
         "currency": { "type": "string" },
         "unit": { "type": "string" },
         "tickSkip": { "oneOf": [{ "type": "integer", "minimum": 1 }, { "const": "auto" }] },
+        "categoryMode": { "enum": ["auto", "categorical", "continuous"] },
+        "labelDensity": { "type": "number", "minimum": 0.1, "maximum": 1 },
         "position": { "enum": ["left", "right", "top", "bottom", "inside"] },
         "labelsInside": { "type": "boolean" },
         "minorTicks": { "type": "boolean" },
@@ -303,6 +305,8 @@
         },
         "colors": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/color" } },
         "cornerRadius": { "type": "number", "minimum": 0 },
+        "barGapRatio": { "type": "number", "minimum": 0, "maximum": 0.9 },
+        "barDatasetGap": { "type": "number", "minimum": 0 },
         "crosshair": {
           "type": "object",
           "additionalProperties": false,

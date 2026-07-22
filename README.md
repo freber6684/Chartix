@@ -51,6 +51,9 @@ const chart = new Chartix(canvas, {
     responsive: true,
     resizable: true,
     colors: ['#625bf6', '#0f9f8f'],
+    barGapRatio: 0.24,
+    barDatasetGap: 4,
+    scales: { x: { categoryMode: 'auto', labelDensity: 0.7 } },
     typography: { fontFamily: 'Inter, sans-serif', titleSize: 18 },
     xLabels: { rotation: -30, fontSize: 11 },
     dataLabels: { show: true, position: 'outside', color: '#172033' },
@@ -75,6 +78,12 @@ chart.update({
 The public playground can replace the sample data without code: upload CSV/JSON, paste rows, or
 load a public API URL, then map one category field and one or more value fields. Imported data is
 kept in the browser and written directly into the generated copy-paste configuration.
+
+For bar and column charts, `barGapRatio` moves categories closer together or farther apart and
+`barDatasetGap` controls the spacing between grouped series. Dense datasets can use
+`scales.x.categoryMode` (or `scales.y` for horizontal bars) with `labelDensity`; Chartix keeps every
+bar but displays a readable sample of axis labels, similar to Power BI's categorical/continuous
+axis choice.
 
 ## Quick Embed
 
