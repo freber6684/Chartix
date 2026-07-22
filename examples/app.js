@@ -790,6 +790,13 @@ function freshEditor(chart) {
     canvasBorderColor: '#d7dce5',
     canvasBorderWidth: 0,
     canvasBorderRadius: 8,
+    highlightType: chart.options.highlight?.type ?? 'outline',
+    highlightColor: chart.options.highlight?.color ?? '#111827',
+    highlightBackground: chart.options.highlight?.backgroundColor ?? '#a8ff1a',
+    highlightBorderWidth: chart.options.highlight?.borderWidth ?? 2,
+    highlightBorderRadius: chart.options.highlight?.borderRadius ?? 8,
+    highlightOpacity: chart.options.highlight?.opacity ?? 0.16,
+    highlightGlowBlur: chart.options.highlight?.glowBlur ?? 14,
     title: `${chart.name} example`,
     subtitle: 'Interactive Chartix visualization',
     xTitle:
@@ -1030,6 +1037,20 @@ function renderControls() {
     'Canvas',
     `${colorEditor('Canvas background', 'background', editor.background)}${colorEditor('Canvas border', 'canvasBorderColor', editor.canvasBorderColor)}${rangeControl('Border width', 'canvasBorderWidth', editor.canvasBorderWidth, 0, 12, 1, 'px')}${rangeControl('Corner roundness', 'canvasBorderRadius', editor.canvasBorderRadius, 0, 40, 1, 'px')}`,
   )}${controlSection(
+    'Highlight',
+    `<label>Highlight style<select data-setting="highlightType">${selectOptions(
+      [
+        ['none', 'None'],
+        ['outline', 'Outline'],
+        ['glow', 'Glow'],
+        ['fill', 'Color wash'],
+        ['x-band', 'Vertical plot band'],
+        ['y-band', 'Horizontal plot band'],
+      ],
+      editor.highlightType,
+    )}</select></label>${editor.highlightType !== 'none' ? `${colorEditor('Highlight color', 'highlightColor', editor.highlightColor)}${['fill', 'x-band', 'y-band'].includes(editor.highlightType) ? `${colorEditor('Highlight background', 'highlightBackground', editor.highlightBackground)}${rangeControl('Background opacity', 'highlightOpacity', editor.highlightOpacity, 0.04, 0.8, 0.02)}` : ''}${rangeControl('Border width', 'highlightBorderWidth', editor.highlightBorderWidth, 1, 10, 1, 'px')}${rangeControl('Corner roundness', 'highlightBorderRadius', editor.highlightBorderRadius, 0, 30, 1, 'px')}${editor.highlightType === 'glow' ? rangeControl('Glow strength', 'highlightGlowBlur', editor.highlightGlowBlur, 0, 40, 1, 'px') : ''}` : ''}<small class="panel-intro">Applied consistently when users hover, tap, or explore with the keyboard.</small>`,
+    true,
+  )}${controlSection(
     'Legend',
     `${toggleControl('Show legend', 'showLegend', editor.showLegend)}<label>Position<select data-setting="legendPosition">${selectOptions(['top', 'bottom', 'left', 'right', 'inside'], editor.legendPosition)}</select></label>${toggleControl('Background panel', 'legendBackgroundEnabled', editor.legendBackgroundEnabled)}${colorEditor('Legend background', 'legendBackground', editor.legendBackground)}${colorEditor('Legend border', 'legendBorderColor', editor.legendBorderColor)}${rangeControl('Border width', 'legendBorderWidth', editor.legendBorderWidth, 0, 6, 1, 'px')}${rangeControl('Corner roundness', 'legendCornerRadius', editor.legendCornerRadius, 0, 24, 1, 'px')}<div class="spacing-grid"><span>Legend box padding</span>${['top', 'right', 'bottom', 'left'].map((side) => `<label>${side}<input type="number" min="0" max="80" data-legend-padding="${side}" value="${editor.legendPadding[side]}"></label>`).join('')}</div>${rangeControl('Item spacing', 'legendItemGap', editor.legendItemGap, 0, 48, 1, 'px')}${rangeControl('Marker size', 'legendMarkerSize', editor.legendMarkerSize, 4, 24, 1, 'px')}<small class="panel-intro">Use Text → Legend to style each legend label and its own border.</small>`,
     true,
@@ -1201,6 +1222,15 @@ function currentConfig() {
     borderColor: editor.canvasBorderColor,
     borderWidth: Number(editor.canvasBorderWidth),
     borderRadius: Number(editor.canvasBorderRadius),
+  };
+  config.options.highlight = {
+    type: editor.highlightType,
+    color: editor.highlightColor,
+    backgroundColor: editor.highlightBackground,
+    borderWidth: Number(editor.highlightBorderWidth),
+    borderRadius: Number(editor.highlightBorderRadius),
+    opacity: Number(editor.highlightOpacity),
+    glowBlur: Number(editor.highlightGlowBlur),
   };
   const targetCount = colorTargets(state.selected).length;
   while (editor.seriesColors.length < targetCount)
@@ -1492,7 +1522,7 @@ function renderDocumentation() {
       <li><code>colors</code> replaces the categorical palette.</li>
       <li><code>dataLabels</code> controls visibility, placement, fonts, angles, and color.</li>
       <li><code>responsive</code> follows the container; the preview controls test exact custom widths and heights.</li>
-      <li><code>tooltip</code>, <code>crosshair</code>, and <code>interaction</code> configure pointer, touch, and keyboard exploration.</li>
+      <li><code>tooltip</code>, <code>highlight</code>, <code>crosshair</code>, and <code>interaction</code> configure pointer, touch, and keyboard exploration.</li>
       <li><code>annotations</code> adds reference lines or highlighted numeric ranges.</li>
       <li><code>scales</code> supports time, logarithmic, percentage, reversed, bounded, dual, formatted, and discontinuous axes.</li>
       <li><code>stacked</code>, per-dataset <code>type</code>, object points, null gaps, and <code>transforms</code> cover advanced composition.</li>
@@ -1679,7 +1709,7 @@ document.querySelector('#chart-controls').addEventListener('change', (event) => 
     if (key.startsWith('text.')) state.editor.textStyles[state.activeRole][key.slice(5)] = value;
     else state.editor[key] = value;
     if (key === 'theme') state.editor.background = themeBackgrounds[target.value];
-    rerenderFromEditor(key === 'theme');
+    rerenderFromEditor(key === 'theme' || key === 'highlightType');
   }
 });
 document.querySelector('#chart-controls').addEventListener('input', (event) => {

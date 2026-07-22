@@ -94,9 +94,11 @@ function renderVertical(context: ChartRenderContext): void {
         dataset.pattern && renderer.pattern
           ? renderer.pattern(valueColor, theme.background, dataset.pattern)
           : renderer.gradient(x, y, x, Math.max(y + height, y + 1), valueColor);
-      const active = context.activeRegions?.some(
-        (region) => region.datasetIndex === datasetIndex && region.valueIndex === valueIndex,
-      );
+      const active =
+        !options.highlight &&
+        context.activeRegions?.some(
+          (region) => region.datasetIndex === datasetIndex && region.valueIndex === valueIndex,
+        );
       const drawnWidth = Math.max(1, barWidth - 3);
       const radius = markRadius(context, drawnWidth, height);
       if (active)
@@ -317,9 +319,11 @@ function renderHorizontal(context: ChartRenderContext): void {
         dataset.pattern && renderer.pattern
           ? renderer.pattern(valueColor, theme.background, dataset.pattern)
           : renderer.gradient(x, y, Math.max(x + width, x + 1), y, valueColor);
-      const active = context.activeRegions?.some(
-        (region) => region.datasetIndex === datasetIndex && region.valueIndex === valueIndex,
-      );
+      const active =
+        !options.highlight &&
+        context.activeRegions?.some(
+          (region) => region.datasetIndex === datasetIndex && region.valueIndex === valueIndex,
+        );
       const drawnHeight = Math.max(1, barHeight - 3);
       const radius = markRadius(context, width, drawnHeight);
       if (active)

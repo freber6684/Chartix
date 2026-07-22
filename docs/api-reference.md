@@ -35,6 +35,7 @@ gaps. Scatter and bubble datasets may additionally use `points: [{x, y, r?}]`. D
 | `stacked`, `stackMode` | disabled                      | Stack values normally or normalize each category to 100%.             |
 | `spanGaps`             | `false`                       | Connect line segments across null values.                             |
 | `height`, `width`      | container size                | Explicit CSS-pixel dimensions.                                        |
+| `highlight`            | outline                       | Style active marks with an outline, glow, fill, or plot band.         |
 | `horizontal`           | `false`                       | Switch a bar chart to horizontal layout.                              |
 | `innerRadius`          | chart default                 | Doughnut hole ratio from `0` through `0.9`.                           |
 | `interaction`          | enabled                       | Pointer hit-testing, keyboard navigation, and intersection behavior.  |
@@ -90,6 +91,8 @@ label/range, fixed-size sum/average/min/max aggregation, and percent/max normali
   boolean remains a compatible shortcut.
 - `tooltip.enabled`, `backgroundColor`, and `color` style the accessible DOM tooltip.
 - `crosshair.enabled`, `color`, `width`, `mode`, and `dash` style active Cartesian guides.
+- `highlight.type` accepts `none`, `outline`, `glow`, `fill`, `x-band`, or `y-band`; its color,
+  background, opacity, border, radius, and glow strength are independently configurable.
 - `legend.interactive` controls click/Enter/Space dataset toggling.
 - `legend.position` accepts `top`, `bottom`, `left`, `right`, or `inside`.
 

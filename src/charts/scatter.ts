@@ -184,9 +184,11 @@ function renderScatter(context: Parameters<ChartModule['render']>[0]): void {
     entries.forEach((entry, index) => {
       if (index >= Math.ceil(entries.length * datasetProgress) || entry.y === null) return;
       const point = { x: xScale.project(parseX(entry.x, index)), y: yScale.project(entry.y) };
-      const active = context.activeRegions?.some(
-        (region) => region.datasetIndex === datasetIndex && region.valueIndex === index,
-      );
+      const active =
+        !options.highlight &&
+        context.activeRegions?.some(
+          (region) => region.datasetIndex === datasetIndex && region.valueIndex === index,
+        );
       const radius = Math.max(
         2,
         ('r' in entry ? entry.r : undefined) ??

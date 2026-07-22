@@ -51,6 +51,15 @@ const config = {
     innerRadius: 0.62,
     startAngle: -90,
     tooltip: { enabled: true, backgroundColor: '#111827', color: '#ffffff' },
+    highlight: {
+      type: 'glow',
+      color: '#00b4d8',
+      backgroundColor: '#90e0ef',
+      borderWidth: 2,
+      borderRadius: 8,
+      opacity: 0.16,
+      glowBlur: 14,
+    },
     interaction: { enabled: true, keyboard: true, intersect: true },
     crosshair: { enabled: true, color: '#64748b88', width: 1 },
     legend: {
@@ -98,6 +107,10 @@ can also resize the container with its own layout or UI and Chartix will redraw 
 Tooltips work with mouse, touch-compatible pointer events, and keyboard focus. Once focused, arrow
 keys move through rendered marks, Enter or Space toggles the focused legend series, and Escape
 clears focus. Cartesian charts can draw an optional crosshair through the active mark.
+
+`highlight` controls the visual response to pointer, touch, and keyboard focus. Choose an outline,
+glow, translucent color wash, vertical plot band, horizontal plot band, or no highlight. The same
+settings work for rectangular marks, points, and radial slices.
 
 Line series over 1,000 values use min/max decimation by default, preserving local peaks and troughs
 while reducing Canvas work. Set `decimation.enabled: false` when every source point must be drawn.

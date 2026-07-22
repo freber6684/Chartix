@@ -31,6 +31,7 @@ describe('embed JSON Schema', () => {
         'editable',
         'fill',
         'height',
+        'highlight',
         'horizontal',
         'innerRadius',
         'interaction',

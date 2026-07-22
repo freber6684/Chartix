@@ -374,6 +374,19 @@
           "type": "object",
           "additionalProperties": { "$ref": "#/$defs/data" }
         },
+        "highlight": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "type": { "enum": ["none", "outline", "glow", "fill", "x-band", "y-band"] },
+            "color": { "$ref": "#/$defs/color" },
+            "backgroundColor": { "$ref": "#/$defs/color" },
+            "borderWidth": { "type": "number", "minimum": 0 },
+            "borderRadius": { "type": "number", "minimum": 0 },
+            "opacity": { "type": "number", "minimum": 0, "maximum": 1 },
+            "glowBlur": { "type": "number", "minimum": 0 }
+          }
+        },
         "padding": { "type": "number", "minimum": 0 },
         "layout": {
           "type": "object",

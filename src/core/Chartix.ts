@@ -51,6 +51,7 @@ const validOptionKeys = new Set<keyof ChartOptions>([
   'stackMode',
   'spanGaps',
   'height',
+  'highlight',
   'horizontal',
   'innerRadius',
   'interaction',
@@ -813,6 +814,7 @@ export class Chartix {
       ...(this.activeRegions.length ? { activeRegions: this.activeRegions } : {}),
     });
     this.runPlugins('afterDatasets', { theme, plot, progress });
+    this.drawHighlights(plot, drawOptions);
     const active = this.activeRegion;
     if (drawOptions.crosshair?.enabled && active && active.kind !== 'legend') {
       const color = drawOptions.crosshair.color ?? theme.mutedText;
@@ -1221,6 +1223,109 @@ export class Chartix {
         `${color}33`,
       );
     }
+  }
+
+  private drawHighlights(plot: PlotArea, options: ChartOptions): void {
+    const highlight = options.highlight;
+    if (!highlight || highlight.type === 'none') return;
+    const activeRegions = this.activeRegions.filter((region) => region.kind !== 'legend');
+    const type = highlight.type ?? 'outline';
+    const borderWidth = highlight.borderWidth ?? 2;
+    const borderRadius = highlight.borderRadius ?? 8;
+
+    activeRegions.forEach((region) => {
+      const color = highlight.color ?? region.color;
+      const backgroundColor = highlight.backgroundColor ?? color;
+      const opacity = Math.round((highlight.opacity ?? 0.16) * 255)
+        .toString(16)
+        .padStart(2, '0');
+      const background = backgroundColor.startsWith('#')
+        ? `${backgroundColor}${opacity}`
+        : backgroundColor;
+      const radius = region.radius ?? 8;
+      const bounds = region.bounds ?? {
+        x: region.x - radius,
+        y: region.y - radius,
+        width: radius * 2,
+        height: radius * 2,
+      };
+
+      if (type === 'x-band' || type === 'y-band') {
+        const band =
+          type === 'x-band'
+            ? { x: bounds.x, y: plot.top, width: bounds.width, height: plot.height }
+            : { x: plot.left, y: bounds.y, width: plot.width, height: bounds.height };
+        this.renderer.roundedRect(
+          band.x,
+          band.y,
+          band.width,
+          band.height,
+          borderRadius,
+          background,
+        );
+        this.renderer.strokeRoundedRect?.(
+          band.x,
+          band.y,
+          band.width,
+          band.height,
+          borderRadius,
+          color,
+          borderWidth,
+        );
+        return;
+      }
+
+      if (type === 'glow') this.renderer.setShadow?.({ color, blur: highlight.glowBlur ?? 14 });
+      if (
+        region.kind === 'slice' &&
+        region.centerX !== undefined &&
+        region.centerY !== undefined &&
+        region.innerRadius !== undefined &&
+        region.outerRadius !== undefined &&
+        region.startAngle !== undefined &&
+        region.endAngle !== undefined
+      ) {
+        this.renderer.ringSegment(
+          { x: region.centerX, y: region.centerY },
+          region.innerRadius,
+          region.outerRadius,
+          region.startAngle,
+          region.endAngle,
+          type === 'fill' ? background : 'transparent',
+          color,
+          0,
+          borderWidth,
+        );
+      } else if (region.kind === 'point') {
+        this.renderer.circle(
+          { x: region.x, y: region.y },
+          radius + borderWidth + 1,
+          type === 'fill' ? background : 'transparent',
+          color,
+          borderWidth,
+        );
+      } else if (type === 'fill') {
+        this.renderer.roundedRect(
+          bounds.x,
+          bounds.y,
+          bounds.width,
+          bounds.height,
+          borderRadius,
+          background,
+        );
+      } else {
+        this.renderer.strokeRoundedRect?.(
+          bounds.x - borderWidth,
+          bounds.y - borderWidth,
+          bounds.width + borderWidth * 2,
+          bounds.height + borderWidth * 2,
+          borderRadius,
+          color,
+          borderWidth,
+        );
+      }
+      if (type === 'glow') this.renderer.setShadow?.();
+    });
   }
 
   private createResetZoomButton(): HTMLButtonElement | undefined {

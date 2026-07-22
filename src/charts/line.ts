@@ -92,9 +92,11 @@ export const LineChart: ChartModule = {
       });
       points.forEach((point, index) => {
         const valueIndex = visibleIndexes[index] ?? index;
-        const active = context.activeRegions?.some(
-          (region) => region.datasetIndex === datasetIndex && region.valueIndex === valueIndex,
-        );
+        const active =
+          !options.highlight &&
+          context.activeRegions?.some(
+            (region) => region.datasetIndex === datasetIndex && region.valueIndex === valueIndex,
+          );
         const pointColor = dataset.colors?.[valueIndex] ?? color;
         const pointRadius = dataset.pointSizes?.[valueIndex] ?? 3.5;
         const shape = dataset.pointShapes?.[valueIndex] ?? 'circle';

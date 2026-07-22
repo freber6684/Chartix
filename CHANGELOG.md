@@ -6,6 +6,7 @@ All notable Chartix changes are documented here. The project follows semantic ve
 
 ### Added
 
+- Configurable active-mark highlights with outline, glow, fill, and plot-band treatments.
 - Pointer, touch-compatible, and keyboard chart exploration with accessible DOM tooltips.
 - Clickable and keyboard-activatable legends that show or hide datasets.
 - Optional Cartesian crosshairs, line/range annotations, and active-mark emphasis.

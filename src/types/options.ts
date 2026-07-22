@@ -418,6 +418,24 @@ export interface CanvasStyleOptions {
   borderRadius?: number;
 }
 
+/** Visual treatment applied to the mark currently under pointer or keyboard focus. */
+export interface HighlightOptions {
+  /** Highlight treatment. */
+  type?: 'none' | 'outline' | 'glow' | 'fill' | 'x-band' | 'y-band';
+  /** Outline or glow color. */
+  color?: string;
+  /** Fill or plot-band color. */
+  backgroundColor?: string;
+  /** Outline width in CSS pixels. */
+  borderWidth?: number;
+  /** Corner radius for rectangular highlights. */
+  borderRadius?: number;
+  /** Fill opacity between zero and one. */
+  opacity?: number;
+  /** Glow blur radius in CSS pixels. */
+  glowBlur?: number;
+}
+
 export interface PositionOptions {
   x?: number;
   y?: number;
@@ -500,6 +518,8 @@ export interface ChartOptions {
   decimation?: DecimationOptions;
   /** Point-specific drill-down data keyed by `datasetIndex:valueIndex` or label. */
   drilldown?: Record<string, ChartData>;
+  /** Styling for the mark currently under pointer or keyboard focus. */
+  highlight?: HighlightOptions;
   /** Permit values to be changed through the editing/history API. */
   editable?: boolean;
   /** Fill the area below a line. */

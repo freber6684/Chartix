@@ -31,9 +31,11 @@ function renderRadial(context: ChartRenderContext, defaultInnerRadius: number): 
         options.colors?.[index % options.colors.length] ??
         theme.palette[(datasetIndex + index) % theme.palette.length] ??
         theme.text;
-      const active = context.activeRegions?.some(
-        (region) => region.datasetIndex === datasetIndex && region.valueIndex === index,
-      );
+      const active =
+        !options.highlight &&
+        context.activeRegions?.some(
+          (region) => region.datasetIndex === datasetIndex && region.valueIndex === index,
+        );
       const explode =
         (options.explodedSlices?.includes(index) ? (options.explodeOffset ?? 10) : 0) +
         (active ? 4 : 0);

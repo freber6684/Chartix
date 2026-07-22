@@ -33,6 +33,7 @@ describe('normalizeConfig', () => {
           padding: { top: 1, right: 2, bottom: 3, left: 4 },
         },
         legend: { padding: { top: 5, right: 6, bottom: 7, left: 8 } },
+        highlight: { type: 'glow' as const, color: '#a8ff1a', glowBlur: 14 },
         typography: { fontFamily: 'Inter' },
       },
     };
@@ -42,11 +43,13 @@ describe('normalizeConfig', () => {
     normalized.options.dataLabels!.rotation = 45;
     normalized.options.dataLabels!.padding!.top = 20;
     normalized.options.legend!.padding = 20;
+    normalized.options.highlight!.glowBlur = 30;
     expect(config.options.colors[0]).toBe('#123456');
     expect(config.options.canvas.borderWidth).toBe(2);
     expect(config.options.dataLabels.rotation).toBe(15);
     expect(config.options.dataLabels.padding.top).toBe(1);
     expect(config.options.legend.padding).toEqual({ top: 5, right: 6, bottom: 7, left: 8 });
+    expect(config.options.highlight.glowBlur).toBe(14);
   });
 
   it('deep-clones drill-down data and gesture options', () => {

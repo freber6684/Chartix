@@ -107,6 +107,7 @@ export function normalizeConfig(config: ChartConfig): ChartConfig & { options: C
             ),
           }
         : {}),
+      ...(config.options?.highlight ? { highlight: { ...config.options.highlight } } : {}),
       decimation: { ...defaultOptions.decimation, ...config.options?.decimation },
       interaction: { ...defaultOptions.interaction, ...config.options?.interaction },
       legend: {

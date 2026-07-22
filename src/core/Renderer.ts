@@ -43,7 +43,7 @@ export interface Renderer {
   polygon?(points: Point[], fill: Paint, stroke?: string, strokeWidth?: number): void;
   area(points: Point[], baseline: number, fill: Paint): void;
   areaBetween(upper: Point[], lower: Point[], fill: string): void;
-  circle(point: Point, radius: number, fill: string, stroke?: string): void;
+  circle(point: Point, radius: number, fill: string, stroke?: string, strokeWidth?: number): void;
   symbol?(point: Point, radius: number, shape: PointShape, fill: string, stroke?: string): void;
   ringSegment(
     point: Point,
@@ -54,6 +54,7 @@ export interface Renderer {
     fill: Paint,
     stroke?: string,
     cornerRadius?: number,
+    strokeWidth?: number,
   ): void;
   roundedRect(
     x: number,
@@ -351,14 +352,20 @@ export class CanvasRenderer implements Renderer {
   }
 
   /** Draw a circular data marker. */
-  public circle(point: Point, radius: number, fill: string, stroke?: string): void {
+  public circle(
+    point: Point,
+    radius: number,
+    fill: string,
+    stroke?: string,
+    strokeWidth = 2,
+  ): void {
     this.context.beginPath();
     this.context.arc(point.x, point.y, radius, 0, Math.PI * 2);
     this.context.fillStyle = fill;
     this.context.fill();
     if (stroke) {
       this.context.strokeStyle = stroke;
-      this.context.lineWidth = 2;
+      this.context.lineWidth = strokeWidth;
       this.context.stroke();
     }
   }
@@ -409,6 +416,7 @@ export class CanvasRenderer implements Renderer {
     fill: Paint,
     stroke?: string,
     cornerRadius = 0,
+    strokeWidth = 2,
   ): void {
     if (cornerRadius > 0 && innerRadius > 0) {
       const radius = (innerRadius + outerRadius) / 2;
@@ -434,7 +442,7 @@ export class CanvasRenderer implements Renderer {
     this.context.fill();
     if (stroke) {
       this.context.strokeStyle = stroke;
-      this.context.lineWidth = 2;
+      this.context.lineWidth = strokeWidth;
       this.context.stroke();
     }
   }
