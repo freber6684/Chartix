@@ -258,14 +258,33 @@ function renderFunnel(context: ChartRenderContext, pyramid: boolean): void {
     context.renderer.area(points, bottom, color);
     const label = context.data.labels[index] ?? '';
     const percentage = Math.round((value / Math.max(1, values[0] ?? value)) * 100);
+    const compactValue = new Intl.NumberFormat(undefined, { notation: 'compact' }).format(value);
+    const stageWidth = Math.min(topWidth, bottomWidth || topWidth);
+    const centerY = y + row / 2;
+    const outside = stageWidth < 170;
+    const textX = outside
+      ? context.plot.left + context.plot.width / 2 + Math.max(topWidth, bottomWidth) / 2 + 14
+      : context.plot.left + context.plot.width / 2;
+    if (outside)
+      context.renderer.line(
+        [
+          {
+            x: context.plot.left + context.plot.width / 2 + Math.max(topWidth, bottomWidth) / 2 + 3,
+            y: centerY,
+          },
+          { x: textX - 4, y: centerY },
+        ],
+        context.theme.mutedText,
+        1,
+      );
     context.renderer.text(
-      `${label} · ${new Intl.NumberFormat(undefined, { notation: 'compact' }).format(value)} · ${percentage}%`,
-      context.plot.left + context.plot.width / 2,
-      y + row / 2,
+      outside ? `${label} · ${percentage}%` : `${label} · ${compactValue} · ${percentage}%`,
+      textX,
+      centerY,
       {
-        align: 'center',
+        align: outside ? 'left' : 'center',
         baseline: 'middle',
-        color: context.theme.background,
+        color: outside ? context.theme.text : context.theme.background,
         font: `700 ${context.theme.fontSize.label}px ${context.theme.fontFamily}`,
       },
     );

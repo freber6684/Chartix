@@ -72,4 +72,17 @@ describe('expanded chart catalog', () => {
       expect(calls).toBeGreaterThan(0);
     });
   });
+
+  it('moves labels outside narrow funnel stages', () => {
+    const draw = context();
+    draw.data.datasets[0]!.values = [1000, 400, 80];
+    catalogCharts.find((chart) => chart.id === 'funnel')!.render(draw);
+    expect(draw.renderer.line).toHaveBeenCalled();
+    expect(draw.renderer.text).toHaveBeenCalledWith(
+      expect.stringContaining('C'),
+      expect.any(Number),
+      expect.any(Number),
+      expect.objectContaining({ align: 'left' }),
+    );
+  });
 });
