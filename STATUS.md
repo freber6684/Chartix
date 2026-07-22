@@ -107,6 +107,8 @@ changes so the next session can resume without reconstructing history.
       titles, data labels, and tooltips, with clear pressed-state feedback in the editor.
 - [x] Add a visible dependency-free world basemap, frame-rate-throttled direct manipulation,
       compact neutral drag handles, and a reset-to-default confirmation dialog.
+- [x] Keep live plot layout and drag overlays on one coordinate model, clearing stale hover state so
+      tooltips remain aligned after direct manipulation and plot resizing.
 
 ## Remaining for v0.1
 

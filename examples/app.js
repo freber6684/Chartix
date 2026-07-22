@@ -1038,6 +1038,24 @@ function resetControls() {
   renderPlayground();
 }
 
+function resolvedEditorLayout() {
+  const editor = state.editor;
+  return {
+    padding: deepClone(editor.padding),
+    title: deepClone(editor.layout.title),
+    subtitle: {
+      ...deepClone(editor.layout.subtitle),
+      ...(editor.layout.subtitle.y === undefined
+        ? { y: editor.padding.top + editor.textStyles.title.fontSize + editor.titleOffset }
+        : {}),
+    },
+    plot: {
+      ...deepClone(editor.layout.plot),
+      y: (editor.layout.plot.y ?? 0) + Number(editor.plotGap),
+    },
+  };
+}
+
 function currentConfig() {
   const config = baseConfig(state.selected);
   const editor = state.editor;
@@ -1116,17 +1134,7 @@ function currentConfig() {
     },
   };
   config.options.padding = undefined;
-  config.options.layout = {
-    padding: editor.padding,
-    title: editor.layout.title,
-    subtitle: {
-      ...editor.layout.subtitle,
-      ...(editor.layout.subtitle.y === undefined
-        ? { y: editor.padding.top + editor.textStyles.title.fontSize + editor.titleOffset }
-        : {}),
-    },
-    plot: { ...editor.layout.plot, y: (editor.layout.plot.y ?? 0) + Number(editor.plotGap) },
-  };
+  config.options.layout = resolvedEditorLayout();
   config.options.startAngle = Number(editor.startAngle);
   config.options.radialGap = Number(editor.radialGap);
   config.options.radialCornerRadius = Number(editor.radialCornerRadius);
@@ -1368,7 +1376,7 @@ function previewEditorLayout() {
     layoutPreviewFrame = 0;
     state.playground?.updateOptions({
       animation: false,
-      layout: deepClone(state.editor.layout),
+      layout: resolvedEditorLayout(),
     });
   });
 }
@@ -1380,7 +1388,7 @@ function commitEditorLayout() {
   }
   state.playground?.updateOptions({
     animation: false,
-    layout: deepClone(state.editor.layout),
+    layout: resolvedEditorLayout(),
   });
   updateGeneratedCode(currentConfig());
 }
@@ -1391,6 +1399,8 @@ function beginDrag(event) {
   const handle = event.currentTarget;
   const role = handle.dataset.dragRole;
   const host = handle.closest('.playground-canvas');
+  state.playground?.unpinTooltip();
+  state.activePoint = null;
   const start = {
     x: event.clientX,
     y: event.clientY,
@@ -1429,6 +1439,8 @@ function beginResize(event) {
   const handle = event.currentTarget;
   const plot = handle.parentElement;
   const host = plot.closest('.playground-canvas');
+  state.playground?.unpinTooltip();
+  state.activePoint = null;
   const start = {
     x: event.clientX,
     y: event.clientY,
