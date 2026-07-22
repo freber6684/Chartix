@@ -10,6 +10,8 @@ All notable Chartix changes are documented here. The project follows semantic ve
 - Power BI-style automatic, categorical, and continuous dense-axis label modes with adjustable
   density that preserve every data mark.
 - In-chart CSV, JSON, PNG, JPEG, and copy-image toolbar with configurable visibility and placement.
+- Fully designed export actions with editable typography, custom labels and icon URLs, icon sizing,
+  text/icon/both modes, shared or per-action button styles, and independent button positions.
 - Browser CSV/JSON upload, paste, and API import with inferred category/value field mapping.
 - Optional searchable, sortable, paginated visible data tables below charts.
 - Configurable active-mark highlights with outline, glow, fill, and plot-band treatments.

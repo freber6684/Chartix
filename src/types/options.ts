@@ -385,6 +385,8 @@ export interface TypographyOptions {
   yAxisTitle?: TextStyleOptions;
   dataLabel?: TextStyleOptions;
   legend?: TextStyleOptions;
+  /** Text shown inside export actions. */
+  exportAction?: TextStyleOptions;
 }
 
 /** Rich but professional text styling shared by every textual chart role. */
@@ -490,6 +492,41 @@ export interface LabelOptions {
   letterSpacing?: number;
 }
 
+export type ExportActionName = 'csv' | 'json' | 'png' | 'jpeg' | 'copy';
+
+/** Visual design shared by export buttons. */
+export interface ExportButtonStyleOptions {
+  backgroundColor?: string;
+  hoverBackgroundColor?: string;
+  borderColor?: string;
+  borderWidth?: number;
+  borderRadius?: number;
+  padding?: Partial<SpacingOptions>;
+  shadow?: string;
+}
+
+/** Content and placement overrides for one export action. */
+export interface ExportActionOptions {
+  /** Hide this action without changing the shared toolbar settings. */
+  enabled?: boolean;
+  /** Visible text; the accessible name remains available in icon-only mode. */
+  label?: string;
+  /** Show text, an image icon, or both. */
+  display?: 'text' | 'icon' | 'icon-text';
+  /** HTTPS or data URL for a custom icon. */
+  iconUrl?: string;
+  /** Icon width and height in CSS pixels. */
+  iconSize?: number;
+  /** Independent anchor used when `layout` is `separate`. */
+  position?: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
+  /** Independent edge distance used when `layout` is `separate`. */
+  padding?: Partial<SpacingOptions>;
+  /** Optional per-action button design override. */
+  buttonStyle?: ExportButtonStyleOptions;
+  /** Optional per-action text design override. */
+  textStyle?: TextStyleOptions;
+}
+
 /** Download and clipboard actions displayed over the chart surface. */
 export interface ExportToolbarOptions {
   /** Show the export toolbar. */
@@ -510,6 +547,18 @@ export interface ExportToolbarOptions {
   padding?: Partial<SpacingOptions>;
   /** Space between toolbar actions. */
   gap?: number;
+  /** Keep actions together or let each action use its own corner. */
+  layout?: 'grouped' | 'separate';
+  /** Default content presentation for every action. */
+  display?: 'text' | 'icon' | 'icon-text';
+  /** Default custom-icon size. */
+  iconSize?: number;
+  /** Shared export-button appearance. */
+  buttonStyle?: ExportButtonStyleOptions;
+  /** Shared export-action typography. */
+  textStyle?: TextStyleOptions;
+  /** Per-action text, icon, placement, and style overrides. */
+  actions?: Partial<Record<ExportActionName, ExportActionOptions>>;
 }
 
 /** Optional visible, interactive table rendered directly below a chart. */

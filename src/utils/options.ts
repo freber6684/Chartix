@@ -115,6 +115,43 @@ export function normalizeConfig(config: ChartConfig): ChartConfig & { options: C
               ...(config.options.exportToolbar.padding
                 ? { padding: { ...config.options.exportToolbar.padding } }
                 : {}),
+              ...(config.options.exportToolbar.buttonStyle
+                ? {
+                    buttonStyle: {
+                      ...config.options.exportToolbar.buttonStyle,
+                      ...(config.options.exportToolbar.buttonStyle.padding
+                        ? { padding: { ...config.options.exportToolbar.buttonStyle.padding } }
+                        : {}),
+                    },
+                  }
+                : {}),
+              ...(config.options.exportToolbar.textStyle
+                ? { textStyle: { ...config.options.exportToolbar.textStyle } }
+                : {}),
+              ...(config.options.exportToolbar.actions
+                ? {
+                    actions: Object.fromEntries(
+                      Object.entries(config.options.exportToolbar.actions).map(([key, action]) => [
+                        key,
+                        {
+                          ...action,
+                          ...(action?.padding ? { padding: { ...action.padding } } : {}),
+                          ...(action?.textStyle ? { textStyle: { ...action.textStyle } } : {}),
+                          ...(action?.buttonStyle
+                            ? {
+                                buttonStyle: {
+                                  ...action.buttonStyle,
+                                  ...(action.buttonStyle.padding
+                                    ? { padding: { ...action.buttonStyle.padding } }
+                                    : {}),
+                                },
+                              }
+                            : {}),
+                        },
+                      ]),
+                    ),
+                  }
+                : {}),
             },
           }
         : {}),

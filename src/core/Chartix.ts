@@ -12,7 +12,14 @@ import { describeChart, updateDataTable } from './accessibility.js';
 import { resolveTheme } from './theme.js';
 import { createPlotArea } from '../charts/cartesian.js';
 import type { ChartModule, PlotArea } from '../charts/types.js';
-import type { ChartConfig, ChartData, ChartOptions, PerformanceStats } from '../types/options.js';
+import type {
+  ChartConfig,
+  ChartData,
+  ChartOptions,
+  ExportActionName,
+  PerformanceStats,
+  SpacingOptions,
+} from '../types/options.js';
 import { cloneData, normalizeConfig } from '../utils/options.js';
 import { applyDataTransforms } from '../utils/transforms.js';
 import {
@@ -353,6 +360,38 @@ export class Chartix {
                     padding: {
                       ...this.config.options.exportToolbar?.padding,
                       ...options.exportToolbar.padding,
+                    },
+                  }
+                : {}),
+              ...(options.exportToolbar.buttonStyle
+                ? {
+                    buttonStyle: {
+                      ...this.config.options.exportToolbar?.buttonStyle,
+                      ...options.exportToolbar.buttonStyle,
+                      ...(options.exportToolbar.buttonStyle.padding
+                        ? {
+                            padding: {
+                              ...this.config.options.exportToolbar?.buttonStyle?.padding,
+                              ...options.exportToolbar.buttonStyle.padding,
+                            },
+                          }
+                        : {}),
+                    },
+                  }
+                : {}),
+              ...(options.exportToolbar.textStyle
+                ? {
+                    textStyle: {
+                      ...this.config.options.exportToolbar?.textStyle,
+                      ...options.exportToolbar.textStyle,
+                    },
+                  }
+                : {}),
+              ...(options.exportToolbar.actions
+                ? {
+                    actions: {
+                      ...this.config.options.exportToolbar?.actions,
+                      ...options.exportToolbar.actions,
                     },
                   }
                 : {}),
@@ -1072,28 +1111,47 @@ export class Chartix {
     const parent = this.canvas.parentElement;
     if (!parent || !options?.enabled) return;
     if (getComputedStyle(parent).position === 'static') parent.style.position = 'relative';
-    const toolbar = document.createElement('div');
-    toolbar.className = 'chartix-export-toolbar';
-    toolbar.setAttribute('role', 'toolbar');
-    toolbar.setAttribute('aria-label', 'Export chart');
-    const padding = { top: 12, right: 12, bottom: 12, left: 12, ...options.padding };
-    const position = options.position ?? 'top-right';
-    toolbar.style.cssText = [
-      'position:absolute',
-      'z-index:8',
-      'display:flex',
-      'align-items:center',
-      `gap:${Math.max(0, options.gap ?? 6)}px`,
-      position.startsWith('top') ? `top:${padding.top}px` : `bottom:${padding.bottom}px`,
-      position.endsWith('left') ? `left:${padding.left}px` : `right:${padding.right}px`,
-      'padding:5px',
-      'border:1px solid rgba(148,163,184,.35)',
-      'border-radius:9px',
-      'background:rgba(255,255,255,.94)',
-      'box-shadow:0 8px 24px rgba(15,23,42,.12)',
-      'backdrop-filter:blur(8px)',
-    ].join(';');
-    const actions: Array<[string, string, () => void | Promise<void>]> = [
+    const root = document.createElement('div');
+    root.className = 'chartix-export-toolbar';
+    root.setAttribute('role', 'toolbar');
+    root.setAttribute('aria-label', 'Export chart');
+    root.style.cssText =
+      'position:absolute;inset:0;z-index:8;pointer-events:none;overflow:hidden;border-radius:inherit';
+    const defaultPadding: SpacingOptions = {
+      top: 12,
+      right: 12,
+      bottom: 12,
+      left: 12,
+      ...options.padding,
+    };
+    const containers = new Map<string, HTMLElement>();
+    const containerFor = (
+      position: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right',
+      padding: SpacingOptions,
+      grouped: boolean,
+    ): HTMLElement => {
+      const key = grouped ? 'grouped' : `${position}:${Object.values(padding).join(':')}`;
+      const existing = containers.get(key);
+      if (existing) return existing;
+      const container = document.createElement('div');
+      container.className = grouped
+        ? 'chartix-export-group chartix-export-group--grouped'
+        : 'chartix-export-group chartix-export-group--separate';
+      container.style.cssText = [
+        'position:absolute',
+        'display:flex',
+        'align-items:center',
+        `gap:${Math.max(0, options.gap ?? 6)}px`,
+        'pointer-events:auto',
+        position.startsWith('top') ? `top:${padding.top}px` : `bottom:${padding.bottom}px`,
+        position.endsWith('left') ? `left:${padding.left}px` : `right:${padding.right}px`,
+        'padding:0',
+      ].join(';');
+      root.append(container);
+      containers.set(key, container);
+      return container;
+    };
+    const actions: Array<[ExportActionName, string, () => void | Promise<void>]> = [
       ...(options.csv !== false ? [['csv', 'CSV', () => this.download('csv')]] : []),
       ...(options.json !== false ? [['json', 'JSON', () => this.download('json')]] : []),
       ...(options.png !== false ? [['png', 'PNG', () => this.download('png')]] : []),
@@ -1101,34 +1159,120 @@ export class Chartix {
       ...(options.copy !== false
         ? [['copy', 'Copy', async () => this.copyToClipboard('png')]]
         : []),
-    ] as Array<[string, string, () => void | Promise<void>]>;
-    actions.forEach(([action, label, handler]) => {
+    ] as Array<[ExportActionName, string, () => void | Promise<void>]>;
+    actions.forEach(([action, defaultLabel, handler]) => {
+      const actionOptions = options.actions?.[action] ?? {};
+      if (actionOptions.enabled === false) return;
+      const label = actionOptions.label?.trim() || defaultLabel;
+      const display = actionOptions.display ?? options.display ?? 'text';
+      const position =
+        options.layout === 'separate'
+          ? (actionOptions.position ?? options.position ?? 'top-right')
+          : (options.position ?? 'top-right');
+      const padding = { ...defaultPadding, ...actionOptions.padding };
+      const container = containerFor(position, padding, options.layout !== 'separate');
+      const sharedButton = options.buttonStyle ?? {};
+      const buttonStyle = {
+        backgroundColor: 'rgba(255,255,255,.96)',
+        hoverBackgroundColor: '#eef2f7',
+        borderColor: 'rgba(148,163,184,.5)',
+        borderWidth: 1,
+        borderRadius: 7,
+        shadow: '0 2px 8px rgba(15,23,42,.08)',
+        ...sharedButton,
+        ...actionOptions.buttonStyle,
+        padding: {
+          top: 6,
+          right: 8,
+          bottom: 6,
+          left: 8,
+          ...sharedButton.padding,
+          ...actionOptions.buttonStyle?.padding,
+        },
+      };
+      const textStyle = {
+        fontFamily: 'ui-sans-serif,system-ui',
+        fontSize: 11,
+        fontWeight: 600,
+        fontStyle: 'normal',
+        color: '#172033',
+        underline: false,
+        lineHeight: 1.2,
+        letterSpacing: 0,
+        ...this.config.options.typography?.exportAction,
+        ...options.textStyle,
+        ...actionOptions.textStyle,
+      };
       const button = document.createElement('button');
       button.type = 'button';
       button.dataset.chartixExport = action;
-      button.textContent = label;
-      button.title = action === 'copy' ? 'Copy chart image' : `Download ${label}`;
-      button.style.cssText =
-        'appearance:none;border:0;border-radius:6px;background:transparent;color:#172033;padding:6px 8px;font:600 11px/1.2 ui-sans-serif,system-ui;cursor:pointer';
-      button.addEventListener('mouseenter', () => (button.style.background = '#eef2f7'));
-      button.addEventListener('mouseleave', () => (button.style.background = 'transparent'));
+      button.setAttribute(
+        'aria-label',
+        action === 'copy' ? 'Copy chart image' : `Download ${label}`,
+      );
+      button.title = button.getAttribute('aria-label') ?? label;
+      button.style.cssText = [
+        'appearance:none',
+        'display:inline-flex',
+        'align-items:center',
+        'justify-content:center',
+        'gap:6px',
+        `border:${Math.max(0, buttonStyle.borderWidth ?? 1)}px solid ${buttonStyle.borderColor}`,
+        `border-radius:${Math.max(0, buttonStyle.borderRadius ?? 7)}px`,
+        `background:${buttonStyle.backgroundColor}`,
+        `color:${textStyle.color}`,
+        `padding:${buttonStyle.padding.top}px ${buttonStyle.padding.right}px ${buttonStyle.padding.bottom}px ${buttonStyle.padding.left}px`,
+        `box-shadow:${buttonStyle.shadow}`,
+        `font-family:${textStyle.fontFamily}`,
+        `font-size:${textStyle.fontSize}px`,
+        `font-weight:${textStyle.fontWeight}`,
+        `font-style:${textStyle.fontStyle}`,
+        `line-height:${textStyle.lineHeight}`,
+        `letter-spacing:${textStyle.letterSpacing}px`,
+        `text-decoration:${textStyle.underline ? 'underline' : 'none'}`,
+        'cursor:pointer',
+        'transition:background-color 140ms ease',
+      ].join(';');
+      const iconUrl = actionOptions.iconUrl?.trim();
+      if (iconUrl && display !== 'text') {
+        const icon = document.createElement('img');
+        const iconSize = Math.max(
+          8,
+          Math.min(96, actionOptions.iconSize ?? options.iconSize ?? 16),
+        );
+        icon.src = iconUrl;
+        icon.alt = '';
+        icon.width = iconSize;
+        icon.height = iconSize;
+        icon.style.cssText = `display:block;width:${iconSize}px;height:${iconSize}px;object-fit:contain;flex:none`;
+        button.append(icon);
+      }
+      const labelElement = document.createElement('span');
+      labelElement.textContent = label;
+      if (display !== 'icon' || !iconUrl) button.append(labelElement);
+      button.addEventListener('mouseenter', () => {
+        button.style.background = buttonStyle.hoverBackgroundColor ?? '#eef2f7';
+      });
+      button.addEventListener('mouseleave', () => {
+        button.style.background = buttonStyle.backgroundColor ?? 'rgba(255,255,255,.96)';
+      });
       button.addEventListener('click', async () => {
         try {
           await handler();
           if (action === 'copy') {
-            button.textContent = 'Copied';
-            window.setTimeout(() => (button.textContent = label), 1400);
+            labelElement.textContent = 'Copied';
+            window.setTimeout(() => (labelElement.textContent = label), 1400);
           }
         } catch {
-          button.textContent = 'Unavailable';
-          window.setTimeout(() => (button.textContent = label), 1800);
+          labelElement.textContent = 'Unavailable';
+          window.setTimeout(() => (labelElement.textContent = label), 1800);
         }
       });
-      toolbar.append(button);
+      container.append(button);
     });
-    if (!toolbar.childElementCount) return;
-    parent.append(toolbar);
-    this.exportToolbar = toolbar;
+    if (!root.querySelector('[data-chartix-export]')) return;
+    parent.append(root);
+    this.exportToolbar = root;
   }
 
   private updateVisibleDataTable(): void {

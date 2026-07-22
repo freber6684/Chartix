@@ -65,6 +65,22 @@ const chart = new Chartix(canvas, {
       png: true,
       copy: true,
       position: 'top-right',
+      layout: 'separate',
+      display: 'icon-text',
+      buttonStyle: {
+        backgroundColor: '#ffffff',
+        borderColor: '#94a3b8',
+        borderRadius: 8,
+      },
+      actions: {
+        png: {
+          label: 'Save image',
+          iconUrl: 'https://example.com/download.svg',
+          iconSize: 18,
+          position: 'bottom-right',
+        },
+        csv: { position: 'top-right' },
+      },
     },
     dataTable: { enabled: true, searchable: true, sortable: true, pageSize: 10 },
   },
@@ -84,6 +100,10 @@ For bar and column charts, `barGapRatio` moves categories closer together or far
 `scales.x.categoryMode` (or `scales.y` for horizontal bars) with `labelDensity`; Chartix keeps every
 bar but displays a readable sample of axis labels, similar to Power BI's categorical/continuous
 axis choice.
+
+Export actions can remain in one compact toolbar or become separately positioned buttons. Each
+action supports custom text, text/icon/both display, an icon URL and size, independent corner and
+edge padding, plus shared or per-action button and typography styling.
 
 ## Quick Embed
 

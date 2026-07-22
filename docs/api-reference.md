@@ -134,7 +134,9 @@ and source complexity. Expensive animation is automatically disabled above 5,000
 - `chart.toDataURL()`, `toCSV()`, `toJSON()`, and `toHTML()` return portable exports.
 - `chart.download('png' | 'jpeg' | 'csv' | 'json' | 'html', filename?)` starts a browser download.
 - `options.exportToolbar` places independently toggled CSV, JSON, PNG, JPEG, and copy-image actions
-  inside any chart with configurable corner placement, edge padding, and spacing.
+  inside any chart. It supports grouped or separate layouts, per-action corners and edge padding,
+  custom labels, text/icon/both presentation, remote or data-URL icons, icon sizing, shared and
+  per-action button styles, and `typography.exportAction` text design.
 - `options.dataTable` adds a visible searchable, sortable, paginated table below the chart;
   `showDataTable` continues to control the visually hidden accessibility table.
 - `chart.setValue(datasetIndex, valueIndex, value)` records an editable change when `editable` is

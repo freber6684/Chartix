@@ -122,12 +122,12 @@ const report = {
   library: {
     rawBytes: libraryBytes.byteLength,
     gzipBytes: gzipSync(libraryBytes).byteLength,
-    budgetBytes: 76 * 1024,
+    budgetBytes: 77 * 1024,
   },
   embed: {
     rawBytes: embedBytes.byteLength,
     gzipBytes: gzipSync(embedBytes).byteLength,
-    budgetBytes: 40 * 1024,
+    budgetBytes: 41 * 1024,
   },
 };
 await writeFile(fromRoot('dist/bundle-size.json'), `${JSON.stringify(report, null, 2)}\n`);

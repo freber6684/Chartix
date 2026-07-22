@@ -171,6 +171,34 @@
         "letterSpacing": { "type": "number" }
       }
     },
+    "exportButtonStyle": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "backgroundColor": { "$ref": "#/$defs/color" },
+        "hoverBackgroundColor": { "$ref": "#/$defs/color" },
+        "borderColor": { "$ref": "#/$defs/color" },
+        "borderWidth": { "type": "number", "minimum": 0 },
+        "borderRadius": { "type": "number", "minimum": 0 },
+        "padding": { "$ref": "#/$defs/spacing" },
+        "shadow": { "type": "string" }
+      }
+    },
+    "exportAction": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "label": { "type": "string" },
+        "display": { "enum": ["text", "icon", "icon-text"] },
+        "iconUrl": { "type": "string" },
+        "iconSize": { "type": "number", "minimum": 8, "maximum": 96 },
+        "position": { "enum": ["top-left", "top-right", "bottom-left", "bottom-right"] },
+        "padding": { "$ref": "#/$defs/spacing" },
+        "buttonStyle": { "$ref": "#/$defs/exportButtonStyle" },
+        "textStyle": { "$ref": "#/$defs/textStyle" }
+      }
+    },
     "axisOptions": {
       "type": "object",
       "additionalProperties": false,
@@ -344,7 +372,23 @@
               "enum": ["top-left", "top-right", "bottom-left", "bottom-right"]
             },
             "padding": { "$ref": "#/$defs/spacing" },
-            "gap": { "type": "number", "minimum": 0 }
+            "gap": { "type": "number", "minimum": 0 },
+            "layout": { "enum": ["grouped", "separate"] },
+            "display": { "enum": ["text", "icon", "icon-text"] },
+            "iconSize": { "type": "number", "minimum": 8, "maximum": 96 },
+            "buttonStyle": { "$ref": "#/$defs/exportButtonStyle" },
+            "textStyle": { "$ref": "#/$defs/textStyle" },
+            "actions": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "csv": { "$ref": "#/$defs/exportAction" },
+                "json": { "$ref": "#/$defs/exportAction" },
+                "png": { "$ref": "#/$defs/exportAction" },
+                "jpeg": { "$ref": "#/$defs/exportAction" },
+                "copy": { "$ref": "#/$defs/exportAction" }
+              }
+            }
           }
         },
         "fill": { "type": "boolean" },
@@ -599,7 +643,8 @@
             "xAxisTitle": { "$ref": "#/$defs/textStyle" },
             "yAxisTitle": { "$ref": "#/$defs/textStyle" },
             "dataLabel": { "$ref": "#/$defs/textStyle" },
-            "legend": { "$ref": "#/$defs/textStyle" }
+            "legend": { "$ref": "#/$defs/textStyle" },
+            "exportAction": { "$ref": "#/$defs/textStyle" }
           }
         },
         "width": { "type": "number", "exclusiveMinimum": 0 },

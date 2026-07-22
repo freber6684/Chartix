@@ -608,6 +608,14 @@ const TEXT_ROLES = [
   ['dataLabel', 'Data labels'],
   ['legend', 'Legend'],
   ['tooltip', 'Tooltip'],
+  ['exportAction', 'Export button text'],
+];
+const EXPORT_ACTIONS = [
+  ['csv', 'CSV'],
+  ['json', 'JSON'],
+  ['png', 'PNG'],
+  ['jpeg', 'JPG'],
+  ['copy', 'Copy'],
 ];
 const PALETTE = [
   '#625bf6',
@@ -645,6 +653,7 @@ function defaultTextStyle(role, theme) {
       padding: { top: 3, right: 5, bottom: 3, left: 5 },
     },
     legend: { fontSize: 11, fontWeight: 500, color: color.muted, lineHeight: 1.3 },
+    exportAction: { fontSize: 11, fontWeight: 600, color: '#172033', lineHeight: 1.2 },
     tooltip: {
       fontSize: 12,
       fontWeight: 600,
@@ -907,6 +916,28 @@ function freshEditor(chart) {
     exportPosition: 'top-right',
     exportGap: 6,
     exportPadding: { top: 12, right: 12, bottom: 12, left: 12 },
+    exportLayout: 'grouped',
+    exportDisplay: 'text',
+    exportIconSize: 16,
+    exportButtonBackground: '#ffffff',
+    exportButtonHover: '#eef2f7',
+    exportButtonBorder: '#94a3b8',
+    exportButtonBorderWidth: 1,
+    exportButtonRadius: 7,
+    exportButtonPadding: { top: 6, right: 8, bottom: 6, left: 8 },
+    exportActions: Object.fromEntries(
+      EXPORT_ACTIONS.map(([key, label]) => [
+        key,
+        {
+          label,
+          display: 'inherit',
+          iconUrl: '',
+          iconSize: 16,
+          position: 'top-right',
+          padding: { top: 12, right: 12, bottom: 12, left: 12 },
+        },
+      ]),
+    ),
   };
 }
 
@@ -954,6 +985,27 @@ function colorEditor(label, key, value) {
   const hex = colorToHex(value);
   const rgb = hexToRgb(hex);
   return `<div class="color-editor" data-color-key="${key}"><span class="color-label">${label}</span><button class="color-trigger" type="button" data-color-trigger aria-expanded="false"><span class="color-chip" style="background:${hex}"></span><code>${hex.toUpperCase()}</code><span class="color-trigger-arrow" aria-hidden="true"></span></button><div class="color-popover" hidden><div class="color-popover-header"><strong>${label}</strong><button type="button" data-color-close aria-label="Close ${label} color palette">×</button></div><label class="visual-picker">Choose visually<input type="color" value="${hex}" data-color-part="picker"></label><label>HEX<input class="code-input" value="${hex.toUpperCase()}" data-color-part="hex" aria-label="${label} hex"></label><div class="rgb-row"><label>R<input type="number" min="0" max="255" value="${rgb.r}" data-color-part="r"></label><label>G<input type="number" min="0" max="255" value="${rgb.g}" data-color-part="g"></label><label>B<input type="number" min="0" max="255" value="${rgb.b}" data-color-part="b"></label></div><div class="palette-row" aria-label="Suggested colors">${PALETTE.map((color) => `<button type="button" data-palette="${color}" aria-label="Use ${color}" title="${color}" style="background:${color}"></button>`).join('')}</div><small>${hex.toUpperCase()} · rgb(${rgb.r}, ${rgb.g}, ${rgb.b})</small></div></div>`;
+}
+
+function exportActionEditor(editor, key, fallbackLabel) {
+  const action = editor.exportActions[key];
+  return `<details class="control-subsection"><summary>${escapeHTML(fallbackLabel)} button</summary><div class="control-subsection-body"><label>Button text<input type="text" data-export-action="${key}" data-export-property="label" value="${escapeHTML(action.label)}"></label><label>Content<select data-export-action="${key}" data-export-property="display">${selectOptions(
+    [
+      ['inherit', 'Use toolbar default'],
+      ['text', 'Text only'],
+      ['icon', 'Icon only'],
+      ['icon-text', 'Icon and text'],
+    ],
+    action.display,
+  )}</select></label><label>Icon URL<input type="url" data-export-action="${key}" data-export-property="iconUrl" value="${escapeHTML(action.iconUrl)}" placeholder="https://example.com/icon.svg"></label>${rangeControl(`Icon size`, `exportAction.${key}.iconSize`, action.iconSize, 8, 64, 1, 'px')}<label>Independent position<select data-export-action="${key}" data-export-property="position">${selectOptions(
+    [
+      ['top-right', 'Top right'],
+      ['top-left', 'Top left'],
+      ['bottom-right', 'Bottom right'],
+      ['bottom-left', 'Bottom left'],
+    ],
+    action.position,
+  )}</select></label><div class="spacing-grid"><span>Edge padding</span>${['top', 'right', 'bottom', 'left'].map((side) => `<label>${side}<input type="number" min="0" max="120" data-export-action="${key}" data-export-padding="${side}" value="${action.padding[side]}"></label>`).join('')}</div></div></details>`;
 }
 
 function colorToHex(value) {
@@ -1141,7 +1193,20 @@ function renderControls() {
       }`,
     )}${controlSection(
       'Export toolbar',
-      `${toggleControl('Show export toolbar', 'exportToolbar', editor.exportToolbar)}${toggleControl('CSV data', 'exportCSV', editor.exportCSV)}${toggleControl('JSON data', 'exportJSON', editor.exportJSON)}${toggleControl('PNG image', 'exportPNG', editor.exportPNG)}${toggleControl('JPEG image', 'exportJPEG', editor.exportJPEG)}${toggleControl('Copy image', 'exportCopy', editor.exportCopy)}<label>Position<select data-setting="exportPosition">${selectOptions(
+      `${toggleControl('Show export toolbar', 'exportToolbar', editor.exportToolbar)}${toggleControl('CSV data', 'exportCSV', editor.exportCSV)}${toggleControl('JSON data', 'exportJSON', editor.exportJSON)}${toggleControl('PNG image', 'exportPNG', editor.exportPNG)}${toggleControl('JPEG image', 'exportJPEG', editor.exportJPEG)}${toggleControl('Copy image', 'exportCopy', editor.exportCopy)}<label>Arrangement<select data-setting="exportLayout">${selectOptions(
+        [
+          ['grouped', 'Grouped toolbar'],
+          ['separate', 'Separate movable buttons'],
+        ],
+        editor.exportLayout,
+      )}</select></label><label>Default content<select data-setting="exportDisplay">${selectOptions(
+        [
+          ['text', 'Text only'],
+          ['icon', 'Icon only'],
+          ['icon-text', 'Icon and text'],
+        ],
+        editor.exportDisplay,
+      )}</select></label><label>Grouped position<select data-setting="exportPosition">${selectOptions(
         [
           ['top-right', 'Top right'],
           ['top-left', 'Top left'],
@@ -1149,7 +1214,7 @@ function renderControls() {
           ['bottom-left', 'Bottom left'],
         ],
         editor.exportPosition,
-      )}</select></label>${rangeControl('Button spacing', 'exportGap', editor.exportGap, 0, 24, 1, 'px')}<div class="spacing-grid"><span>Edge padding</span>${['top', 'right', 'bottom', 'left'].map((side) => `<label>${side}<input type="number" min="0" max="80" data-export-padding="${side}" value="${editor.exportPadding[side]}"></label>`).join('')}</div><small class="panel-intro">These actions are part of the chart and are included in generated code.</small>`,
+      )}</select></label>${rangeControl('Button spacing', 'exportGap', editor.exportGap, 0, 24, 1, 'px')}${rangeControl('Default icon size', 'exportIconSize', editor.exportIconSize, 8, 64, 1, 'px')}<div class="spacing-grid"><span>Grouped edge padding</span>${['top', 'right', 'bottom', 'left'].map((side) => `<label>${side}<input type="number" min="0" max="120" data-export-padding="${side}" value="${editor.exportPadding[side]}"></label>`).join('')}</div>${colorEditor('Button background', 'exportButtonBackground', editor.exportButtonBackground)}${colorEditor('Hover background', 'exportButtonHover', editor.exportButtonHover)}${colorEditor('Button border', 'exportButtonBorder', editor.exportButtonBorder)}${rangeControl('Border width', 'exportButtonBorderWidth', editor.exportButtonBorderWidth, 0, 8, 1, 'px')}${rangeControl('Corner roundness', 'exportButtonRadius', editor.exportButtonRadius, 0, 32, 1, 'px')}<div class="spacing-grid"><span>Button padding</span>${['top', 'right', 'bottom', 'left'].map((side) => `<label>${side}<input type="number" min="0" max="40" data-export-button-padding="${side}" value="${editor.exportButtonPadding[side]}"></label>`).join('')}</div><p class="panel-intro">Design export typography under <strong>Text → Export button text</strong>. Each action can use its own label, icon URL, icon size, and corner.</p>${EXPORT_ACTIONS.map(([key, label]) => exportActionEditor(editor, key, label)).join('')}`,
       true,
     )}${controlSection(
       'Data tools',
@@ -1384,6 +1449,34 @@ function currentConfig() {
     position: editor.exportPosition,
     gap: Number(editor.exportGap),
     padding: deepClone(editor.exportPadding),
+    layout: editor.exportLayout,
+    display: editor.exportDisplay,
+    iconSize: Number(editor.exportIconSize),
+    buttonStyle: {
+      backgroundColor: editor.exportButtonBackground,
+      hoverBackgroundColor: editor.exportButtonHover,
+      borderColor: editor.exportButtonBorder,
+      borderWidth: Number(editor.exportButtonBorderWidth),
+      borderRadius: Number(editor.exportButtonRadius),
+      padding: deepClone(editor.exportButtonPadding),
+      shadow: '0 2px 8px rgba(15,23,42,.08)',
+    },
+    actions: Object.fromEntries(
+      EXPORT_ACTIONS.map(([key]) => {
+        const action = editor.exportActions[key];
+        return [
+          key,
+          {
+            label: action.label,
+            ...(action.display === 'inherit' ? {} : { display: action.display }),
+            ...(action.iconUrl.trim() ? { iconUrl: action.iconUrl.trim() } : {}),
+            iconSize: Number(action.iconSize),
+            position: action.position,
+            padding: deepClone(action.padding),
+          },
+        ];
+      }),
+    ),
   };
   config.options.editable = true;
   config.options.accessibility = {
@@ -1973,6 +2066,12 @@ document.querySelector('#chart-controls').addEventListener('change', (event) => 
     rerenderFromEditor(true);
     return;
   }
+  if (target.matches('[data-export-action][data-export-property]')) {
+    state.editor.exportActions[target.dataset.exportAction][target.dataset.exportProperty] =
+      target.value;
+    rerenderFromEditor(true);
+    return;
+  }
   if (target.matches('[data-setting]')) {
     const key = target.dataset.setting;
     const value =
@@ -1982,7 +2081,10 @@ document.querySelector('#chart-controls').addEventListener('change', (event) => 
           ? Number(target.value)
           : target.value;
     if (key.startsWith('text.')) state.editor.textStyles[state.activeRole][key.slice(5)] = value;
-    else state.editor[key] = value;
+    else if (key.startsWith('exportAction.')) {
+      const [, action, property] = key.split('.');
+      state.editor.exportActions[action][property] = value;
+    } else state.editor[key] = value;
     if (key === 'theme') state.editor.background = themeBackgrounds[target.value];
     if (key === 'importEnabled') updateImportButton();
     rerenderFromEditor(key === 'theme' || key === 'highlightType');
@@ -2026,8 +2128,29 @@ document.querySelector('#chart-controls').addEventListener('input', (event) => {
     rerenderFromEditor();
     return;
   }
+  if (target.matches('[data-export-action][data-export-padding]')) {
+    state.editor.exportActions[target.dataset.exportAction].padding[target.dataset.exportPadding] =
+      Number(target.value);
+    rerenderFromEditor();
+    return;
+  }
   if (target.matches('[data-export-padding]')) {
     state.editor.exportPadding[target.dataset.exportPadding] = Number(target.value);
+    rerenderFromEditor();
+    return;
+  }
+  if (target.matches('[data-export-button-padding]')) {
+    state.editor.exportButtonPadding[target.dataset.exportButtonPadding] = Number(target.value);
+    rerenderFromEditor();
+    return;
+  }
+  if (
+    target.matches(
+      'input[data-export-action][data-export-property="label"], input[data-export-action][data-export-property="iconUrl"]',
+    )
+  ) {
+    state.editor.exportActions[target.dataset.exportAction][target.dataset.exportProperty] =
+      target.value;
     rerenderFromEditor();
     return;
   }

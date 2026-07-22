@@ -46,7 +46,28 @@ function mountChart(): Chartix {
     },
     options: {
       animation: false,
-      exportToolbar: { enabled: true, jpeg: true },
+      typography: { exportAction: { fontSize: 13, fontStyle: 'italic', color: '#123456' } },
+      exportToolbar: {
+        enabled: true,
+        jpeg: true,
+        layout: 'separate',
+        display: 'icon-text',
+        buttonStyle: {
+          backgroundColor: '#f8fafc',
+          borderColor: '#334155',
+          borderWidth: 2,
+          borderRadius: 12,
+        },
+        actions: {
+          jpeg: {
+            label: 'Photo',
+            iconUrl: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg"/%3E',
+            iconSize: 20,
+            position: 'bottom-left',
+          },
+          copy: { position: 'bottom-right', display: 'text' },
+        },
+      },
       dataTable: { enabled: true, pageSize: 1 },
     },
   });
@@ -58,6 +79,12 @@ describe('data tools', () => {
     expect(JSON.parse(chart.toJSON()).datasets[1].label).toBe('Growth');
     expect(document.querySelectorAll('[data-chartix-export]')).toHaveLength(5);
     expect(document.querySelector('[data-chartix-export="json"]')).not.toBeNull();
+    const jpeg = document.querySelector('[data-chartix-export="jpeg"]') as HTMLButtonElement;
+    expect(jpeg.textContent).toBe('Photo');
+    expect(jpeg.querySelector('img')?.width).toBe(20);
+    expect(jpeg.style.fontStyle).toBe('italic');
+    expect(jpeg.style.borderRadius).toBe('12px');
+    expect(document.querySelectorAll('.chartix-export-group--separate').length).toBeGreaterThan(1);
     chart.destroy();
     expect(document.querySelector('[data-chartix-export]')).toBeNull();
   });

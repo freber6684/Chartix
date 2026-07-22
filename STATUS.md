@@ -22,6 +22,8 @@ changes so the next session can resume without reconstructing history.
 - [x] Add configurable category and grouped-series spacing to vertical and horizontal bars.
 - [x] Add automatic/categorical/continuous dense-axis modes with adjustable label density while
       preserving every chart mark.
+- [x] Add customizable export-action typography, button styling, icon URLs/sizing, text/icon modes,
+      and grouped or independently positioned export buttons.
 - [x] Implement line charts with markers and optional area fills.
 - [x] Implement pie and doughnut charts with configurable holes, angles, slice colors, and labels.
 - [x] Implement scatter charts with multiple datasets and numeric x/y scales.
@@ -208,7 +210,7 @@ formatting, lint, strict types, unit tests, production bundles, and separate lea
 - Unit tests: 155 passed across 35 test files, including 45 chart/theme visual baselines.
 - Production build: ESM, CJS, standalone embed ESM, browser IIFE, minified browser IIFE, and TypeScript declarations generated.
 - Lean original-family core: measured on every build against a 35 KB gzip budget.
-- Complete library and public embed: measured against 76 KB and 40 KB gzip budgets respectively.
+- Complete library and public embed: measured against 77 KB and 41 KB gzip budgets respectively.
 - Browser check: the public demo rendered bar, line, pie, doughnut, and scatter charts without page errors.
 - Accessibility check: all five canvases had generated `role="img"` labels and matching data tables.
 - GitHub-hosted CI: push and pull-request checks completed successfully.

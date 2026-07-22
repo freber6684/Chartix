@@ -34,7 +34,12 @@ describe('normalizeConfig', () => {
         },
         legend: { padding: { top: 5, right: 6, bottom: 7, left: 8 } },
         highlight: { type: 'glow' as const, color: '#a8ff1a', glowBlur: 14 },
-        exportToolbar: { enabled: true, padding: { top: 4, right: 5 } },
+        exportToolbar: {
+          enabled: true,
+          padding: { top: 4, right: 5 },
+          buttonStyle: { padding: { left: 9 } },
+          actions: { png: { label: 'Image', padding: { bottom: 7 } } },
+        },
         dataTable: { enabled: true, pageSize: 8 },
         typography: { fontFamily: 'Inter' },
       },
@@ -47,6 +52,8 @@ describe('normalizeConfig', () => {
     normalized.options.legend!.padding = 20;
     normalized.options.highlight!.glowBlur = 30;
     normalized.options.exportToolbar!.padding!.top = 40;
+    normalized.options.exportToolbar!.buttonStyle!.padding!.left = 30;
+    normalized.options.exportToolbar!.actions!.png!.padding!.bottom = 20;
     normalized.options.dataTable!.pageSize = 20;
     expect(config.options.colors[0]).toBe('#123456');
     expect(config.options.canvas.borderWidth).toBe(2);
@@ -55,6 +62,8 @@ describe('normalizeConfig', () => {
     expect(config.options.legend.padding).toEqual({ top: 5, right: 6, bottom: 7, left: 8 });
     expect(config.options.highlight.glowBlur).toBe(14);
     expect(config.options.exportToolbar.padding.top).toBe(4);
+    expect(config.options.exportToolbar.buttonStyle.padding.left).toBe(9);
+    expect(config.options.exportToolbar.actions.png.padding.bottom).toBe(7);
     expect(config.options.dataTable.pageSize).toBe(8);
   });
 
