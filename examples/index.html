@@ -461,18 +461,31 @@ Chartix.register(BarChart);
             <section class="tab-panel" data-panel="code" hidden>
               <div class="inspector-header">
                 <div>
-                  <span class="panel-icon">&lt;/&gt;</span><strong>Copy-paste embed</strong>
+                  <span class="panel-icon">&lt;/&gt;</span><strong>Live configuration</strong>
                 </div>
-                <button class="copy-button" type="button" id="copy-code">Copy</button>
+                <div class="code-header-actions">
+                  <button class="copy-button" type="button" id="apply-code">Apply</button>
+                  <button class="copy-button" type="button" id="copy-code">Copy embed</button>
+                </div>
               </div>
-              <p class="panel-intro">This snippet includes your current playground settings.</p>
+              <p class="panel-intro">
+                Edit this JSON to update the chart. Valid changes also synchronize the visual
+                controls. Invalid JSON is never applied.
+              </p>
               <div class="export-actions" aria-label="Export chart">
                 <button class="copy-button" type="button" data-export="png">PNG</button>
                 <button class="copy-button" type="button" data-export="jpeg">JPEG</button>
                 <button class="copy-button" type="button" data-export="csv">CSV</button>
                 <button class="copy-button" type="button" data-export="html">Portable HTML</button>
               </div>
-              <pre class="generated-code"><code id="generated-code"></code></pre>
+              <label class="code-editor-label" for="generated-code">Chart configuration</label>
+              <textarea
+                class="generated-code"
+                id="generated-code"
+                rows="28"
+                spellcheck="false"
+                aria-describedby="copy-status"
+              ></textarea>
               <p class="copy-status" id="copy-status" aria-live="polite"></p>
             </section>
 

@@ -944,6 +944,9 @@ const state = {
   importRows: [],
   importFields: [],
   importMapping: { category: '', values: [] },
+  codeEdited: false,
+  codeTimer: null,
+  lastConfig: null,
 };
 
 function activeData() {
@@ -1654,6 +1657,11 @@ function renderBarDesignTabs() {
 }
 
 function resetControls() {
+  if (state.codeEdited) {
+    state.selected = charts.find((chart) => chart.id === state.selected.id) ?? state.selected;
+    state.codeEdited = false;
+    state.importedData = null;
+  }
   state.editor = freshEditor(state.selected);
   state.activeRole = 'title';
   state.controlTab = state.selected.showcaseOnly ? 'content' : 'chart';
@@ -2004,11 +2012,95 @@ function renderPlayground() {
   updateGeneratedCode(config);
 }
 
-function updateGeneratedCode(config) {
+function embedSnippet(config) {
   const clean = deepClone(config);
   const json = JSON.stringify(clean, null, 2).replace(/'/g, '&#39;');
-  document.querySelector('#generated-code').textContent =
-    `<script src="https://freber6684.github.io/Chartix/dist/chartix.min.js"></script>\n\n<div data-chartix data-config='${json}'></div>`;
+  return `<script src="https://freber6684.github.io/Chartix/dist/chartix.min.js"></script>\n\n<div data-chartix data-config='${json}'></div>`;
+}
+
+function updateGeneratedCode(config, force = false) {
+  state.lastConfig = deepClone(config);
+  const editor = document.querySelector('#generated-code');
+  if (force || document.activeElement !== editor) editor.value = JSON.stringify(config, null, 2);
+}
+
+function validateCodeConfiguration(config) {
+  if (!config || typeof config !== 'object' || Array.isArray(config))
+    throw new Error('The configuration must be one JSON object.');
+  if (typeof config.type !== 'string' || !config.type.trim())
+    throw new Error('Add a valid chart "type".');
+  if (!config.data || !Array.isArray(config.data.labels) || !Array.isArray(config.data.datasets))
+    throw new Error('Data needs "labels" and "datasets" arrays.');
+  if (!config.data.datasets.length) throw new Error('Add at least one dataset.');
+  if (
+    !config.data.datasets.every(
+      (dataset) => dataset && typeof dataset === 'object' && Array.isArray(dataset.values),
+    )
+  )
+    throw new Error('Every dataset needs a "values" array.');
+  if (config.options !== undefined && (!config.options || typeof config.options !== 'object'))
+    throw new Error('"options" must be a JSON object.');
+}
+
+function applyCodeConfiguration() {
+  const codeEditor = document.querySelector('#generated-code');
+  const status = document.querySelector('#copy-status');
+  const previous = {
+    selected: state.selected,
+    importedData: state.importedData,
+    editor: state.editor,
+    codeEdited: state.codeEdited,
+    previewWidth: state.previewWidth,
+    previewHeight: state.previewHeight,
+  };
+  let mutated = false;
+  try {
+    const config = JSON.parse(codeEditor.value);
+    validateCodeConfiguration(config);
+    const typeTemplate = charts.find((chart) => chart.type === config.type && !chart.showcaseOnly);
+    if (config.type !== state.selected.type && !typeTemplate)
+      throw new Error(`Chart type "${config.type}" is not available in this playground.`);
+    const selectionSource = config.type === state.selected.type ? state.selected : typeTemplate;
+    state.selected = {
+      ...selectionSource,
+      type: config.type,
+      family: typeTemplate?.family ?? selectionSource.family,
+      theme: config.theme ?? selectionSource.theme,
+      options: deepClone(config.options ?? {}),
+      labels: [...config.data.labels],
+      datasets: deepClone(config.data.datasets),
+    };
+    state.importedData = deepClone(config.data);
+    state.editor = freshEditor(state.selected);
+    state.codeEdited = true;
+    mutated = true;
+    state.activeRole = 'title';
+    const nextWidth = Number(config.options?.width) || 0;
+    const nextHeight = Number(config.options?.height) || state.previewHeight;
+    renderDetailNavigation();
+    renderBarDesignTabs();
+    renderControls();
+    applyPreviewSize(nextWidth, nextHeight);
+    renderPlayground();
+    codeEditor.setAttribute('aria-invalid', 'false');
+    status.classList.remove('is-error');
+    status.textContent = 'Applied. The chart and visual settings are synchronized.';
+  } catch (error) {
+    if (mutated) {
+      state.selected = previous.selected;
+      state.importedData = previous.importedData;
+      state.editor = previous.editor;
+      state.codeEdited = previous.codeEdited;
+      renderDetailNavigation();
+      renderBarDesignTabs();
+      renderControls();
+      applyPreviewSize(previous.previewWidth, previous.previewHeight);
+      renderPlayground();
+    }
+    codeEditor.setAttribute('aria-invalid', 'true');
+    status.classList.add('is-error');
+    status.textContent = error instanceof Error ? error.message : 'The configuration is invalid.';
+  }
 }
 
 function applyPreviewSize(width, height) {
@@ -2132,6 +2224,7 @@ function openChart(id, updateHash = true) {
   state.importRows = [];
   state.importFields = [];
   state.importMapping = { category: '', values: [] };
+  state.codeEdited = false;
   document.body.classList.add('detail-active');
   document.querySelector('#overview-view').hidden = true;
   document.querySelector('#detail-view').hidden = false;
@@ -2168,6 +2261,7 @@ function switchTab(tab) {
   document.querySelectorAll('.tab-panel').forEach((panel) => {
     panel.hidden = panel.dataset.panel !== tab;
   });
+  if (tab === 'code' && state.editor) updateGeneratedCode(currentConfig(), true);
 }
 
 function updateImportButton() {
@@ -2554,13 +2648,27 @@ document.querySelector('#chart-controls').addEventListener('input', (event) => {
     if (rangeOutput) rangeOutput.textContent = target.value;
   }
 });
+const codeEditor = document.querySelector('#generated-code');
+codeEditor.addEventListener('input', () => {
+  window.clearTimeout(state.codeTimer);
+  const status = document.querySelector('#copy-status');
+  status.classList.remove('is-error');
+  status.textContent = 'Checking changes…';
+  state.codeTimer = window.setTimeout(applyCodeConfiguration, 450);
+});
+document.querySelector('#apply-code').addEventListener('click', () => {
+  window.clearTimeout(state.codeTimer);
+  applyCodeConfiguration();
+});
 document.querySelector('#copy-code').addEventListener('click', async () => {
   const status = document.querySelector('#copy-status');
   try {
-    await navigator.clipboard.writeText(document.querySelector('#generated-code').textContent);
-    status.textContent = 'Copied to clipboard.';
+    await navigator.clipboard.writeText(embedSnippet(state.lastConfig ?? currentConfig()));
+    status.classList.remove('is-error');
+    status.textContent = 'Copy-paste embed copied.';
   } catch {
-    status.textContent = 'Select the code and copy it manually.';
+    status.classList.add('is-error');
+    status.textContent = 'Clipboard access failed. Copy the JSON manually.';
   }
 });
 document.querySelectorAll('[data-export]').forEach((button) =>

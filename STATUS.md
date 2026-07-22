@@ -143,6 +143,8 @@ changes so the next session can resume without reconstructing history.
       embed schema, generated code, and chart-specific playground controls.
 - [x] Add four tabbed, ready-to-copy vertical/horizontal bar design presets and reusable solid or
       patterned full-domain tracks, contextual kicker text, per-bar colors, and rounded styling.
+- [x] Make the Code tab a safe live JSON editor with validation, automatic chart updates,
+      bidirectional visual-control synchronization, and copy-ready embed output.
 
 ## Remaining for v0.1
 
