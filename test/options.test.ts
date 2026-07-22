@@ -34,6 +34,8 @@ describe('normalizeConfig', () => {
         },
         legend: { padding: { top: 5, right: 6, bottom: 7, left: 8 } },
         highlight: { type: 'glow' as const, color: '#a8ff1a', glowBlur: 14 },
+        exportToolbar: { enabled: true, padding: { top: 4, right: 5 } },
+        dataTable: { enabled: true, pageSize: 8 },
         typography: { fontFamily: 'Inter' },
       },
     };
@@ -44,12 +46,16 @@ describe('normalizeConfig', () => {
     normalized.options.dataLabels!.padding!.top = 20;
     normalized.options.legend!.padding = 20;
     normalized.options.highlight!.glowBlur = 30;
+    normalized.options.exportToolbar!.padding!.top = 40;
+    normalized.options.dataTable!.pageSize = 20;
     expect(config.options.colors[0]).toBe('#123456');
     expect(config.options.canvas.borderWidth).toBe(2);
     expect(config.options.dataLabels.rotation).toBe(15);
     expect(config.options.dataLabels.padding.top).toBe(1);
     expect(config.options.legend.padding).toEqual({ top: 5, right: 6, bottom: 7, left: 8 });
     expect(config.options.highlight.glowBlur).toBe(14);
+    expect(config.options.exportToolbar.padding.top).toBe(4);
+    expect(config.options.dataTable.pageSize).toBe(8);
   });
 
   it('deep-clones drill-down data and gesture options', () => {

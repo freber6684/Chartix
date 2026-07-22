@@ -6,6 +6,9 @@ All notable Chartix changes are documented here. The project follows semantic ve
 
 ### Added
 
+- In-chart CSV, JSON, PNG, JPEG, and copy-image toolbar with configurable visibility and placement.
+- Browser CSV/JSON upload, paste, and API import with inferred category/value field mapping.
+- Optional searchable, sortable, paginated visible data tables below charts.
 - Configurable active-mark highlights with outline, glow, fill, and plot-band treatments.
 - Pointer, touch-compatible, and keyboard chart exploration with accessible DOM tooltips.
 - Clickable and keyboard-activatable legends that show or hide datasets.

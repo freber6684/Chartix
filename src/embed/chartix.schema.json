@@ -326,6 +326,23 @@
             "algorithm": { "enum": ["min-max", "lttb", "auto"] }
           }
         },
+        "exportToolbar": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "enabled": { "type": "boolean" },
+            "csv": { "type": "boolean" },
+            "json": { "type": "boolean" },
+            "png": { "type": "boolean" },
+            "jpeg": { "type": "boolean" },
+            "copy": { "type": "boolean" },
+            "position": {
+              "enum": ["top-left", "top-right", "bottom-left", "bottom-right"]
+            },
+            "padding": { "$ref": "#/$defs/spacing" },
+            "gap": { "type": "number", "minimum": 0 }
+          }
+        },
         "fill": { "type": "boolean" },
         "editable": { "type": "boolean" },
         "stacked": { "type": "boolean" },
@@ -435,6 +452,16 @@
             "enabled": { "type": "boolean" },
             "mode": { "enum": ["brush", "lasso"] },
             "color": { "$ref": "#/$defs/color" }
+          }
+        },
+        "dataTable": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "enabled": { "type": "boolean" },
+            "searchable": { "type": "boolean" },
+            "sortable": { "type": "boolean" },
+            "pageSize": { "type": "integer", "minimum": 1 }
           }
         },
         "showDataTable": { "type": "boolean" },

@@ -108,6 +108,17 @@ export function normalizeConfig(config: ChartConfig): ChartConfig & { options: C
           }
         : {}),
       ...(config.options?.highlight ? { highlight: { ...config.options.highlight } } : {}),
+      ...(config.options?.exportToolbar
+        ? {
+            exportToolbar: {
+              ...config.options.exportToolbar,
+              ...(config.options.exportToolbar.padding
+                ? { padding: { ...config.options.exportToolbar.padding } }
+                : {}),
+            },
+          }
+        : {}),
+      ...(config.options?.dataTable ? { dataTable: { ...config.options.dataTable } } : {}),
       decimation: { ...defaultOptions.decimation, ...config.options?.decimation },
       interaction: { ...defaultOptions.interaction, ...config.options?.interaction },
       legend: {

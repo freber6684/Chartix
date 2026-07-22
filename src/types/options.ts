@@ -486,6 +486,40 @@ export interface LabelOptions {
   letterSpacing?: number;
 }
 
+/** Download and clipboard actions displayed over the chart surface. */
+export interface ExportToolbarOptions {
+  /** Show the export toolbar. */
+  enabled?: boolean;
+  /** Include a CSV data download. */
+  csv?: boolean;
+  /** Include a JSON data download. */
+  json?: boolean;
+  /** Include a PNG image download. */
+  png?: boolean;
+  /** Include a JPEG image download. */
+  jpeg?: boolean;
+  /** Include a copy-image action. */
+  copy?: boolean;
+  /** Corner used to anchor the toolbar inside the chart. */
+  position?: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
+  /** Distance from the selected canvas edges. */
+  padding?: Partial<SpacingOptions>;
+  /** Space between toolbar actions. */
+  gap?: number;
+}
+
+/** Optional visible, interactive table rendered directly below a chart. */
+export interface DataTableOptions {
+  /** Display the visible data table. The screen-reader table remains controlled separately. */
+  enabled?: boolean;
+  /** Show a text filter above the table. */
+  searchable?: boolean;
+  /** Allow columns to be sorted. */
+  sortable?: boolean;
+  /** Maximum rows shown on each page. */
+  pageSize?: number;
+}
+
 /** Runtime options shared by built-in charts. */
 export interface ChartOptions {
   /** Accessibility studio controls. */
@@ -516,6 +550,8 @@ export interface ChartOptions {
   direction?: 'ltr' | 'rtl';
   /** Automatic sampling for large line datasets. */
   decimation?: DecimationOptions;
+  /** Visible data and image export actions overlaid on the chart. */
+  exportToolbar?: ExportToolbarOptions;
   /** Point-specific drill-down data keyed by `datasetIndex:valueIndex` or label. */
   drilldown?: Record<string, ChartData>;
   /** Styling for the mark currently under pointer or keyboard focus. */
@@ -558,6 +594,8 @@ export interface ChartOptions {
   scales?: ScaleOptions;
   /** Brush or lasso data selection. */
   selection?: SelectionOptions;
+  /** Visible, searchable, sortable data table shown below the chart. */
+  dataTable?: DataTableOptions;
   /** Add a visually hidden data table beside the canvas. */
   showDataTable?: boolean;
   /** Display subtle grid lines. */

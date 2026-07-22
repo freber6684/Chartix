@@ -126,8 +126,12 @@ and source complexity. Expensive animation is automatically disabled above 5,000
 - `chart.destroy()` removes observers, events, tooltips, and generated accessibility markup.
 - `chart.resetZoom()` restores the complete viewport.
 - `chart.drillUp()` restores the previous drill-down level.
-- `chart.toDataURL()`, `toCSV()`, and `toHTML()` return portable exports.
-- `chart.download('png' | 'jpeg' | 'csv' | 'html', filename?)` starts a browser download.
+- `chart.toDataURL()`, `toCSV()`, `toJSON()`, and `toHTML()` return portable exports.
+- `chart.download('png' | 'jpeg' | 'csv' | 'json' | 'html', filename?)` starts a browser download.
+- `options.exportToolbar` places independently toggled CSV, JSON, PNG, JPEG, and copy-image actions
+  inside any chart with configurable corner placement, edge padding, and spacing.
+- `options.dataTable` adds a visible searchable, sortable, paginated table below the chart;
+  `showDataTable` continues to control the visually hidden accessibility table.
 - `chart.setValue(datasetIndex, valueIndex, value)` records an editable change when `editable` is
   enabled; `undo()`, `redo()`, and `getHistory()` provide deterministic change control.
 - `pauseAnimation()`, `resumeAnimation()`, and `seekAnimation(progress)` control active playback.

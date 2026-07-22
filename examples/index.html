@@ -183,6 +183,10 @@ Chartix.register(BarChart);
             <p id="chart-picker-help" class="chart-picker-help">
               Switch examples without leaving the playground.
             </p>
+            <button class="data-import-button" id="open-data-import" type="button">
+              <span aria-hidden="true">↥</span>
+              <span><strong>Import data</strong><small>CSV, JSON, or API</small></span>
+            </button>
           </aside>
 
           <div class="preview-column">
@@ -488,6 +492,79 @@ Chartix.register(BarChart);
             Reset chart
           </button>
         </div>
+      </form>
+    </dialog>
+
+    <dialog class="data-dialog" id="data-import-dialog" aria-labelledby="data-dialog-title">
+      <form method="dialog" class="data-dialog-card" id="data-import-form">
+        <header class="data-dialog-header">
+          <div>
+            <p class="confirm-dialog-eyebrow">Data workspace</p>
+            <h2 id="data-dialog-title">Connect your data</h2>
+            <p>Bring in rows, then choose the category and numeric fields that build the chart.</p>
+          </div>
+          <button type="button" class="dialog-close" id="close-data-import" aria-label="Close">
+            ×
+          </button>
+        </header>
+        <div class="data-source-tabs" role="tablist" aria-label="Data source">
+          <button type="button" class="is-active" data-data-source="file">Upload file</button>
+          <button type="button" data-data-source="paste">Paste data</button>
+          <button type="button" data-data-source="api">API URL</button>
+        </div>
+        <section class="data-source-panel" data-data-panel="file">
+          <label class="drop-zone" for="data-file-input">
+            <strong>Choose a CSV or JSON file</strong>
+            <span>Files stay in your browser and are not uploaded to a server.</span>
+            <input id="data-file-input" type="file" accept=".csv,.json,text/csv,application/json" />
+          </label>
+        </section>
+        <section class="data-source-panel" data-data-panel="paste" hidden>
+          <label
+            >Paste CSV or a JSON array<textarea
+              id="data-paste-input"
+              rows="9"
+              placeholder="Month,Revenue,Growth\nJan,120,12\nFeb,190,18"
+            ></textarea>
+          </label>
+          <button type="button" class="button" id="parse-pasted-data">Read pasted data</button>
+        </section>
+        <section class="data-source-panel" data-data-panel="api" hidden>
+          <label
+            >Public JSON or CSV endpoint<input
+              id="data-api-input"
+              type="url"
+              placeholder="https://api.example.com/results.json"
+          /></label>
+          <p class="data-help">
+            The endpoint must allow browser access (CORS). JSON can be an array or use a
+            <code>data</code>, <code>results</code>, or <code>items</code> array.
+          </p>
+          <button type="button" class="button" id="load-api-data">Load API data</button>
+        </section>
+        <p class="data-import-status" id="data-import-status" aria-live="polite">
+          Choose a source to inspect its fields.
+        </p>
+        <section class="field-mapper" id="field-mapper" hidden>
+          <div class="field-mapper-heading">
+            <div><strong>Map chart fields</strong><span id="data-row-count"></span></div>
+            <span class="auto-map-badge">Auto-detected</span>
+          </div>
+          <div class="field-mapper-grid">
+            <label>Category / X axis<select id="category-field"></select></label>
+            <fieldset>
+              <legend>Values / Y axis</legend>
+              <div id="value-fields"></div>
+            </fieldset>
+          </div>
+          <div class="data-preview-table" id="data-preview-table"></div>
+        </section>
+        <footer class="data-dialog-actions">
+          <button class="button button-quiet" type="button" id="cancel-data-import">Cancel</button>
+          <button class="button confirm-reset-button" type="button" id="apply-data-import" disabled>
+            Use this data
+          </button>
+        </footer>
       </form>
     </dialog>
 

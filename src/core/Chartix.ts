@@ -44,6 +44,7 @@ const validOptionKeys = new Set<keyof ChartOptions>([
   'dataLabels',
   'direction',
   'decimation',
+  'exportToolbar',
   'drilldown',
   'editable',
   'fill',
@@ -66,6 +67,7 @@ const validOptionKeys = new Set<keyof ChartOptions>([
   'resizable',
   'scales',
   'selection',
+  'dataTable',
   'showDataTable',
   'showGrid',
   'showLegend',
@@ -145,6 +147,8 @@ export class Chartix {
   private resizeObserver?: ResizeObserver;
   private animationController?: AnimationController;
   private dataTable: HTMLTableElement | undefined;
+  private exportToolbar: HTMLElement | undefined;
+  private visibleDataTable: HTMLElement | undefined;
   private readonly eventManager: EventManager;
   private readonly tooltip: Tooltip;
   private regions: HitRegion[] = [];
@@ -336,6 +340,25 @@ export class Chartix {
         : {}),
       ...(options.dataLabels
         ? { dataLabels: { ...this.config.options.dataLabels, ...options.dataLabels } }
+        : {}),
+      ...(options.exportToolbar
+        ? {
+            exportToolbar: {
+              ...this.config.options.exportToolbar,
+              ...options.exportToolbar,
+              ...(options.exportToolbar.padding
+                ? {
+                    padding: {
+                      ...this.config.options.exportToolbar?.padding,
+                      ...options.exportToolbar.padding,
+                    },
+                  }
+                : {}),
+            },
+          }
+        : {}),
+      ...(options.dataTable
+        ? { dataTable: { ...this.config.options.dataTable, ...options.dataTable } }
         : {}),
       ...(options.typography
         ? { typography: { ...this.config.options.typography, ...options.typography } }
@@ -553,6 +576,12 @@ export class Chartix {
     return chartDataToCSV(this.config.data);
   }
 
+  /** Export the current aligned chart data as formatted JSON. */
+  public toJSON(): string {
+    this.assertActive();
+    return JSON.stringify(this.config.data, null, 2);
+  }
+
   /** Generate a portable, offline-ready HTML chart package. */
   public toHTML(bundleUrl = 'https://freber6684.github.io/Chartix/dist/chartix.min.js'): string {
     this.assertActive();
@@ -577,9 +606,9 @@ export class Chartix {
     return chartConfigToIframe(this.config, bundleUrl);
   }
 
-  /** Copy an image, SVG, CSV, HTML, or iframe snippet to the system clipboard. */
+  /** Copy an image, SVG, CSV, JSON, HTML, or iframe snippet to the system clipboard. */
   public async copyToClipboard(
-    format: 'png' | 'svg' | 'csv' | 'html' | 'iframe' = 'png',
+    format: 'png' | 'svg' | 'csv' | 'json' | 'html' | 'iframe' = 'png',
   ): Promise<void> {
     this.assertActive();
     if (!navigator.clipboard) throw new Error('Chartix: Clipboard API is unavailable.');
@@ -598,9 +627,11 @@ export class Chartix {
         ? this.toSVG()
         : format === 'csv'
           ? this.toCSV()
-          : format === 'iframe'
-            ? this.toIframe()
-            : this.toHTML();
+          : format === 'json'
+            ? this.toJSON()
+            : format === 'iframe'
+              ? this.toIframe()
+              : this.toHTML();
     await navigator.clipboard.writeText(text);
   }
 
@@ -612,9 +643,9 @@ export class Chartix {
     this.canvas.classList.remove('chartix-print-target');
   }
 
-  /** Download an image, CSV dataset, or self-contained HTML package. */
+  /** Download an image, CSV/JSON dataset, or self-contained HTML package. */
   public download(
-    format: 'png' | 'jpeg' | 'svg' | 'pdf' | 'csv' | 'html',
+    format: 'png' | 'jpeg' | 'svg' | 'pdf' | 'csv' | 'json' | 'html',
     filename = 'chartix',
   ): void {
     this.assertActive();
@@ -624,11 +655,23 @@ export class Chartix {
       const copy = new Uint8Array(bytes.byteLength);
       copy.set(bytes);
       href = URL.createObjectURL(new Blob([copy.buffer], { type: 'application/pdf' }));
-    } else if (format === 'csv' || format === 'html' || format === 'svg') {
+    } else if (format === 'csv' || format === 'json' || format === 'html' || format === 'svg') {
       const content =
-        format === 'csv' ? this.toCSV() : format === 'html' ? this.toHTML() : this.toSVG();
+        format === 'csv'
+          ? this.toCSV()
+          : format === 'json'
+            ? this.toJSON()
+            : format === 'html'
+              ? this.toHTML()
+              : this.toSVG();
       const type =
-        format === 'csv' ? 'text/csv' : format === 'html' ? 'text/html' : 'image/svg+xml';
+        format === 'csv'
+          ? 'text/csv'
+          : format === 'json'
+            ? 'application/json'
+            : format === 'html'
+              ? 'text/html'
+              : 'image/svg+xml';
       href = URL.createObjectURL(new Blob([content], { type }));
     } else {
       href = this.toDataURL(format === 'jpeg' ? 'image/jpeg' : 'image/png');
@@ -692,6 +735,8 @@ export class Chartix {
     this.eventManager.destroy();
     this.tooltip.destroy();
     this.resetZoomButton?.remove();
+    this.exportToolbar?.remove();
+    this.visibleDataTable?.remove();
     this.dataTable?.remove();
     this.accessibilityHelp?.remove();
     this.explorationLive?.remove();
@@ -991,6 +1036,8 @@ export class Chartix {
     this.dataTable = this.config.options.showDataTable
       ? (updateDataTable(this.canvas, this.config.data) ?? undefined)
       : undefined;
+    this.updateExportToolbar();
+    this.updateVisibleDataTable();
     this.accessibilityHelp?.remove();
     this.explorationLive?.remove();
     const parent = this.canvas.parentElement;
@@ -1014,6 +1061,207 @@ export class Chartix {
       parent.append(live);
       this.explorationLive = live;
     }
+  }
+
+  private updateExportToolbar(): void {
+    this.exportToolbar?.remove();
+    this.exportToolbar = undefined;
+    const options = this.config.options.exportToolbar;
+    const parent = this.canvas.parentElement;
+    if (!parent || !options?.enabled) return;
+    if (getComputedStyle(parent).position === 'static') parent.style.position = 'relative';
+    const toolbar = document.createElement('div');
+    toolbar.className = 'chartix-export-toolbar';
+    toolbar.setAttribute('role', 'toolbar');
+    toolbar.setAttribute('aria-label', 'Export chart');
+    const padding = { top: 12, right: 12, bottom: 12, left: 12, ...options.padding };
+    const position = options.position ?? 'top-right';
+    toolbar.style.cssText = [
+      'position:absolute',
+      'z-index:8',
+      'display:flex',
+      'align-items:center',
+      `gap:${Math.max(0, options.gap ?? 6)}px`,
+      position.startsWith('top') ? `top:${padding.top}px` : `bottom:${padding.bottom}px`,
+      position.endsWith('left') ? `left:${padding.left}px` : `right:${padding.right}px`,
+      'padding:5px',
+      'border:1px solid rgba(148,163,184,.35)',
+      'border-radius:9px',
+      'background:rgba(255,255,255,.94)',
+      'box-shadow:0 8px 24px rgba(15,23,42,.12)',
+      'backdrop-filter:blur(8px)',
+    ].join(';');
+    const actions: Array<[string, string, () => void | Promise<void>]> = [
+      ...(options.csv !== false ? [['csv', 'CSV', () => this.download('csv')]] : []),
+      ...(options.json !== false ? [['json', 'JSON', () => this.download('json')]] : []),
+      ...(options.png !== false ? [['png', 'PNG', () => this.download('png')]] : []),
+      ...(options.jpeg === true ? [['jpeg', 'JPG', () => this.download('jpeg')]] : []),
+      ...(options.copy !== false
+        ? [['copy', 'Copy', async () => this.copyToClipboard('png')]]
+        : []),
+    ] as Array<[string, string, () => void | Promise<void>]>;
+    actions.forEach(([action, label, handler]) => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.dataset.chartixExport = action;
+      button.textContent = label;
+      button.title = action === 'copy' ? 'Copy chart image' : `Download ${label}`;
+      button.style.cssText =
+        'appearance:none;border:0;border-radius:6px;background:transparent;color:#172033;padding:6px 8px;font:600 11px/1.2 ui-sans-serif,system-ui;cursor:pointer';
+      button.addEventListener('mouseenter', () => (button.style.background = '#eef2f7'));
+      button.addEventListener('mouseleave', () => (button.style.background = 'transparent'));
+      button.addEventListener('click', async () => {
+        try {
+          await handler();
+          if (action === 'copy') {
+            button.textContent = 'Copied';
+            window.setTimeout(() => (button.textContent = label), 1400);
+          }
+        } catch {
+          button.textContent = 'Unavailable';
+          window.setTimeout(() => (button.textContent = label), 1800);
+        }
+      });
+      toolbar.append(button);
+    });
+    if (!toolbar.childElementCount) return;
+    parent.append(toolbar);
+    this.exportToolbar = toolbar;
+  }
+
+  private updateVisibleDataTable(): void {
+    this.visibleDataTable?.remove();
+    this.visibleDataTable = undefined;
+    const options = this.config.options.dataTable;
+    const host = this.canvas.parentElement;
+    if (!host || !options?.enabled) return;
+    const section = document.createElement('section');
+    section.className = 'chartix-data-table';
+    section.setAttribute('aria-label', 'Chart data');
+    section.style.cssText =
+      'width:100%;box-sizing:border-box;margin-top:12px;border:1px solid #dce3ec;border-radius:12px;background:#fff;color:#172033;overflow:hidden;font:13px/1.45 ui-sans-serif,system-ui;box-shadow:0 8px 24px rgba(15,23,42,.06)';
+    const heading = document.createElement('div');
+    heading.style.cssText =
+      'display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;border-bottom:1px solid #e5eaf0';
+    const title = document.createElement('strong');
+    title.textContent = 'Chart data';
+    heading.append(title);
+    let query = '';
+    let sortColumn = 0;
+    let sortDirection = 1;
+    let page = 0;
+    if (options.searchable !== false) {
+      const search = document.createElement('input');
+      search.type = 'search';
+      search.placeholder = 'Filter rows…';
+      search.setAttribute('aria-label', 'Filter chart data');
+      search.style.cssText =
+        'min-width:180px;border:1px solid #cbd5e1;border-radius:7px;padding:7px 9px;background:#fff;color:#172033;font:inherit';
+      heading.append(search);
+      search.addEventListener('input', () => {
+        query = search.value.trim().toLocaleLowerCase();
+        page = 0;
+        renderRows();
+      });
+    }
+    section.append(heading);
+    const scroller = document.createElement('div');
+    scroller.style.cssText = 'overflow:auto';
+    const table = document.createElement('table');
+    table.style.cssText = 'width:100%;border-collapse:collapse;text-align:left';
+    const columns = ['Category', ...this.config.data.datasets.map((dataset) => dataset.label)];
+    const head = document.createElement('thead');
+    const headRow = document.createElement('tr');
+    columns.forEach((column, index) => {
+      const cell = document.createElement('th');
+      cell.scope = 'col';
+      cell.style.cssText =
+        'padding:10px 16px;background:#f8fafc;border-bottom:1px solid #e5eaf0;color:#475569;font-size:11px;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap';
+      if (options.sortable !== false) {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.textContent = column;
+        button.style.cssText =
+          'appearance:none;border:0;background:transparent;color:inherit;padding:0;font:inherit;letter-spacing:inherit;text-transform:inherit;cursor:pointer';
+        button.addEventListener('click', () => {
+          sortDirection = sortColumn === index ? -sortDirection : 1;
+          sortColumn = index;
+          page = 0;
+          renderRows();
+        });
+        cell.append(button);
+      } else cell.textContent = column;
+      headRow.append(cell);
+    });
+    head.append(headRow);
+    table.append(head);
+    const body = document.createElement('tbody');
+    table.append(body);
+    scroller.append(table);
+    section.append(scroller);
+    const footer = document.createElement('div');
+    footer.style.cssText =
+      'display:flex;align-items:center;justify-content:flex-end;gap:8px;padding:10px 14px;border-top:1px solid #e5eaf0;color:#64748b;font-size:12px';
+    section.append(footer);
+    const rows = this.config.data.labels.map((label, index) => [
+      label,
+      ...this.config.data.datasets.map((dataset) => dataset.values[index] ?? ''),
+    ]);
+    const pageSize = Math.max(1, Math.floor(options.pageSize ?? 10));
+    const renderRows = (): void => {
+      const filtered = rows
+        .filter(
+          (row) => !query || row.some((value) => String(value).toLocaleLowerCase().includes(query)),
+        )
+        .sort((a, b) => {
+          const first = a[sortColumn] ?? '';
+          const second = b[sortColumn] ?? '';
+          return (
+            (typeof first === 'number' && typeof second === 'number'
+              ? first - second
+              : String(first).localeCompare(String(second), undefined, { numeric: true })) *
+            sortDirection
+          );
+        });
+      const pageCount = Math.max(1, Math.ceil(filtered.length / pageSize));
+      page = Math.min(page, pageCount - 1);
+      body.replaceChildren();
+      filtered.slice(page * pageSize, (page + 1) * pageSize).forEach((row) => {
+        const tr = document.createElement('tr');
+        row.forEach((value, index) => {
+          const cell = document.createElement(index === 0 ? 'th' : 'td');
+          if (index === 0) (cell as HTMLTableCellElement).scope = 'row';
+          cell.textContent = String(value);
+          cell.style.cssText =
+            'padding:10px 16px;border-bottom:1px solid #eef2f6;white-space:nowrap;font-weight:' +
+            (index === 0 ? '600' : '400');
+          tr.append(cell);
+        });
+        body.append(tr);
+      });
+      footer.replaceChildren();
+      const status = document.createElement('span');
+      status.textContent = `${filtered.length} row${filtered.length === 1 ? '' : 's'} · ${page + 1}/${pageCount}`;
+      footer.append(status);
+      if (pageCount > 1) {
+        ['Previous', 'Next'].forEach((label, direction) => {
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.textContent = label;
+          button.disabled = direction === 0 ? page === 0 : page >= pageCount - 1;
+          button.style.cssText =
+            'border:1px solid #cbd5e1;border-radius:6px;background:#fff;color:#172033;padding:5px 8px;font:inherit;cursor:pointer';
+          button.addEventListener('click', () => {
+            page += direction === 0 ? -1 : 1;
+            renderRows();
+          });
+          footer.append(button);
+        });
+      }
+    };
+    renderRows();
+    host.insertAdjacentElement('afterend', section);
+    this.visibleDataTable = section;
   }
 
   private assertActive(): void {

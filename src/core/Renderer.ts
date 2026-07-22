@@ -573,7 +573,8 @@ export class CanvasRenderer implements Renderer {
       }
       this.context.fillText(line, 0, lineY);
       if (options.underline) {
-        const width = this.context.measureText(line).width;
+        const metrics = this.context.measureText(line);
+        const width = metrics.width;
         const left =
           this.context.textAlign === 'center'
             ? -width / 2
@@ -581,8 +582,11 @@ export class CanvasRenderer implements Renderer {
               ? -width
               : 0;
         this.context.beginPath();
-        this.context.moveTo(left, lineY + 3);
-        this.context.lineTo(left + width, lineY + 3);
+        const underlineY =
+          lineY +
+          Math.max(2, (metrics.actualBoundingBoxDescent || fontSize * 0.2) + fontSize * 0.08);
+        this.context.moveTo(left, underlineY);
+        this.context.lineTo(left + width, underlineY);
         this.context.strokeStyle = options.color;
         this.context.lineWidth = 1;
         this.context.stroke();

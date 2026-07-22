@@ -118,6 +118,14 @@ changes so the next session can resume without reconstructing history.
 - [x] Synchronize typed and dragged title positions, repair multiline line-height and text padding,
       add independent X/Y/Y2 title spacing and axis sides, stabilize logarithmic/percentage/reversed
       scales, and align tooltips correctly when responsive previews are visually scaled.
+- [x] Add an in-chart export toolbar with independently toggled CSV, JSON, PNG, JPEG, and copy-image
+      actions plus configurable corner placement, edge padding, and button spacing.
+- [x] Add a browser-only CSV/JSON upload, paste, and public-API data workspace with automatic field
+      inference, Power BI-style category/value mapping, preview rows, and live generated embed data.
+- [x] Add an optional modern data table below charts with filtering, sortable columns, pagination,
+      reusable runtime options, strict schema coverage, and a separate screen-reader fallback.
+- [x] Correct canvas underline placement using measured font descent so underline, bold, and italic
+      combinations remain readable.
 - [x] Replace generic typography with professional role-aware light/dark defaults, guarantee readable
       dark-tooltip contrast and spacing, and remove direct title/plot dragging from the playground.
 - [x] Measure horizontal category labels and axis-title styling before layout so long labels, Y-axis
@@ -197,7 +205,7 @@ formatting, lint, strict types, unit tests, production bundles, and separate lea
 - Unit tests: 155 passed across 35 test files, including 45 chart/theme visual baselines.
 - Production build: ESM, CJS, standalone embed ESM, browser IIFE, minified browser IIFE, and TypeScript declarations generated.
 - Lean original-family core: measured on every build against a 35 KB gzip budget.
-- Complete library and public embed: measured against 72 KB and 40 KB gzip budgets respectively.
+- Complete library and public embed: measured against 76 KB and 40 KB gzip budgets respectively.
 - Browser check: the public demo rendered bar, line, pie, doughnut, and scatter charts without page errors.
 - Accessibility check: all five canvases had generated `role="img"` labels and matching data tables.
 - GitHub-hosted CI: push and pull-request checks completed successfully.

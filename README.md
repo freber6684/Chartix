@@ -55,6 +55,15 @@ const chart = new Chartix(canvas, {
     xLabels: { rotation: -30, fontSize: 11 },
     dataLabels: { show: true, position: 'outside', color: '#172033' },
     animation: { duration: 360, easing: 'easeOutCubic' },
+    exportToolbar: {
+      enabled: true,
+      csv: true,
+      json: true,
+      png: true,
+      copy: true,
+      position: 'top-right',
+    },
+    dataTable: { enabled: true, searchable: true, sortable: true, pageSize: 10 },
   },
 });
 
@@ -62,6 +71,10 @@ chart.update({
   datasets: [{ label: 'Revenue', values: [150, 230, 340] }],
 });
 ```
+
+The public playground can replace the sample data without code: upload CSV/JSON, paste rows, or
+load a public API URL, then map one category field and one or more value fields. Imported data is
+kept in the browser and written directly into the generated copy-paste configuration.
 
 ## Quick Embed
 

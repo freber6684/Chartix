@@ -1,4 +1,4 @@
-/* global document, window, history, location, navigator */
+/* global document, window, history, location, navigator, fetch */
 
 const themes = [
   'light',
@@ -701,7 +701,20 @@ const state = {
   activeRole: 'title',
   controlTab: 'chart',
   editor: null,
+  importedData: null,
+  importRows: [],
+  importFields: [],
+  importMapping: { category: '', values: [] },
 };
+
+function activeData() {
+  return (
+    state.importedData ?? {
+      labels: state.selected.labels,
+      datasets: state.selected.datasets,
+    }
+  );
+}
 
 function chartCapabilities(chart) {
   const type = chart.type;
@@ -868,6 +881,20 @@ function freshEditor(chart) {
     highContrast: false,
     dyslexia: false,
     dataTable: true,
+    visibleDataTable: false,
+    dataTableSearch: true,
+    dataTableSort: true,
+    dataTablePageSize: 10,
+    importEnabled: true,
+    exportToolbar: true,
+    exportCSV: true,
+    exportJSON: true,
+    exportPNG: true,
+    exportJPEG: false,
+    exportCopy: true,
+    exportPosition: 'top-right',
+    exportGap: 6,
+    exportPadding: { top: 12, right: 12, bottom: 12, left: 12 },
   };
 }
 
@@ -1025,7 +1052,7 @@ function renderControls() {
     : '';
   const chartDesign = `${controlSection(
     'Chart colors',
-    `${colorTargets(state.selected)
+    `${colorTargets({ ...state.selected, ...activeData() })
       .map(({ label }, index) =>
         colorEditor(label, `seriesColors.${index}`, editor.seriesColors[index]),
       )
@@ -1088,6 +1115,22 @@ function renderControls() {
             )}</select></label>${editor.annotation === 'image' ? `<label>Image URL<input type="url" data-setting="annotationImage" value="${escapeHTML(editor.annotationImage)}"></label>` : ''}`
           : ''
       }`,
+    )}${controlSection(
+      'Export toolbar',
+      `${toggleControl('Show export toolbar', 'exportToolbar', editor.exportToolbar)}${toggleControl('CSV data', 'exportCSV', editor.exportCSV)}${toggleControl('JSON data', 'exportJSON', editor.exportJSON)}${toggleControl('PNG image', 'exportPNG', editor.exportPNG)}${toggleControl('JPEG image', 'exportJPEG', editor.exportJPEG)}${toggleControl('Copy image', 'exportCopy', editor.exportCopy)}<label>Position<select data-setting="exportPosition">${selectOptions(
+        [
+          ['top-right', 'Top right'],
+          ['top-left', 'Top left'],
+          ['bottom-right', 'Bottom right'],
+          ['bottom-left', 'Bottom left'],
+        ],
+        editor.exportPosition,
+      )}</select></label>${rangeControl('Button spacing', 'exportGap', editor.exportGap, 0, 24, 1, 'px')}<div class="spacing-grid"><span>Edge padding</span>${['top', 'right', 'bottom', 'left'].map((side) => `<label>${side}<input type="number" min="0" max="80" data-export-padding="${side}" value="${editor.exportPadding[side]}"></label>`).join('')}</div><small class="panel-intro">These actions are part of the chart and are included in generated code.</small>`,
+      true,
+    )}${controlSection(
+      'Data tools',
+      `${toggleControl('Show import button', 'importEnabled', editor.importEnabled)}<button class="apply-all-button" type="button" data-open-import ${editor.importEnabled ? '' : 'disabled'}>Import or connect data</button>${toggleControl('Show table below chart', 'visibleDataTable', editor.visibleDataTable)}${toggleControl('Table search', 'dataTableSearch', editor.dataTableSearch)}${toggleControl('Sortable columns', 'dataTableSort', editor.dataTableSort)}${rangeControl('Rows per page', 'dataTablePageSize', editor.dataTablePageSize, 5, 50, 5)}<small class="panel-intro">Upload CSV/JSON, paste rows, or load a public API. Map a category field and one or more numeric value fields.</small>`,
+      true,
     )}`,
     interaction: `${controlSection(
       'Tooltips and legend',
@@ -1127,10 +1170,13 @@ function deepClone(value) {
   return JSON.parse(JSON.stringify(value));
 }
 function baseConfig(chart, compact = false) {
+  const data = compact || chart !== state.selected ? null : state.importedData;
   return {
     type: chart.type,
     theme: chart.theme,
-    data: { labels: [...chart.labels], datasets: deepClone(chart.datasets) },
+    data: data
+      ? deepClone(data)
+      : { labels: [...chart.labels], datasets: deepClone(chart.datasets) },
     options: {
       ...deepClone(chart.options),
       animation: false,
@@ -1190,6 +1236,7 @@ function resetControls() {
   state.controlTab = 'chart';
   state.previewWidth = 0;
   state.previewHeight = 470;
+  updateImportButton();
   renderControls();
   applyPreviewSize(0, 470);
   renderPlayground();
@@ -1297,6 +1344,23 @@ function currentConfig() {
   config.options.resizable = false;
   config.options.direction = editor.rtl ? 'rtl' : 'ltr';
   config.options.showDataTable = editor.dataTable;
+  config.options.dataTable = {
+    enabled: editor.visibleDataTable,
+    searchable: editor.dataTableSearch,
+    sortable: editor.dataTableSort,
+    pageSize: Number(editor.dataTablePageSize),
+  };
+  config.options.exportToolbar = {
+    enabled: editor.exportToolbar,
+    csv: editor.exportCSV,
+    json: editor.exportJSON,
+    png: editor.exportPNG,
+    jpeg: editor.exportJPEG,
+    copy: editor.exportCopy,
+    position: editor.exportPosition,
+    gap: Number(editor.exportGap),
+    padding: deepClone(editor.exportPadding),
+  };
   config.options.editable = true;
   config.options.accessibility = {
     autoSummary: true,
@@ -1405,6 +1469,7 @@ function renderPlayground() {
   state.playground?.destroy();
   const host = document.querySelector('#playground-canvas');
   host.innerHTML = '';
+  document.querySelector('.chartix-data-table')?.remove();
   host.style.height = `${state.previewHeight}px`;
   const canvas = document.createElement('canvas');
   canvas.style.cssText = 'display:block;width:100%;height:100%';
@@ -1538,6 +1603,10 @@ function openChart(id, updateHash = true) {
   const chart = charts.find((candidate) => candidate.id === id);
   if (!chart) return;
   state.selected = chart;
+  state.importedData = null;
+  state.importRows = [];
+  state.importFields = [];
+  state.importMapping = { category: '', values: [] };
   document.body.classList.add('detail-active');
   document.querySelector('#overview-view').hidden = true;
   document.querySelector('#detail-view').hidden = false;
@@ -1575,6 +1644,166 @@ function switchTab(tab) {
   });
 }
 
+function updateImportButton() {
+  const button = document.querySelector('#open-data-import');
+  if (button) button.hidden = state.editor?.importEnabled === false;
+}
+
+function parseCSVRows(source) {
+  const rows = [];
+  let row = [];
+  let value = '';
+  let quoted = false;
+  for (let index = 0; index <= source.length; index += 1) {
+    const character = source[index] ?? '\n';
+    if (character === '"') {
+      if (quoted && source[index + 1] === '"') {
+        value += '"';
+        index += 1;
+      } else quoted = !quoted;
+    } else if (character === ',' && !quoted) {
+      row.push(value.trim());
+      value = '';
+    } else if ((character === '\n' || character === '\r') && !quoted) {
+      if (character === '\r' && source[index + 1] === '\n') index += 1;
+      row.push(value.trim());
+      value = '';
+      if (row.some((cell) => cell !== '')) rows.push(row);
+      row = [];
+    } else value += character;
+  }
+  if (rows.length < 2) throw new Error('CSV needs a header and at least one data row.');
+  const headers = rows[0].map((header, index) => header || `Field ${index + 1}`);
+  return rows
+    .slice(1)
+    .map((cells) =>
+      Object.fromEntries(headers.map((header, index) => [header, cells[index] ?? ''])),
+    );
+}
+
+function normalizeImportedRows(value) {
+  const candidate = Array.isArray(value)
+    ? value
+    : (value?.data ?? value?.results ?? value?.items ?? value?.records);
+  if (!Array.isArray(candidate) || !candidate.length)
+    throw new Error('No row array was found. Use an array of objects or CSV with headers.');
+  if (!candidate.every((row) => row && typeof row === 'object' && !Array.isArray(row)))
+    throw new Error('Every imported row must be an object with named fields.');
+  const fields = [...new Set(candidate.flatMap((row) => Object.keys(row)))];
+  if (fields.length < 2) throw new Error('Import at least two fields to build a chart.');
+  return candidate.map((row) =>
+    Object.fromEntries(
+      fields.map((field) => {
+        const cell = row[field];
+        return [field, cell === null || cell === undefined ? '' : cell];
+      }),
+    ),
+  );
+}
+
+function parseImportedText(source, contentType = '') {
+  const trimmed = source.trim();
+  if (!trimmed) throw new Error('The data source is empty.');
+  if (contentType.includes('json') || trimmed.startsWith('[') || trimmed.startsWith('{'))
+    return normalizeImportedRows(JSON.parse(trimmed));
+  return parseCSVRows(trimmed);
+}
+
+function fieldIsNumeric(field, rows) {
+  const values = rows.map((row) => row[field]).filter((value) => value !== '');
+  return (
+    values.length > 0 &&
+    values.filter((value) => Number.isFinite(Number(value))).length / values.length >= 0.8
+  );
+}
+
+function setImportedRows(rows) {
+  state.importRows = rows;
+  state.importFields = Object.keys(rows[0] ?? {});
+  const numeric = state.importFields.filter((field) => fieldIsNumeric(field, rows));
+  const category =
+    state.importFields.find((field) => !numeric.includes(field)) ?? state.importFields[0];
+  state.importMapping = {
+    category,
+    values: numeric.filter((field) => field !== category).slice(0, 8),
+  };
+  if (!state.importMapping.values.length) {
+    state.importMapping.values = state.importFields
+      .filter((field) => field !== category)
+      .slice(0, 1);
+  }
+  renderFieldMapper();
+}
+
+function renderFieldMapper() {
+  const mapper = document.querySelector('#field-mapper');
+  mapper.hidden = false;
+  document.querySelector('#data-row-count').textContent =
+    `${state.importRows.length} rows · ${state.importFields.length} fields`;
+  document.querySelector('#category-field').innerHTML = state.importFields
+    .map(
+      (field) =>
+        `<option value="${escapeHTML(field)}" ${field === state.importMapping.category ? 'selected' : ''}>${escapeHTML(field)}</option>`,
+    )
+    .join('');
+  document.querySelector('#value-fields').innerHTML = state.importFields
+    .filter((field) => field !== state.importMapping.category)
+    .map((field) => {
+      const numeric = fieldIsNumeric(field, state.importRows);
+      return `<label class="field-choice"><input type="checkbox" value="${escapeHTML(field)}" ${state.importMapping.values.includes(field) ? 'checked' : ''}><span><strong>${escapeHTML(field)}</strong><small>${numeric ? 'Number · recommended' : 'Text · selectable'}</small></span></label>`;
+    })
+    .join('');
+  const previewFields = state.importFields.slice(0, 6);
+  const previewRows = state.importRows.slice(0, 5);
+  document.querySelector('#data-preview-table').innerHTML =
+    `<table><thead><tr>${previewFields.map((field) => `<th>${escapeHTML(field)}</th>`).join('')}</tr></thead><tbody>${previewRows.map((row) => `<tr>${previewFields.map((field) => `<td>${escapeHTML(row[field])}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+  document.querySelector('#data-import-status').textContent =
+    'Fields are ready. Confirm the mapping below.';
+  document.querySelector('#apply-data-import').disabled = !state.importMapping.values.length;
+}
+
+function openDataImport() {
+  if (!state.editor.importEnabled) return;
+  document.querySelector('#data-import-dialog').showModal();
+}
+
+function closeDataImport() {
+  document.querySelector('#data-import-dialog').close();
+}
+
+async function readDataFile(file) {
+  if (!file) return;
+  const status = document.querySelector('#data-import-status');
+  status.textContent = `Reading ${file.name}…`;
+  try {
+    setImportedRows(parseImportedText(await file.text(), file.type));
+  } catch (error) {
+    status.textContent = error instanceof Error ? error.message : 'This file could not be read.';
+  }
+}
+
+function applyImportedData() {
+  const category = state.importMapping.category;
+  const valueFields = state.importMapping.values;
+  if (!category || !valueFields.length) return;
+  state.importedData = {
+    labels: state.importRows.map((row) => String(row[category] ?? '')),
+    datasets: valueFields.map((field) => ({
+      label: field,
+      values: state.importRows.map((row) => {
+        const numeric = Number(row[field]);
+        return Number.isFinite(numeric) ? numeric : null;
+      }),
+    })),
+  };
+  state.editor.seriesColors = valueFields.map((_, index) => PALETTE[index % PALETTE.length]);
+  state.editor.xTitle = category;
+  state.editor.yTitle = valueFields.length === 1 ? valueFields[0] : 'Value';
+  renderControls();
+  renderPlayground();
+  closeDataImport();
+}
+
 document.addEventListener('click', (event) => {
   const openButton = event.target.closest('[data-open-chart]');
   if (openButton) openChart(openButton.dataset.openChart);
@@ -1598,6 +1827,7 @@ document.addEventListener('click', (event) => {
     state.controlTab = controlTab.dataset.controlTab;
     renderControls();
   }
+  if (event.target.closest('[data-open-import]')) openDataImport();
   const colorTrigger = event.target.closest('[data-color-trigger]');
   if (colorTrigger) {
     const editor = colorTrigger.closest('[data-color-key]');
@@ -1709,6 +1939,7 @@ document.querySelector('#chart-controls').addEventListener('change', (event) => 
     if (key.startsWith('text.')) state.editor.textStyles[state.activeRole][key.slice(5)] = value;
     else state.editor[key] = value;
     if (key === 'theme') state.editor.background = themeBackgrounds[target.value];
+    if (key === 'importEnabled') updateImportButton();
     rerenderFromEditor(key === 'theme' || key === 'highlightType');
   }
 });
@@ -1750,6 +1981,11 @@ document.querySelector('#chart-controls').addEventListener('input', (event) => {
     rerenderFromEditor();
     return;
   }
+  if (target.matches('[data-export-padding]')) {
+    state.editor.exportPadding[target.dataset.exportPadding] = Number(target.value);
+    rerenderFromEditor();
+    return;
+  }
   if (target.matches('[data-padding]')) {
     state.editor.padding[target.dataset.padding] = Number(target.value);
     rerenderFromEditor();
@@ -1775,6 +2011,70 @@ document.querySelectorAll('[data-export]').forEach((button) =>
     document.querySelector('#copy-status').textContent = `${button.textContent} export created.`;
   }),
 );
+const dataDialog = document.querySelector('#data-import-dialog');
+document.querySelector('#open-data-import').addEventListener('click', openDataImport);
+document.querySelector('#close-data-import').addEventListener('click', closeDataImport);
+document.querySelector('#cancel-data-import').addEventListener('click', closeDataImport);
+dataDialog.addEventListener('click', (event) => {
+  if (event.target === dataDialog) closeDataImport();
+});
+document.querySelectorAll('[data-data-source]').forEach((button) =>
+  button.addEventListener('click', () => {
+    document
+      .querySelectorAll('[data-data-source]')
+      .forEach((candidate) => candidate.classList.toggle('is-active', candidate === button));
+    document.querySelectorAll('[data-data-panel]').forEach((panel) => {
+      panel.hidden = panel.dataset.dataPanel !== button.dataset.dataSource;
+    });
+  }),
+);
+document
+  .querySelector('#data-file-input')
+  .addEventListener('change', (event) => readDataFile(event.target.files?.[0]));
+document.querySelector('#parse-pasted-data').addEventListener('click', () => {
+  const status = document.querySelector('#data-import-status');
+  try {
+    setImportedRows(parseImportedText(document.querySelector('#data-paste-input').value));
+  } catch (error) {
+    status.textContent =
+      error instanceof Error ? error.message : 'The pasted data could not be read.';
+  }
+});
+document.querySelector('#load-api-data').addEventListener('click', async () => {
+  const status = document.querySelector('#data-import-status');
+  const url = document.querySelector('#data-api-input').value.trim();
+  if (!url) {
+    status.textContent = 'Enter a public API URL first.';
+    return;
+  }
+  status.textContent = 'Connecting to the API…';
+  try {
+    const response = await fetch(url);
+    if (!response.ok) throw new Error(`API returned ${response.status}.`);
+    setImportedRows(
+      parseImportedText(await response.text(), response.headers.get('content-type') ?? ''),
+    );
+  } catch (error) {
+    status.textContent =
+      error instanceof Error
+        ? `${error.message} Check that the endpoint is public and allows browser access.`
+        : 'The API could not be loaded.';
+  }
+});
+document.querySelector('#category-field').addEventListener('change', (event) => {
+  state.importMapping.category = event.target.value;
+  state.importMapping.values = state.importMapping.values.filter(
+    (field) => field !== state.importMapping.category,
+  );
+  renderFieldMapper();
+});
+document.querySelector('#value-fields').addEventListener('change', () => {
+  state.importMapping.values = [...document.querySelectorAll('#value-fields input:checked')].map(
+    (input) => input.value,
+  );
+  document.querySelector('#apply-data-import').disabled = !state.importMapping.values.length;
+});
+document.querySelector('#apply-data-import').addEventListener('click', applyImportedData);
 window.addEventListener('hashchange', () => {
   const match = location.hash.match(/^#chart\/(.+)$/);
   if (match) openChart(match[1], false);
