@@ -514,6 +514,14 @@
         },
         "showDataTable": { "type": "boolean" },
         "showGrid": { "type": "boolean" },
+        "grid": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "horizontal": { "type": "boolean" },
+            "vertical": { "type": "boolean" }
+          }
+        },
         "showLegend": { "type": "boolean" },
         "startAngle": { "type": "number" },
         "radialGap": { "type": "number", "minimum": 0 },

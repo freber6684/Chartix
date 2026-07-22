@@ -51,6 +51,7 @@ gaps. Scatter and bubble datasets may additionally use `points: [{x, y, r?}]`. D
 | `selection`            | disabled                      | Brush or lasso selection with portable events.                        |
 | `showDataTable`        | `true`                        | Add a visually hidden accessible data table.                          |
 | `showGrid`             | `true`                        | Draw subtle Cartesian grid lines.                                     |
+| `grid`                 | chart-specific                | Independently show horizontal and vertical Cartesian gridlines.       |
 | `showLegend`           | `true`                        | Draw the dataset legend.                                              |
 | `startAngle`           | `-90`                         | Pie/doughnut starting angle in degrees.                               |
 | `title`                | unset                         | Chart heading drawn inside the canvas.                                |
@@ -78,6 +79,11 @@ both endpoints visible. Formatting presets
 cover automatic, compact, currency, percentage, date, currency code, and locale. JavaScript callers
 can use `tickFormatter`; JSON embeds use the serializable presets. Exported scale primitives include
 linear, log, time, percentage, band, and radial scales.
+
+Use top-level `grid: { horizontal: boolean, vertical: boolean }` to control the direction of lines
+across the plot. Both directions may be enabled or disabled independently. `showGrid: false` remains
+the backward-compatible master override. Per-axis `scales.x.grid` and `scales.y.grid` continue to
+control color, width, and dash styling.
 
 ## Composition and transforms
 

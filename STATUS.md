@@ -139,6 +139,8 @@ changes so the next session can resume without reconstructing history.
       borders, and reusable borders for every text and label role.
 - [x] Add configurable hover/focus highlights with outline, glow, color-wash, vertical-band, and
       horizontal-band treatments shared across rectangular, point, and radial charts.
+- [x] Add independent horizontal and vertical Cartesian gridline switches to the runtime API,
+      embed schema, generated code, and chart-specific playground controls.
 
 ## Remaining for v0.1
 
@@ -207,7 +209,7 @@ formatting, lint, strict types, unit tests, production bundles, and separate lea
 ## Latest validation
 
 - Formatting, ESLint, and strict TypeScript: passed with no warnings or errors.
-- Unit tests: 155 passed across 35 test files, including 45 chart/theme visual baselines.
+- Unit tests: 161 passed across 36 test files, including 45 chart/theme visual baselines.
 - Production build: ESM, CJS, standalone embed ESM, browser IIFE, minified browser IIFE, and TypeScript declarations generated.
 - Lean original-family core: measured on every build against a 35 KB gzip budget.
 - Complete library and public embed: measured against 77 KB and 41 KB gzip budgets respectively.

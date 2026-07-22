@@ -57,6 +57,7 @@ const validOptionKeys = new Set<keyof ChartOptions>([
   'drilldown',
   'editable',
   'fill',
+  'grid',
   'stacked',
   'stackMode',
   'spanGaps',

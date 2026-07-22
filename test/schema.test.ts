@@ -52,6 +52,7 @@ describe('embed JSON Schema', () => {
         'dataTable',
         'showDataTable',
         'showGrid',
+        'grid',
         'showLegend',
         'spanGaps',
         'stackMode',

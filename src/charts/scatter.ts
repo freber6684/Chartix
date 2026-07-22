@@ -2,6 +2,7 @@ import {
   createAxisScale,
   dataLabelRendererStyle,
   formatTick,
+  gridVisible,
   numericValues,
   rendererTextStyle,
   textStyle,
@@ -39,7 +40,7 @@ function renderScatter(context: Parameters<ChartModule['render']>[0]): void {
   yScale.ticks.forEach((tick) => {
     if (options.scales?.y?.display === false) return;
     const y = yScale.project(tick);
-    if (options.showGrid !== false) {
+    if (gridVisible(options, 'horizontal', true)) {
       renderer.line(
         [
           { x: plot.left, y },
@@ -76,7 +77,7 @@ function renderScatter(context: Parameters<ChartModule['render']>[0]): void {
   xScale.ticks.forEach((tick) => {
     if (options.scales?.x?.display === false) return;
     const x = xScale.project(tick);
-    if (options.showGrid !== false) {
+    if (gridVisible(options, 'vertical', true)) {
       renderer.line(
         [
           { x, y: plot.top },

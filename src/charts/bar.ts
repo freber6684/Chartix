@@ -5,6 +5,7 @@ import {
   drawVerticalFrame,
   fitAxisLabel,
   formatTick,
+  gridVisible,
   horizontalCategoryAxisMetrics,
   numericValues,
   rendererTextStyle,
@@ -172,7 +173,7 @@ function renderHorizontal(context: ChartRenderContext): void {
   scale.ticks.forEach((tick) => {
     if (options.scales?.x?.display === false) return;
     const x = scale.project(tick);
-    if (options.showGrid !== false)
+    if (gridVisible(options, 'vertical', true))
       renderer.line(
         [
           { x, y: plot.top },
@@ -206,6 +207,19 @@ function renderHorizontal(context: ChartRenderContext): void {
   });
 
   const categoryHeight = plot.height / data.labels.length;
+  if (options.scales?.y?.display !== false && gridVisible(options, 'horizontal', false)) {
+    data.labels.forEach((_label, index) => {
+      const y = plot.top + categoryHeight * (index + 0.5);
+      renderer.line(
+        [
+          { x: plot.left, y },
+          { x: plot.right, y },
+        ],
+        theme.grid,
+        1,
+      );
+    });
+  }
   const groupHeight =
     options.barGapRatio === undefined
       ? categoryHeight * 0.64

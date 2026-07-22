@@ -838,6 +838,12 @@ function freshEditor(chart) {
     yAngle: 0,
     showXAxis: chart.options.scales?.x?.display !== false,
     showYAxis: chart.options.scales?.y?.display !== false,
+    showHorizontalGrid:
+      chart.options.grid?.horizontal ?? (chart.options.showGrid !== false && !horizontal),
+    showVerticalGrid:
+      chart.options.grid?.vertical ??
+      (chart.options.showGrid !== false &&
+        (horizontal || ['scatter', 'bubble'].includes(chart.type))),
     xAxisColor: chart.options.scales?.x?.line?.color ?? '#cbd5e1',
     yAxisColor: chart.options.scales?.y?.line?.color ?? '#cbd5e1',
     xAxisWidth: chart.options.scales?.x?.line?.width ?? 1,
@@ -1045,7 +1051,7 @@ function renderControls() {
   const axes = caps.axes
     ? controlSection(
         'Axes and labels',
-        `${toggleControl('Show data labels', 'showLabels', editor.showLabels)}<label>Data-label position<select data-setting="labelPosition">${selectOptions(
+        `${toggleControl('Horizontal gridlines', 'showHorizontalGrid', editor.showHorizontalGrid)}${toggleControl('Vertical gridlines', 'showVerticalGrid', editor.showVerticalGrid)}<p class="control-note">Show either direction, both directions, or turn both off for a clean plot.</p>${toggleControl('Show data labels', 'showLabels', editor.showLabels)}<label>Data-label position<select data-setting="labelPosition">${selectOptions(
           [
             ['outside', 'Outside'],
             ['inside', 'Inside'],
@@ -1352,6 +1358,7 @@ function resolvedEditorLayout() {
 function currentConfig() {
   const config = baseConfig(state.selected);
   const editor = state.editor;
+  const caps = chartCapabilities(state.selected);
   config.theme = editor.theme;
   config.options.backgroundColor = editor.background;
   config.options.canvas = {
@@ -1487,6 +1494,15 @@ function currentConfig() {
     dyslexiaFriendly: editor.dyslexia,
     automaticPatterns: editor.patterns,
   };
+  if (caps.axes) {
+    config.options.showGrid = editor.showHorizontalGrid || editor.showVerticalGrid;
+    config.options.grid = {
+      horizontal: editor.showHorizontalGrid,
+      vertical: editor.showVerticalGrid,
+    };
+  } else {
+    delete config.options.grid;
+  }
   config.options.scales = {
     ...config.options.scales,
     x: {

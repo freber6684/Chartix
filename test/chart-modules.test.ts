@@ -6,7 +6,7 @@ import { BarChart } from '../src/charts/bar.js';
 import { ComboChart } from '../src/charts/combo.js';
 import { createPlotArea } from '../src/charts/cartesian.js';
 import type { ChartRenderContext } from '../src/charts/types.js';
-import type { Renderer } from '../src/core/Renderer.js';
+import type { Point, Renderer } from '../src/core/Renderer.js';
 import { lightTheme } from '../src/core/theme.js';
 
 class RecordingRenderer implements Renderer {
@@ -20,13 +20,19 @@ class RecordingRenderer implements Renderer {
   public rectangles = 0;
   public rectangleSizes: Array<{ width: number; height: number }> = [];
   public lines = 0;
+  public horizontalLines = 0;
+  public verticalLines = 0;
   public radii: number[] = [];
   public clear(): void {}
   public gradient(): CanvasGradient {
     return {} as CanvasGradient;
   }
-  public line(): void {
+  public line(points: Point[]): void {
     this.lines += 1;
+    const [start, end] = points;
+    if (!start || !end) return;
+    if (start.y === end.y) this.horizontalLines += 1;
+    if (start.x === end.x) this.verticalLines += 1;
   }
   public area(): void {}
   public circle(): void {
@@ -187,6 +193,61 @@ describe('built-in chart modules', () => {
       visible.theme,
     );
     expect(titledPlot.bottom).toBeLessThan(untitledPlot.bottom);
+  });
+
+  it('shows horizontal and vertical gridlines independently', () => {
+    const horizontalRenderer = new RecordingRenderer();
+    const horizontal = context(horizontalRenderer);
+    horizontal.options = {
+      dataLabels: { show: false },
+      grid: { horizontal: true, vertical: false },
+    };
+    BarChart.render(horizontal);
+    expect(horizontalRenderer.horizontalLines).toBeGreaterThan(0);
+    expect(horizontalRenderer.verticalLines).toBe(0);
+
+    const verticalRenderer = new RecordingRenderer();
+    const vertical = context(verticalRenderer);
+    vertical.options = {
+      dataLabels: { show: false },
+      grid: { horizontal: false, vertical: true },
+    };
+    BarChart.render(vertical);
+    expect(verticalRenderer.horizontalLines).toBe(0);
+    expect(verticalRenderer.verticalLines).toBe(vertical.data.labels.length);
+
+    const hiddenRenderer = new RecordingRenderer();
+    const hidden = context(hiddenRenderer);
+    hidden.options = {
+      dataLabels: { show: false },
+      grid: { horizontal: true, vertical: true },
+      showGrid: false,
+    };
+    BarChart.render(hidden);
+    expect(hiddenRenderer.lines).toBe(0);
+  });
+
+  it('applies directional gridlines to horizontal bars and scatter charts', () => {
+    const barRenderer = new RecordingRenderer();
+    const bar = context(barRenderer);
+    bar.options = {
+      dataLabels: { show: false },
+      horizontal: true,
+      grid: { horizontal: true, vertical: false },
+    };
+    BarChart.render(bar);
+    expect(barRenderer.horizontalLines).toBe(bar.data.labels.length);
+    expect(barRenderer.verticalLines).toBe(0);
+
+    const scatterRenderer = new RecordingRenderer();
+    const scatter = context(scatterRenderer);
+    scatter.options = {
+      dataLabels: { show: false },
+      grid: { horizontal: false, vertical: true },
+    };
+    ScatterChart.render(scatter);
+    expect(scatterRenderer.horizontalLines).toBe(0);
+    expect(scatterRenderer.verticalLines).toBeGreaterThan(0);
   });
 
   it('controls category and series spacing for vertical and horizontal bars', () => {

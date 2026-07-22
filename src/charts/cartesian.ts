@@ -322,6 +322,46 @@ function drawHorizontalGrid(
   }
 }
 
+function drawVerticalGrid(
+  renderer: Renderer,
+  plot: PlotArea,
+  x: number,
+  axis: AxisOptions,
+  fallback: string,
+): void {
+  const color = axis.grid?.color ?? fallback;
+  const width = axis.grid?.width ?? 1;
+  const dash = axis.grid?.dash ?? 0;
+  if (dash <= 0)
+    return renderer.line(
+      [
+        { x, y: plot.top },
+        { x, y: plot.bottom },
+      ],
+      color,
+      width,
+    );
+  for (let y = plot.top; y < plot.bottom; y += dash * 2) {
+    renderer.line(
+      [
+        { x, y },
+        { x, y: Math.min(plot.bottom, y + dash) },
+      ],
+      color,
+      width,
+    );
+  }
+}
+
+/** Resolve directional grid visibility while honoring the legacy master switch. */
+export function gridVisible(
+  options: ChartOptions,
+  direction: 'horizontal' | 'vertical',
+  defaultVisible: boolean,
+): boolean {
+  return options.showGrid !== false && (options.grid?.[direction] ?? defaultVisible);
+}
+
 export function drawYAxis(
   renderer: Renderer,
   scale: LinearScale,
@@ -815,10 +855,10 @@ export function drawVerticalFrame(
   const xAxis = options.scales?.x ?? {};
   const scale = createAxisScale(values, plot.bottom, plot.top, axis);
   drawYAxis(renderer, scale, axis, plot, options, theme, 0, (tick) => {
-    if (options.showGrid !== false)
+    if (gridVisible(options, 'horizontal', true))
       drawHorizontalGrid(renderer, plot, scale.project(tick), axis, theme.grid);
   });
-  if (axis.display !== false && axis.minorTicks) {
+  if (axis.display !== false && axis.minorTicks && gridVisible(options, 'horizontal', true)) {
     scale.ticks.slice(1).forEach((tick, index) => {
       const previous = scale.ticks[index];
       if (previous === undefined) return;
@@ -829,6 +869,12 @@ export function drawVerticalFrame(
         { ...axis, grid: { ...axis.grid, width: (axis.grid?.width ?? 1) * 0.5 } },
         theme.grid,
       );
+    });
+  }
+  if (xAxis.display !== false && gridVisible(options, 'vertical', false)) {
+    labels.forEach((_label, index) => {
+      const x = plot.left + ((index + 0.5) / Math.max(1, labels.length)) * plot.width;
+      drawVerticalGrid(renderer, plot, x, xAxis, theme.grid);
     });
   }
   options.annotations?.forEach((annotation) => {

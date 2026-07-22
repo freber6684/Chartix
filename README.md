@@ -53,6 +53,7 @@ const chart = new Chartix(canvas, {
     colors: ['#625bf6', '#0f9f8f'],
     barGapRatio: 0.24,
     barDatasetGap: 4,
+    grid: { horizontal: true, vertical: false },
     scales: { x: { categoryMode: 'auto', labelDensity: 0.7 } },
     typography: { fontFamily: 'Inter, sans-serif', titleSize: 18 },
     xLabels: { rotation: -30, fontSize: 11 },
@@ -100,6 +101,10 @@ For bar and column charts, `barGapRatio` moves categories closer together or far
 `scales.x.categoryMode` (or `scales.y` for horizontal bars) with `labelDensity`; Chartix keeps every
 bar but displays a readable sample of axis labels, similar to Power BI's categorical/continuous
 axis choice.
+
+Cartesian charts can show horizontal gridlines, vertical gridlines, both, or neither with
+`grid.horizontal` and `grid.vertical`. The older `showGrid: false` option remains a master switch
+that hides every gridline.
 
 Export actions can remain in one compact toolbar or become separately positioned buttons. Each
 action supports custom text, text/icon/both display, an icon URL and size, independent corner and

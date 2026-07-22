@@ -6,6 +6,7 @@ All notable Chartix changes are documented here. The project follows semantic ve
 
 ### Added
 
+- Independent horizontal and vertical gridline visibility in the public API and playground.
 - Vertical/horizontal bar category-gap and grouped-series spacing controls.
 - Power BI-style automatic, categorical, and continuous dense-axis label modes with adjustable
   density that preserve every data mark.

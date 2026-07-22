@@ -144,6 +144,14 @@ export interface AxisOptions {
   breaks?: Array<{ from: number; to: number }>;
 }
 
+/** Controls which Cartesian gridline directions are rendered. */
+export interface GridOptions {
+  /** Draw lines running horizontally across the plot. */
+  horizontal?: boolean;
+  /** Draw lines running vertically across the plot. */
+  vertical?: boolean;
+}
+
 /** Scale options for Cartesian charts. */
 export interface ScaleOptions {
   /** Category or numeric x-axis configuration. */
@@ -657,6 +665,8 @@ export interface ChartOptions {
   showDataTable?: boolean;
   /** Display subtle grid lines. */
   showGrid?: boolean;
+  /** Independently display horizontal and vertical Cartesian gridlines. */
+  grid?: GridOptions;
   /** Display the dataset legend. */
   showLegend?: boolean;
   /** Starting angle for radial charts, in degrees. */
