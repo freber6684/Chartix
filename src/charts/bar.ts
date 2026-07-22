@@ -38,6 +38,14 @@ function stackDomain(context: ChartRenderContext): number[] {
   });
 }
 
+function markRadius(context: ChartRenderContext, width: number, height: number): number {
+  return Math.min(
+    Math.max(0, context.options.cornerRadius ?? context.theme.radius),
+    Math.max(0, width) / 2,
+    Math.max(0, height) / 2,
+  );
+}
+
 function renderVertical(context: ChartRenderContext): void {
   const { data, options, plot, renderer, theme } = context;
   const allValues = options.stacked
@@ -87,17 +95,19 @@ function renderVertical(context: ChartRenderContext): void {
       const active = context.activeRegions?.some(
         (region) => region.datasetIndex === datasetIndex && region.valueIndex === valueIndex,
       );
+      const drawnWidth = Math.max(1, barWidth - 3);
+      const radius = markRadius(context, drawnWidth, height);
       if (active)
         renderer.roundedRect(
           x - 2,
           y - 2,
           Math.max(1, barWidth + 1),
           height + 4,
-          theme.radius + 2,
+          radius + 2,
           `${valueColor}55`,
         );
       renderer.setShadow?.(dataset.shadow);
-      renderer.roundedRect(x, y, Math.max(1, barWidth - 3), height, theme.radius, fill);
+      renderer.roundedRect(x, y, drawnWidth, height, radius, fill);
       renderer.setShadow?.();
       context.interactions.add({
         kind: 'bar',
@@ -240,17 +250,19 @@ function renderHorizontal(context: ChartRenderContext): void {
       const active = context.activeRegions?.some(
         (region) => region.datasetIndex === datasetIndex && region.valueIndex === valueIndex,
       );
+      const drawnHeight = Math.max(1, barHeight - 3);
+      const radius = markRadius(context, width, drawnHeight);
       if (active)
         renderer.roundedRect(
           x - 2,
           y - 2,
           width + 4,
           Math.max(1, barHeight + 1),
-          theme.radius + 2,
+          radius + 2,
           `${valueColor}55`,
         );
       renderer.setShadow?.(dataset.shadow);
-      renderer.roundedRect(x, y, width, Math.max(1, barHeight - 3), theme.radius, fill);
+      renderer.roundedRect(x, y, width, drawnHeight, radius, fill);
       renderer.setShadow?.();
       context.interactions.add({
         kind: 'bar',

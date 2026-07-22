@@ -193,6 +193,10 @@ export interface CrosshairOptions {
   color?: string;
   /** Guide width in CSS pixels. */
   width?: number;
+  /** Draw a vertical guide, horizontal guide, or both. */
+  mode?: 'x' | 'y' | 'both';
+  /** Optional dash pattern for quieter guides. */
+  dash?: number[];
 }
 
 /** Dataset legend behavior. */
@@ -450,6 +454,8 @@ export interface ChartOptions {
   backgroundImageOpacity?: number;
   /** Override the theme palette for all datasets or slices. */
   colors?: string[];
+  /** Corner radius for rectangular marks such as bars and columns. */
+  cornerRadius?: number;
   /** Guides drawn through an active Cartesian mark. */
   crosshair?: CrosshairOptions;
   /** Values displayed on or near marks such as bars, points, and slices. */

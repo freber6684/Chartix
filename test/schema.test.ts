@@ -21,6 +21,7 @@ describe('embed JSON Schema', () => {
         'backgroundImage',
         'backgroundImageOpacity',
         'colors',
+        'cornerRadius',
         'crosshair',
         'dataLabels',
         'direction',

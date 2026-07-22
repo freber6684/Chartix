@@ -100,6 +100,9 @@ changes so the next session can resume without reconstructing history.
       double-click editing for headings and chart values with live generated code.
 - [x] Replace the long chart sidebar and scrolling inspector with a chart dropdown, real settings
       tabs, chart-aware collapsible groups, compact color popovers, and styled font choices.
+- [x] Replace intrusive drag outlines with discreet grab controls, add custom preview width and
+      height, correct pie/funnel/spline geometry, polish tooltips and crosshairs, and expose
+      chart-specific bar/column corner roundness.
 
 ## Remaining for v0.1
 
@@ -168,7 +171,7 @@ formatting, lint, strict types, unit tests, production bundles, and separate lea
 ## Latest validation
 
 - Formatting, ESLint, and strict TypeScript: passed with no warnings or errors.
-- Unit tests: 142 passed across 35 test files, including 45 chart/theme visual baselines.
+- Unit tests: 144 passed across 35 test files, including 45 chart/theme visual baselines.
 - Production build: ESM, CJS, standalone embed ESM, browser IIFE, minified browser IIFE, and TypeScript declarations generated.
 - Lean original-family core: measured on every build against a 35 KB gzip budget.
 - Complete library and public embed: measured against 70 KB and 40 KB gzip budgets respectively.

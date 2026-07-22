@@ -71,7 +71,13 @@ export const ComboChart: ChartModule = {
             barIndex * barWidth;
           const y = Math.min(baseline, animated);
           const height = Math.abs(animated - baseline);
-          renderer.roundedRect(x, y, barWidth - 2, height, theme.radius, color);
+          const width = Math.max(1, barWidth - 2);
+          const radius = Math.min(
+            Math.max(0, options.cornerRadius ?? theme.radius),
+            width / 2,
+            height / 2,
+          );
+          renderer.roundedRect(x, y, width, height, radius, color);
           context.interactions.add({
             kind: 'bar',
             datasetIndex,

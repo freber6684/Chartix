@@ -12,7 +12,7 @@ function renderRadial(context: ChartRenderContext, defaultInnerRadius: number): 
     .filter(({ datasetIndex }) => !context.hiddenDatasets.has(datasetIndex));
   const ringWidth = (outerRadius - baseInnerRadius) / Math.max(1, visibleDatasets.length);
   const gap = Math.max(0, ((options.radialGap ?? 1) * Math.PI) / 180);
-  const lastOutsideY = { left: Number.NEGATIVE_INFINITY, right: Number.NEGATIVE_INFINITY };
+  const lastOutsideY = { left: Number.POSITIVE_INFINITY, right: Number.NEGATIVE_INFINITY };
 
   visibleDatasets.forEach(({ dataset, datasetIndex }, ringIndex) => {
     const datasetProgress = context.seriesProgress?.(datasetIndex) ?? context.progress;
@@ -87,11 +87,17 @@ function renderRadial(context: ChartRenderContext, defaultInnerRadius: number): 
             : position === 'center'
               ? (ringInner + ringOuter) / 2
               : ringInner + ringWidth * 0.68;
-        const x = sliceCenter.x + Math.cos(middle) * radius;
+        let x = sliceCenter.x + Math.cos(middle) * radius;
         let y = sliceCenter.y + Math.sin(middle) * radius;
+        const side = Math.cos(middle) >= 0 ? 'right' : 'left';
         if (position === 'outside') {
-          const side = Math.cos(middle) >= 0 ? 'right' : 'left';
-          y = Math.max(y, lastOutsideY[side] + (labels.fontSize ?? theme.fontSize.label) + 4);
+          const spacing = (labels.fontSize ?? theme.fontSize.label) + 6;
+          x = sliceCenter.x + (side === 'right' ? 1 : -1) * (ringOuter + 28);
+          y =
+            side === 'right'
+              ? Math.max(y, lastOutsideY.right + spacing)
+              : Math.min(y, lastOutsideY.left - spacing);
+          y = Math.max(plot.top + spacing, Math.min(plot.bottom - spacing, y));
           lastOutsideY[side] = y;
         }
         if (position === 'outside')
@@ -101,7 +107,11 @@ function renderRadial(context: ChartRenderContext, defaultInnerRadius: number): 
                 x: sliceCenter.x + Math.cos(middle) * (ringOuter + 2),
                 y: sliceCenter.y + Math.sin(middle) * (ringOuter + 2),
               },
-              { x, y },
+              {
+                x: sliceCenter.x + (side === 'right' ? 1 : -1) * (ringOuter + 12),
+                y,
+              },
+              { x: x + (side === 'right' ? -5 : 5), y },
             ],
             labels.color ?? theme.mutedText,
             1,
@@ -109,7 +119,7 @@ function renderRadial(context: ChartRenderContext, defaultInnerRadius: number): 
         const label = data.labels[index] ?? `Slice ${index + 1}`;
         const percent = formatTick((value / total) * 100);
         renderer.text(position === 'outside' ? `${label} ${percent}%` : `${percent}%`, x, y, {
-          align: position === 'outside' ? (Math.cos(middle) >= 0 ? 'left' : 'right') : 'center',
+          align: position === 'outside' ? (side === 'right' ? 'left' : 'right') : 'center',
           baseline: 'middle',
           rotation: labels.rotation,
           ...dataLabelRendererStyle(

@@ -598,8 +598,8 @@ a {
   background: #fff;
 }
 .preview-toolbar {
-  height: 46px;
-  padding: 0 15px;
+  min-height: 54px;
+  padding: 8px 15px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -613,6 +613,49 @@ a {
   display: flex;
   gap: 8px;
   align-items: center;
+}
+.preview-breakpoints {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+.preview-breakpoints > button,
+.preview-dimensions button {
+  min-height: 30px;
+  padding: 0 10px;
+  border: 1px solid #8b8d94;
+  border-radius: 3px;
+  background: #fff;
+  color: #17181d;
+  font:
+    8px 'Space Mono',
+    monospace;
+  cursor: pointer;
+}
+.preview-dimensions {
+  gap: 5px !important;
+  padding-left: 8px;
+  border-left: 1px solid #d9dae0;
+}
+.preview-dimensions label {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+.preview-dimensions input {
+  width: 58px;
+  height: 30px;
+  padding: 0 6px;
+  border: 1px solid #b9bbc2;
+  border-radius: 3px;
+  background: #fff;
+  color: #17181d;
+  font:
+    9px 'Space Mono',
+    monospace;
+}
+.preview-dimensions input:focus {
+  border-color: #111216;
+  outline: 2px solid rgb(98 91 246 / 20%);
 }
 .preview-dot {
   width: 7px;
@@ -1028,59 +1071,87 @@ a {
 .plot-handle {
   position: absolute;
   z-index: 5;
-  opacity: 0;
-  border: 1px dashed #625bf6;
-  background: rgb(98 91 246 / 8%);
-  color: #625bf6;
+  border: 0;
+  background: transparent;
+  color: #fff;
   font:
     8px 'Space Mono',
     monospace;
   cursor: grab;
-  transition: opacity 0.15s;
-}
-.playground-canvas:hover .direct-handle,
-.playground-canvas:hover .plot-handle,
-.direct-handle:focus-visible {
-  opacity: 1;
 }
 .direct-handle {
-  min-width: 90px;
+  width: 25px;
   height: 25px;
-  padding: 3px 7px;
-  text-align: left;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  opacity: 0;
+  border-radius: 7px;
+  background: rgb(17 24 39 / 88%);
+  box-shadow: 0 4px 14px rgb(15 23 42 / 22%);
+  transition:
+    opacity 0.15s,
+    transform 0.15s;
+  transform: translateX(-31px);
+}
+.direct-handle:hover,
+.direct-handle:focus-visible {
+  transform: translateX(-31px) scale(1.05);
+}
+.playground-canvas:hover .direct-handle,
+.direct-handle:focus-visible,
+.direct-handle:active {
+  opacity: 0.9;
 }
 .plot-handle {
   width: calc(100% - 110px);
   height: 300px;
   pointer-events: none;
 }
-.plot-handle > span {
+.plot-grip {
   position: absolute;
-  top: -20px;
-  right: 0;
-  padding: 3px 6px;
-  background: #625bf6;
+  top: -12px;
+  right: -12px;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  opacity: 0;
+  border: 1px solid rgb(255 255 255 / 75%);
+  border-radius: 8px;
+  background: rgb(17 24 39 / 88%);
   color: #fff;
   pointer-events: auto;
+  cursor: grab;
+  box-shadow: 0 5px 16px rgb(15 23 42 / 24%);
+  transition: opacity 0.15s;
 }
-.plot-handle::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  pointer-events: auto;
-  cursor: move;
+.playground-canvas:hover .plot-grip,
+.plot-grip:focus-visible,
+.plot-grip:active {
+  opacity: 0.9;
 }
 .plot-resize {
   position: absolute;
-  right: -6px;
-  bottom: -6px;
-  width: 14px;
-  height: 14px;
+  right: -10px;
+  bottom: -10px;
+  width: 20px;
+  height: 20px;
   padding: 0;
+  opacity: 0;
   border: 2px solid white;
-  background: #625bf6;
+  border-radius: 6px;
+  background: #111827;
   cursor: nwse-resize;
   pointer-events: auto;
+  box-shadow: 0 4px 14px rgb(15 23 42 / 22%);
+  transition: opacity 0.15s;
+}
+.playground-canvas:hover .plot-resize,
+.plot-resize:focus-visible,
+.plot-resize:active {
+  opacity: 0.9;
 }
 .inline-chart-editor {
   position: absolute;
@@ -1287,6 +1358,15 @@ body.detail-active .site-footer {
   .preview-column {
     border-right: 0;
   }
+  .preview-toolbar {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .preview-breakpoints {
+    width: 100%;
+    justify-content: flex-start;
+  }
   .playground-canvas {
     height: 390px;
   }
@@ -1360,8 +1440,23 @@ body.detail-active .site-footer {
   .preview-column {
     padding: 8px;
   }
+  .preview-dimensions {
+    width: 100%;
+    padding-top: 7px;
+    padding-left: 0;
+    border-top: 1px solid #d9dae0;
+    border-left: 0;
+  }
   .tip-bar {
     display: none;
+  }
+}
+
+@media (hover: none) {
+  .direct-handle,
+  .plot-grip,
+  .plot-resize {
+    opacity: 0.72;
   }
 }
 

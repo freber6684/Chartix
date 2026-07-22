@@ -14,9 +14,9 @@
       href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="./styles.css?v=editor-3" />
-    <script src="../dist/chartix.min.js?v=editor-3" defer></script>
-    <script src="./app.js?v=editor-3" defer></script>
+    <link rel="stylesheet" href="./styles.css?v=quality-1" />
+    <script src="../dist/chartix.min.js?v=quality-1" defer></script>
+    <script src="./app.js?v=quality-1" defer></script>
   </head>
   <body>
     <header class="site-header">
@@ -83,7 +83,7 @@ Chartix.register(BarChart);
           <div><strong>9.63 KB</strong><span>Gzipped embed</span></div>
           <div><strong>9</strong><span>Curated themes</span></div>
           <div><strong>0</strong><span>Runtime dependencies</span></div>
-          <div><strong>70/70</strong><span>Tests passing</span></div>
+          <div><strong>144/144</strong><span>Tests passing</span></div>
         </section>
 
         <section class="gallery-section" id="gallery" aria-labelledby="gallery-title">
@@ -188,11 +188,27 @@ Chartix.register(BarChart);
             <div class="preview-card">
               <div class="preview-toolbar">
                 <div><span class="preview-dot"></span><strong>Live preview</strong></div>
-                <div class="preview-breakpoints" aria-label="Responsive preview width">
-                  <button type="button" data-preview-width="375">Phone</button>
-                  <button type="button" data-preview-width="768">Tablet</button>
-                  <button type="button" data-preview-width="0">Fluid</button>
-                  <span id="preview-size">Responsive</span>
+                <div class="preview-breakpoints" aria-label="Responsive preview size">
+                  <button type="button" data-preview-width="390" data-preview-height="520">
+                    Phone
+                  </button>
+                  <button type="button" data-preview-width="768" data-preview-height="640">
+                    Tablet
+                  </button>
+                  <button type="button" data-preview-width="0" data-preview-height="470">
+                    Fluid
+                  </button>
+                  <div class="preview-dimensions" aria-label="Custom chart dimensions">
+                    <label
+                      >W<input id="preview-width-input" type="number" min="280" max="1600"
+                    /></label>
+                    <span>×</span>
+                    <label
+                      >H<input id="preview-height-input" type="number" min="240" max="1200"
+                    /></label>
+                    <button type="button" id="apply-preview-size">Apply</button>
+                  </div>
+                  <span id="preview-size">Fluid · 470px high</span>
                 </div>
               </div>
               <div class="preview-stage" id="preview-stage">

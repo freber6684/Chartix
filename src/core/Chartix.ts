@@ -815,22 +815,28 @@ export class Chartix {
     if (drawOptions.crosshair?.enabled && active && active.kind !== 'legend') {
       const color = drawOptions.crosshair.color ?? theme.mutedText;
       const width = drawOptions.crosshair.width ?? 1;
-      this.renderer.line(
-        [
-          { x: active.x, y: plot.top },
-          { x: active.x, y: plot.bottom },
-        ],
-        color,
-        width,
-      );
-      this.renderer.line(
-        [
-          { x: plot.left, y: active.y },
-          { x: plot.right, y: active.y },
-        ],
-        color,
-        width,
-      );
+      const mode = drawOptions.crosshair.mode ?? 'both';
+      const lineStyle = { dash: drawOptions.crosshair.dash ?? [] };
+      if (mode === 'x' || mode === 'both')
+        this.renderer.line(
+          [
+            { x: active.x, y: plot.top },
+            { x: active.x, y: plot.bottom },
+          ],
+          color,
+          width,
+          lineStyle,
+        );
+      if (mode === 'y' || mode === 'both')
+        this.renderer.line(
+          [
+            { x: plot.left, y: active.y },
+            { x: plot.right, y: active.y },
+          ],
+          color,
+          width,
+          lineStyle,
+        );
     }
     this.drawGestureOverlay(theme.mutedText);
     if (progress >= 1) {

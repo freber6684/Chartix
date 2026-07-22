@@ -27,7 +27,8 @@ gaps. Scatter and bubble datasets may additionally use `points: [{x, y, r?}]`. D
 | `ariaLabel`            | generated string              | Accessible canvas description override.                               |
 | `backgroundColor`      | theme token                   | Canvas background override.                                           |
 | `colors`               | `string[]`                    | Dataset or slice palette override.                                    |
-| `crosshair`            | disabled                      | Guides through the active Cartesian mark.                             |
+| `cornerRadius`         | theme token                   | Rounded corners for bar, column, and combo-bar marks.                 |
+| `crosshair`            | disabled                      | Optional x, y, or two-axis guides through the active Cartesian mark.  |
 | `dataLabels`           | hidden                        | Values rendered on/near marks using `LabelOptions`.                   |
 | `decimation`           | enabled above 1,000 points    | Min/max sampling; default target is 500 points.                       |
 | `fill`                 | `false`                       | Fill beneath a line to create an area chart.                          |
@@ -88,7 +89,7 @@ label/range, fixed-size sum/average/min/max aggregation, and percent/max normali
 - `interaction.mode` accepts `nearest`, `dataset`, `index`, or `intersect`; the older `intersect`
   boolean remains a compatible shortcut.
 - `tooltip.enabled`, `backgroundColor`, and `color` style the accessible DOM tooltip.
-- `crosshair.enabled`, `color`, and `width` style active Cartesian guides.
+- `crosshair.enabled`, `color`, `width`, `mode`, and `dash` style active Cartesian guides.
 - `legend.interactive` controls click/Enter/Space dataset toggling.
 - `legend.position` accepts `top`, `bottom`, `left`, `right`, or `inside`.
 

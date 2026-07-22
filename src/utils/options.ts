@@ -79,7 +79,16 @@ export function normalizeConfig(config: ChartConfig): ChartConfig & { options: C
       ...(config.options?.accessibility
         ? { accessibility: { ...config.options.accessibility } }
         : {}),
-      ...(config.options?.crosshair ? { crosshair: { ...config.options.crosshair } } : {}),
+      ...(config.options?.crosshair
+        ? {
+            crosshair: {
+              ...config.options.crosshair,
+              ...(config.options.crosshair.dash
+                ? { dash: [...config.options.crosshair.dash] }
+                : {}),
+            },
+          }
+        : {}),
       ...(config.options?.dataLabels ? { dataLabels: { ...config.options.dataLabels } } : {}),
       ...(config.options?.drilldown
         ? {

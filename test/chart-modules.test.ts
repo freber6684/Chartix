@@ -15,6 +15,7 @@ class RecordingRenderer implements Renderer {
   public circles = 0;
   public labels: string[] = [];
   public rectangles = 0;
+  public radii: number[] = [];
   public clear(): void {}
   public gradient(): CanvasGradient {
     return {} as CanvasGradient;
@@ -27,8 +28,15 @@ class RecordingRenderer implements Renderer {
   public ringSegment(): void {
     this.segments += 1;
   }
-  public roundedRect(): void {
+  public roundedRect(
+    _x: number,
+    _y: number,
+    _width: number,
+    _height: number,
+    radius: number,
+  ): void {
     this.rectangles += 1;
+    this.radii.push(radius);
   }
   public text(value: string): void {
     this.labels.push(value);
@@ -109,5 +117,13 @@ describe('built-in chart modules', () => {
     ComboChart.render(combo);
     expect(comboRenderer.rectangles).toBe(3);
     expect(comboRenderer.circles).toBe(3);
+  });
+
+  it('uses a chart-specific corner radius for bar marks', () => {
+    const renderer = new RecordingRenderer();
+    const value = context(renderer);
+    value.options = { cornerRadius: 18 };
+    BarChart.render(value);
+    expect(renderer.radii).toEqual([18, 18, 18]);
   });
 });

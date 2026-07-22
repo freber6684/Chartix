@@ -235,24 +235,31 @@ export const WaterfallChart: ChartModule = {
 };
 
 function renderFunnel(context: ChartRenderContext, pyramid: boolean): void {
-  const values = context.data.datasets[0]?.values.map((value) => Math.max(0, value ?? 0)) ?? [];
+  const source = context.data.datasets[0]?.values.map((value) => Math.max(0, value ?? 0)) ?? [];
+  const values = source.reduce<number[]>((result, value, index) => {
+    result.push(index === 0 ? value : Math.min(result[index - 1] ?? value, value));
+    return result;
+  }, []);
   const max = Math.max(1, ...values);
   const row = context.plot.height / Math.max(1, values.length);
   values.forEach((value, index) => {
     const next = values[index + 1] ?? (pyramid ? 0 : value);
     const topWidth = (value / max) * context.plot.width * context.progress;
     const bottomWidth = (next / max) * context.plot.width * context.progress;
-    const y = context.plot.top + index * row;
+    const y = context.plot.top + index * row + 2;
+    const bottom = y + row - 6;
     const points = [
       { x: context.plot.left + (context.plot.width - topWidth) / 2, y },
       { x: context.plot.right - (context.plot.width - topWidth) / 2, y },
-      { x: context.plot.right - (context.plot.width - bottomWidth) / 2, y: y + row - 2 },
-      { x: context.plot.left + (context.plot.width - bottomWidth) / 2, y: y + row - 2 },
+      { x: context.plot.right - (context.plot.width - bottomWidth) / 2, y: bottom },
+      { x: context.plot.left + (context.plot.width - bottomWidth) / 2, y: bottom },
     ];
     const color = context.theme.palette[index % context.theme.palette.length] ?? context.theme.text;
-    context.renderer.area(points, y + row - 2, color);
+    context.renderer.area(points, bottom, color);
+    const label = context.data.labels[index] ?? '';
+    const percentage = Math.round((value / Math.max(1, values[0] ?? value)) * 100);
     context.renderer.text(
-      context.data.labels[index] ?? '',
+      `${label} · ${new Intl.NumberFormat(undefined, { notation: 'compact' }).format(value)} · ${percentage}%`,
       context.plot.left + context.plot.width / 2,
       y + row / 2,
       {

@@ -226,6 +226,89 @@ const charts = [
   },
 ];
 
+const catalogPresets = {
+  spline: {
+    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+    datasets: [
+      { label: 'This year', values: [32, 41, 38, 52, 61, 58] },
+      { label: 'Last year', values: [26, 34, 40, 43, 49, 47] },
+    ],
+  },
+  step: {
+    labels: ['08:00', '10:00', '12:00', '14:00', '16:00', '18:00'],
+    datasets: [{ label: 'Open tickets', values: [18, 24, 21, 29, 16, 12] }],
+  },
+  waterfall: {
+    labels: ['Opening', 'New sales', 'Expansion', 'Churn', 'Costs', 'Closing'],
+    datasets: [{ label: 'Net change', values: [120, 48, 22, -18, -31, 0] }],
+  },
+  funnel: {
+    labels: ['Visitors', 'Sign-ups', 'Trials', 'Qualified', 'Customers'],
+    datasets: [{ label: 'Conversion funnel', values: [1200, 820, 540, 310, 180] }],
+  },
+  pyramid: {
+    labels: ['Awareness', 'Interest', 'Consideration', 'Intent', 'Purchase'],
+    datasets: [{ label: 'Audience journey', values: [100, 78, 58, 39, 24] }],
+  },
+  gauge: {
+    labels: ['Quarterly target'],
+    datasets: [{ label: 'Attainment', values: [78] }],
+  },
+  progress: {
+    labels: ['Migration progress'],
+    datasets: [{ label: 'Completed', values: [72] }],
+  },
+  'polar-area': {
+    labels: ['Product', 'Engineering', 'Sales', 'Support', 'Operations'],
+    datasets: [{ label: 'Team capacity', values: [82, 94, 68, 74, 61] }],
+  },
+  radar: {
+    labels: ['Speed', 'Quality', 'Ease', 'Support', 'Value'],
+    datasets: [
+      { label: 'Current release', values: [86, 91, 78, 82, 88] },
+      { label: 'Previous release', values: [72, 84, 69, 76, 80] },
+    ],
+  },
+  histogram: {
+    labels: ['0–10', '11–20', '21–30', '31–40', '41–50'],
+    datasets: [{ label: 'Response time distribution', values: [8, 24, 42, 31, 12] }],
+  },
+  stock: {
+    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
+    datasets: [{ label: 'Close', values: [104.2, 106.8, 105.9, 109.4, 111.1] }],
+  },
+  volume: {
+    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
+    datasets: [{ label: 'Shares traded', values: [1.8, 2.4, 1.9, 3.1, 2.7] }],
+  },
+  range: {
+    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
+    datasets: [
+      {
+        label: 'Forecast range',
+        values: [68, 72, 75, 71, 78],
+        lowerValues: [62, 66, 69, 65, 71],
+        upperValues: [74, 79, 82, 78, 85],
+      },
+    ],
+  },
+  'error-bar': {
+    labels: ['Control', 'Variant A', 'Variant B', 'Variant C', 'Variant D'],
+    datasets: [{ label: 'Conversion', values: [42, 48, 51, 46, 54], errorValues: [2, 3, 4, 3, 3] }],
+  },
+  gantt: {
+    labels: ['Research', 'Design', 'Build', 'QA', 'Launch'],
+    datasets: [
+      {
+        label: 'Project plan',
+        values: [4, 4, 6, 3, 2],
+        startValues: [0, 3, 6, 11, 14],
+        endValues: [4, 7, 12, 14, 16],
+      },
+    ],
+  },
+};
+
 const catalogExamples = [
   ['column', 'Column', 'Comparison'],
   ['horizontal-bar', 'Horizontal bar module', 'Ranking'],
@@ -254,40 +337,34 @@ const catalogExamples = [
   ['error-bar', 'Error bar', 'Uncertainty'],
   ['timeline', 'Timeline', 'Time'],
   ['gantt', 'Gantt', 'Scheduling'],
-].map(([type, name, tag], index) => ({
-  id: `catalog-${type}`,
-  name,
-  type,
-  family: ['gauge', 'polar-area', 'radar'].includes(type) ? 'radial' : 'cartesian',
-  tag,
-  theme: themes[index % themes.length],
-  summary: `A production-ready ${name.toLowerCase()} renderer with themes, accessibility, and interactions.`,
-  bestFor: `${tag} stories that need a focused, reusable ${name.toLowerCase()} view.`,
-  options: {
-    ...(type === 'stacked-bar' ? { stacked: true } : {}),
-    ...(type === 'gantt' ? { horizontal: true } : {}),
-    ...(type === 'range' ? { fill: true } : {}),
-    dataLabels: { show: ['gauge', 'progress', 'funnel', 'pyramid'].includes(type) },
-  },
-  labels: ['Alpha', 'Beta', 'Gamma', 'Delta', 'Epsilon'],
-  datasets:
-    type === 'gauge' || type === 'progress'
-      ? [{ label: 'Completion', values: [72, 0, 0, 0, 0] }]
-      : [
-          {
-            label: 'Current',
-            values: [22, 38, 31, 54, 46],
-            ...(type === 'range'
-              ? { lowerValues: [18, 31, 26, 47, 40], upperValues: [27, 45, 38, 62, 52] }
-              : {}),
-            ...(type === 'error-bar' ? { errorValues: [3, 5, 4, 6, 4] } : {}),
-            ...(type === 'gantt'
-              ? { startValues: [0, 2, 5, 7, 10], endValues: [4, 6, 9, 12, 14] }
-              : {}),
-          },
-          { label: 'Previous', values: [17, 29, 36, 41, 39] },
-        ],
-}));
+].map(([type, name, tag], index) => {
+  const preset = catalogPresets[type] ?? {
+    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
+    datasets: [
+      { label: 'Current period', values: [32, 44, 39, 57, 63] },
+      { label: 'Previous period', values: [28, 36, 42, 49, 54] },
+    ],
+  };
+  return {
+    id: `catalog-${type}`,
+    name,
+    type,
+    family: ['gauge', 'polar-area', 'radar'].includes(type) ? 'radial' : 'cartesian',
+    tag,
+    theme: themes[index % themes.length],
+    summary: `A production-ready ${name.toLowerCase()} renderer with themes, accessibility, and interactions.`,
+    bestFor: `${tag} stories that need a focused, reusable ${name.toLowerCase()} view.`,
+    options: {
+      ...(type === 'stacked-bar' ? { stacked: true } : {}),
+      ...(type === 'gantt' ? { horizontal: true } : {}),
+      ...(type === 'range' ? { fill: true } : {}),
+      ...(['funnel', 'pyramid'].includes(type) ? { showLegend: false } : {}),
+      dataLabels: { show: ['gauge', 'progress', 'funnel', 'pyramid'].includes(type) },
+    },
+    labels: preset.labels,
+    datasets: preset.datasets,
+  };
+});
 
 charts.push(...catalogExamples);
 
@@ -562,6 +639,7 @@ const state = {
   playground: null,
   tab: 'playground',
   previewWidth: 0,
+  previewHeight: 470,
   activeRole: 'title',
   controlTab: 'design',
   editor: null,
@@ -663,7 +741,9 @@ function freshEditor(chart) {
     yScale: chart.options.scales?.y?.type ?? 'linear',
     reverseAxis: Boolean(chart.options.scales?.y?.reverse),
     startAngle: chart.options.startAngle ?? -90,
-    innerRadius: chart.options.innerRadius ?? 0.62,
+    innerRadius: chart.type === 'doughnut' ? (chart.options.innerRadius ?? 0.58) : 0,
+    radialCornerRadius: chart.options.radialCornerRadius ?? 3,
+    cornerRadius: chart.options.cornerRadius ?? 8,
     radialGap: chart.options.radialGap ?? 1,
     tooltips: true,
     pinTooltip: false,
@@ -803,7 +883,7 @@ function renderControls() {
   const bar = caps.bar
     ? controlSection(
         'Bars',
-        `${toggleControl('Stack datasets', 'stacked', editor.stacked)}${rangeControl('Mark width', 'borderWidth', editor.borderWidth, 1, 10)}`,
+        `${toggleControl('Stack datasets', 'stacked', editor.stacked)}${rangeControl('Corner roundness', 'cornerRadius', editor.cornerRadius, 0, 30, 1, 'px')}`,
       )
     : '';
   const points = caps.points
@@ -812,7 +892,7 @@ function renderControls() {
   const radial = caps.radial
     ? controlSection(
         'Radial chart',
-        `${rangeControl('Start angle', 'startAngle', editor.startAngle, -180, 180, 1, '°')}${rangeControl('Slice gap', 'radialGap', editor.radialGap, 0, 12, 0.5, '°')}${caps.doughnut ? rangeControl('Inner radius', 'innerRadius', editor.innerRadius, 0.1, 0.9, 0.01) : ''}`,
+        `${rangeControl('Start angle', 'startAngle', editor.startAngle, -180, 180, 1, '°')}${rangeControl('Slice gap', 'radialGap', editor.radialGap, 0, 12, 0.5, '°')}${rangeControl('Corner roundness', 'radialCornerRadius', editor.radialCornerRadius, 0, 20, 1, 'px')}${caps.doughnut ? rangeControl('Inner radius', 'innerRadius', editor.innerRadius, 0.1, 0.9, 0.01) : ''}`,
         true,
       )
     : '';
@@ -899,7 +979,7 @@ function baseConfig(chart, compact = false) {
       animation: false,
       responsive: true,
       showDataTable: !compact,
-      showLegend: !compact || chart.datasets.length > 1,
+      showLegend: chart.options.showLegend ?? (!compact || chart.datasets.length > 1),
       showGrid: chart.family !== 'radial',
       padding: compact ? 12 : 24,
       title: compact ? undefined : `${chart.name} example`,
@@ -952,8 +1032,9 @@ function resetControls() {
   state.activeRole = 'title';
   state.controlTab = 'design';
   state.previewWidth = 0;
+  state.previewHeight = 470;
   renderControls();
-  applyPreviewWidth(0);
+  applyPreviewSize(0, 470);
   renderPlayground();
 }
 
@@ -982,7 +1063,13 @@ function currentConfig() {
     textStyle: tooltipStyle,
     rowGap: 5,
   };
-  config.options.crosshair = { enabled: editor.crosshair, color: '#94a3b888' };
+  config.options.crosshair = {
+    enabled: editor.crosshair,
+    color: '#64748b55',
+    width: 1,
+    mode: 'x',
+    dash: [4, 5],
+  };
   config.options.interaction = { mode: editor.interactionMode, keyboard: true };
   config.options.legend = {
     interactive: true,
@@ -1042,7 +1129,12 @@ function currentConfig() {
   };
   config.options.startAngle = Number(editor.startAngle);
   config.options.radialGap = Number(editor.radialGap);
-  config.options.innerRadius = Number(editor.innerRadius);
+  config.options.radialCornerRadius = Number(editor.radialCornerRadius);
+  config.options.cornerRadius = Number(editor.cornerRadius);
+  if (state.selected.type === 'doughnut') config.options.innerRadius = Number(editor.innerRadius);
+  else delete config.options.innerRadius;
+  config.options.width = state.previewWidth || undefined;
+  config.options.height = state.previewHeight;
   config.data.datasets = config.data.datasets.map((dataset) => ({
     ...dataset,
     lineStyle: editor.lineStyle,
@@ -1097,8 +1189,9 @@ function renderPlayground() {
   state.playground?.destroy();
   const host = document.querySelector('#playground-canvas');
   host.innerHTML = '';
+  host.style.height = `${state.previewHeight}px`;
   const canvas = document.createElement('canvas');
-  canvas.style.cssText = 'display:block;width:100%;height:470px';
+  canvas.style.cssText = 'display:block;width:100%;height:100%';
   host.append(canvas);
   const config = currentConfig();
   state.playground = new window.Chartix(canvas, config);
@@ -1108,24 +1201,40 @@ function renderPlayground() {
 
 function updateGeneratedCode(config) {
   const clean = deepClone(config);
-  delete clean.options.height;
   const json = JSON.stringify(clean, null, 2).replace(/'/g, '&#39;');
   document.querySelector('#generated-code').textContent =
     `<script src="https://freber6684.github.io/Chartix/dist/chartix.min.js"></script>\n\n<div data-chartix data-config='${json}'></div>`;
 }
 
-function applyPreviewWidth(width) {
-  state.previewWidth = width;
+function applyPreviewSize(width, height) {
+  const safeWidth = width ? Math.max(280, Math.min(1600, Number(width))) : 0;
+  const safeHeight = Math.max(240, Math.min(1200, Number(height) || 470));
+  state.previewWidth = safeWidth;
+  state.previewHeight = safeHeight;
   const host = document.querySelector('#playground-canvas');
-  host.style.width = width ? `min(100%, ${width}px)` : '100%';
-  host.dataset.viewport = width === 375 ? 'phone' : width === 768 ? 'tablet' : 'fluid';
-  document.querySelector('#preview-size').textContent = width ? `${width}px target` : 'Responsive';
+  host.style.width = safeWidth ? `min(100%, ${safeWidth}px)` : '100%';
+  host.style.height = `${safeHeight}px`;
+  host.dataset.viewport = safeWidth === 390 ? 'phone' : safeWidth === 768 ? 'tablet' : 'custom';
+  document.querySelector('#preview-width-input').value = safeWidth || host.clientWidth;
+  document.querySelector('#preview-height-input').value = safeHeight;
+  document.querySelector('#preview-size').textContent = safeWidth
+    ? `${safeWidth} × ${safeHeight}px`
+    : `Fluid · ${safeHeight}px high`;
   document.querySelectorAll('[data-preview-width]').forEach((button) => {
-    const active = Number(button.dataset.previewWidth) === width;
+    const active =
+      Number(button.dataset.previewWidth) === safeWidth &&
+      Number(button.dataset.previewHeight) === safeHeight;
     button.classList.toggle('is-active', active);
     button.setAttribute('aria-pressed', String(active));
   });
-  window.requestAnimationFrame(() => state.playground?.resize());
+  window.requestAnimationFrame(() => {
+    state.playground?.updateOptions({
+      width: safeWidth || undefined,
+      height: safeHeight,
+    });
+    state.playground?.resize();
+    updateGeneratedCode(currentConfig());
+  });
 }
 
 function loadFont(font) {
@@ -1176,17 +1285,19 @@ function installDirectEditor(host, canvas) {
   title.className = 'direct-handle direct-title';
   title.type = 'button';
   title.dataset.dragRole = 'title';
-  title.textContent = 'Drag title';
+  title.setAttribute('aria-label', 'Move chart title');
+  title.innerHTML = '<span aria-hidden="true">⠿</span>';
   const subtitle = document.createElement('button');
   subtitle.className = 'direct-handle direct-subtitle';
   subtitle.type = 'button';
   subtitle.dataset.dragRole = 'subtitle';
-  subtitle.textContent = 'Drag subtitle';
+  subtitle.setAttribute('aria-label', 'Move chart subtitle');
+  subtitle.innerHTML = '<span aria-hidden="true">⠿</span>';
   const plot = document.createElement('div');
   plot.className = 'plot-handle';
   plot.dataset.dragRole = 'plot';
   plot.innerHTML =
-    '<span>Drag plot</span><button type="button" class="plot-resize" aria-label="Resize chart plot"></button>';
+    '<button type="button" class="plot-grip" aria-label="Move chart plot"><span aria-hidden="true">⠿</span></button><button type="button" class="plot-resize" aria-label="Resize chart plot"></button>';
   host.append(title, subtitle, plot);
   const positions = {
     title: editor.layout.title,
@@ -1423,7 +1534,8 @@ document.addEventListener('click', (event) => {
   const tab = event.target.closest('[data-tab]');
   if (tab) switchTab(tab.dataset.tab);
   const preview = event.target.closest('[data-preview-width]');
-  if (preview) applyPreviewWidth(Number(preview.dataset.previewWidth));
+  if (preview)
+    applyPreviewSize(Number(preview.dataset.previewWidth), Number(preview.dataset.previewHeight));
   const controlTab = event.target.closest('[data-control-tab]');
   if (controlTab) {
     state.controlTab = controlTab.dataset.controlTab;
@@ -1490,6 +1602,20 @@ document.addEventListener('click', (event) => {
 
 document.querySelector('#back-to-gallery').addEventListener('click', closeDetail);
 document.querySelector('#reset-controls').addEventListener('click', resetControls);
+document.querySelector('#apply-preview-size').addEventListener('click', () => {
+  applyPreviewSize(
+    Number(document.querySelector('#preview-width-input').value),
+    Number(document.querySelector('#preview-height-input').value),
+  );
+});
+document.querySelectorAll('#preview-width-input, #preview-height-input').forEach((input) =>
+  input.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      document.querySelector('#apply-preview-size').click();
+    }
+  }),
+);
 document.querySelector('#chart-type-select').addEventListener('change', (event) => {
   openChart(event.target.value);
 });

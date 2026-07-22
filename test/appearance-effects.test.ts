@@ -84,4 +84,32 @@ describe('advanced renderer appearance', () => {
     expect(context.fillText).toHaveBeenCalledWith('Chartix', 0, 0);
     expect(context.stroke).toHaveBeenCalled();
   });
+
+  it('draws smooth lines through every data point', () => {
+    const context = {
+      beginPath: vi.fn(),
+      moveTo: vi.fn(),
+      lineTo: vi.fn(),
+      bezierCurveTo: vi.fn(),
+      stroke: vi.fn(),
+      setLineDash: vi.fn(),
+    };
+    vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(
+      context as unknown as CanvasRenderingContext2D,
+    );
+    const renderer = new CanvasRenderer(document.createElement('canvas'));
+    renderer.line(
+      [
+        { x: 0, y: 20 },
+        { x: 40, y: 10 },
+        { x: 80, y: 30 },
+      ],
+      '#625bf6',
+      2,
+      { interpolation: 'smooth' },
+    );
+    expect(context.moveTo).toHaveBeenCalledWith(0, 20);
+    expect(context.bezierCurveTo).toHaveBeenCalledTimes(2);
+    expect(context.bezierCurveTo.mock.calls.at(-1)?.slice(-2)).toEqual([80, 30]);
+  });
 });

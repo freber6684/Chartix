@@ -287,13 +287,16 @@
         "backgroundImage": { "type": "string" },
         "backgroundImageOpacity": { "type": "number", "minimum": 0, "maximum": 1 },
         "colors": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/color" } },
+        "cornerRadius": { "type": "number", "minimum": 0 },
         "crosshair": {
           "type": "object",
           "additionalProperties": false,
           "properties": {
             "enabled": { "type": "boolean" },
             "color": { "$ref": "#/$defs/color" },
-            "width": { "type": "number", "exclusiveMinimum": 0 }
+            "width": { "type": "number", "exclusiveMinimum": 0 },
+            "mode": { "enum": ["x", "y", "both"] },
+            "dash": { "type": "array", "items": { "type": "number", "minimum": 0 } }
           }
         },
         "dataLabels": { "$ref": "#/$defs/labelOptions" },

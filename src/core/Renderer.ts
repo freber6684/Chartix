@@ -242,19 +242,29 @@ export class CanvasRenderer implements Renderer {
         })
       : points;
     this.context.beginPath();
-    expanded.forEach((point, index) => {
-      if (index === 0) this.context.moveTo(point.x, point.y);
-      else if (style.interpolation === 'smooth') {
-        const previous = expanded[index - 1] ?? point;
-        this.context.quadraticCurveTo(
-          previous.x,
-          previous.y,
-          (previous.x + point.x) / 2,
-          (previous.y + point.y) / 2,
+    if (style.interpolation === 'smooth' && points.length > 1) {
+      const first = points[0]!;
+      this.context.moveTo(first.x, first.y);
+      for (let index = 0; index < points.length - 1; index += 1) {
+        const previous = points[index - 1] ?? points[index]!;
+        const current = points[index]!;
+        const next = points[index + 1]!;
+        const following = points[index + 2] ?? next;
+        this.context.bezierCurveTo(
+          current.x + (next.x - previous.x) / 6,
+          current.y + (next.y - previous.y) / 6,
+          next.x - (following.x - current.x) / 6,
+          next.y - (following.y - current.y) / 6,
+          next.x,
+          next.y,
         );
-        if (index === expanded.length - 1) this.context.lineTo(point.x, point.y);
-      } else this.context.lineTo(point.x, point.y);
-    });
+      }
+    } else {
+      expanded.forEach((point, index) => {
+        if (index === 0) this.context.moveTo(point.x, point.y);
+        else this.context.lineTo(point.x, point.y);
+      });
+    }
     this.context.strokeStyle = color;
     this.context.lineWidth = width;
     this.context.lineCap = 'round';
