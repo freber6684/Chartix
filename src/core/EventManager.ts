@@ -51,9 +51,10 @@ export class EventManager {
 
   private point(event: PointerEvent | WheelEvent): Point {
     const rect = this.canvas.getBoundingClientRect();
+    const ratio = Math.min(globalThis.devicePixelRatio || 1, 2);
     return {
-      x: rect.width ? ((event.clientX - rect.left) / rect.width) * this.canvas.clientWidth : 0,
-      y: rect.height ? ((event.clientY - rect.top) / rect.height) * this.canvas.clientHeight : 0,
+      x: rect.width ? ((event.clientX - rect.left) * this.canvas.width) / rect.width / ratio : 0,
+      y: rect.height ? ((event.clientY - rect.top) * this.canvas.height) / rect.height / ratio : 0,
     };
   }
 

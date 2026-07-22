@@ -153,10 +153,11 @@ export function createAxisScale(
     ...(axis.reverse !== undefined ? { reverse: axis.reverse } : {}),
   };
   const custom = axis.type ? resolveCustomScale(axis.type) : undefined;
+  const scaleValues = axis.type === 'logarithmic' ? values.filter((value) => value > 0) : values;
   const base = custom
-    ? custom(values, outputStart, outputEnd, options)
+    ? custom(scaleValues, outputStart, outputEnd, options)
     : axis.type === 'logarithmic'
-      ? createLogScale(values, outputStart, outputEnd, options)
+      ? createLogScale(scaleValues, outputStart, outputEnd, options)
       : axis.type === 'time'
         ? createTimeScale(values, outputStart, outputEnd, options)
         : axis.type === 'percentage'
@@ -221,6 +222,87 @@ function drawHorizontalGrid(
       ],
       color,
       width,
+    );
+  }
+}
+
+export function drawYAxis(
+  renderer: Renderer,
+  scale: LinearScale,
+  axis: AxisOptions,
+  plot: PlotArea,
+  options: ChartOptions,
+  theme: ThemeObject,
+  slotOffset = 0,
+  beforeTick?: (tick: number) => void,
+): void {
+  if (axis.display === false) return;
+  const rightAxis = axis.position === 'right';
+  const direction = rightAxis ? 1 : -1;
+  const labels = options.yLabels;
+  const style = {
+    ...textStyle(options, 'yAxis', {
+      color: theme.mutedText,
+      fontFamily: theme.fontFamily,
+      fontSize: theme.fontSize.tick,
+      fontWeight: 450,
+    }),
+    ...labels,
+  };
+  scale.ticks.forEach((tick, index) => {
+    beforeTick?.(tick);
+    if (labels?.show !== false)
+      renderer.text(
+        axis.tickFormatter?.(tick, index) ?? formatTick(tick, axis),
+        (rightAxis
+          ? plot.right + (axis.labelsInside ? -10 : 10)
+          : plot.left + (axis.labelsInside ? 10 : -10)) +
+          direction * ((labels?.offset ?? 0) + slotOffset),
+        scale.project(tick),
+        {
+          align: rightAxis
+            ? axis.labelsInside
+              ? 'right'
+              : 'left'
+            : axis.labelsInside
+              ? 'left'
+              : 'right',
+          baseline: 'middle',
+          ...rendererTextStyle(style),
+          rotation: labels?.rotation,
+        },
+      );
+  });
+  if (axis.line) {
+    const x = rightAxis ? plot.right : plot.left;
+    renderer.line(
+      [
+        { x, y: plot.top },
+        { x, y: plot.bottom },
+      ],
+      axis.line.color ?? theme.grid,
+      axis.line.width ?? 1,
+    );
+  }
+  if (axis.title) {
+    const titleStyle = textStyle(options, 'yAxisTitle', {
+      color: theme.mutedText,
+      fontFamily: theme.fontFamily,
+      fontSize: theme.fontSize.label,
+      fontWeight: 600,
+    });
+    renderer.text(
+      axis.title,
+      rightAxis
+        ? plot.right + 34 + slotOffset + (axis.titleOffset ?? 0)
+        : plot.left - 42 - slotOffset - (axis.titleOffset ?? 0),
+      plot.top + plot.height / 2,
+      {
+        align: 'center',
+        baseline: 'middle',
+        ...rendererTextStyle(titleStyle),
+        rotation: rightAxis ? 90 : -90,
+      },
     );
   }
 }
@@ -382,19 +464,42 @@ export function createPlotArea(
   const legendPosition = options.showLegend === false ? undefined : options.legend?.position;
   const sideLegendWidth = legendPosition === 'left' || legendPosition === 'right' ? 132 : 0;
   const plotLayout = options.layout?.plot;
-  const baseLeft = boxPadding.left + 44 + (legendPosition === 'left' ? sideLegendWidth : 0);
-  const baseTop = Math.max(boxPadding.top + 10, headerBottom + 10);
+  const yAxes = [options.scales?.y, options.scales?.y1].filter((axis): axis is AxisOptions =>
+    Boolean(axis && axis.display !== false),
+  );
+  const axisGutter = (axis: AxisOptions): number =>
+    44 + (axis.title ? 22 + (axis.titleOffset ?? 0) : 0);
+  const leftAxisSpace = yAxes
+    .filter((axis) => axis.position !== 'right')
+    .reduce((total, axis) => total + axisGutter(axis), 0);
+  const rightAxisSpace = yAxes
+    .filter((axis) => axis.position === 'right')
+    .reduce((total, axis) => total + axisGutter(axis), 0);
+  const xAxis = options.scales?.x;
+  const topAxisSpace =
+    xAxis?.display !== false && xAxis?.position === 'top'
+      ? 24 + (xAxis.title ? 26 + (xAxis.titleOffset ?? 0) : 0)
+      : 0;
+  const baseLeft =
+    boxPadding.left +
+    Math.max(44, leftAxisSpace) +
+    (legendPosition === 'left' ? sideLegendWidth : 0);
+  const baseTop = Math.max(boxPadding.top + 10, headerBottom + 10) + topAxisSpace;
   const baseRight =
-    renderer.width - boxPadding.right - (legendPosition === 'right' ? sideLegendWidth : 0);
+    renderer.width -
+    boxPadding.right -
+    Math.max(0, rightAxisSpace) -
+    (legendPosition === 'right' ? sideLegendWidth : 0);
   const xRotation = Math.abs(options.xLabels?.rotation ?? 0);
   const xTitleSpace =
-    options.scales?.x?.display !== false && options.scales?.x?.title
-      ? 30 + (options.scales.x.titleOffset ?? 0)
+    xAxis?.display !== false && xAxis?.position !== 'top' && xAxis?.title
+      ? 30 + (xAxis.titleOffset ?? 0)
       : 0;
+  const xLabelSpace = xAxis?.display !== false && xAxis?.position !== 'top' ? 24 : 0;
   const bottom =
     renderer.height -
     boxPadding.bottom -
-    24 -
+    xLabelSpace -
     xTitleSpace -
     Math.min(34, xRotation * 0.35) -
     (legendPosition === 'bottom' ? 28 : 0) -
@@ -590,42 +695,9 @@ export function drawVerticalFrame(
   const axis = options.scales?.y ?? {};
   const xAxis = options.scales?.x ?? {};
   const scale = createAxisScale(values, plot.bottom, plot.top, axis);
-  scale.ticks.forEach((tick, tickIndex) => {
-    if (axis.display === false) return;
-    const y = scale.project(tick);
-    if (options.showGrid !== false) drawHorizontalGrid(renderer, plot, y, axis, theme.grid);
-    const labels = options.yLabels;
-    if (labels?.show === false) return;
-    const style = {
-      ...textStyle(options, 'yAxis', {
-        color: theme.mutedText,
-        fontFamily: theme.fontFamily,
-        fontSize: theme.fontSize.tick,
-        fontWeight: 450,
-      }),
-      ...labels,
-    };
-    const rightAxis = axis.position === 'right';
-    renderer.text(
-      axis.tickFormatter?.(tick, tickIndex) ?? formatTick(tick, axis),
-      (rightAxis
-        ? plot.right + (axis.labelsInside ? -10 : 10)
-        : plot.left + (axis.labelsInside ? 10 : -10)) +
-        (rightAxis ? 1 : -1) * (labels?.offset ?? 0),
-      y,
-      {
-        align: rightAxis
-          ? axis.labelsInside
-            ? 'right'
-            : 'left'
-          : axis.labelsInside
-            ? 'left'
-            : 'right',
-        baseline: 'middle',
-        ...rendererTextStyle(style),
-        rotation: labels?.rotation,
-      },
-    );
+  drawYAxis(renderer, scale, axis, plot, options, theme, 0, (tick) => {
+    if (options.showGrid !== false)
+      drawHorizontalGrid(renderer, plot, scale.project(tick), axis, theme.grid);
   });
   if (axis.display !== false && axis.minorTicks) {
     scale.ticks.slice(1).forEach((tick, index) => {
@@ -639,39 +711,6 @@ export function drawVerticalFrame(
         theme.grid,
       );
     });
-  }
-  if (axis.display !== false && axis.line) {
-    const rightAxis = axis.position === 'right';
-    const axisX = rightAxis ? plot.right : plot.left;
-    renderer.line(
-      [
-        { x: axisX, y: plot.top },
-        { x: axisX, y: plot.bottom },
-      ],
-      axis.line?.color ?? theme.grid,
-      axis.line?.width ?? 1,
-    );
-  }
-  if (axis.display !== false && axis.title) {
-    const rightAxis = axis.position === 'right';
-    const style = textStyle(options, 'yAxisTitle', {
-      color: theme.mutedText,
-      fontFamily: theme.fontFamily,
-      fontSize: theme.fontSize.label,
-      fontWeight: 600,
-    });
-    const titleOffset = axis.titleOffset ?? 0;
-    renderer.text(
-      axis.title,
-      rightAxis ? plot.right + 34 + titleOffset : plot.left - 42 - titleOffset,
-      plot.top + plot.height / 2,
-      {
-        align: 'center',
-        baseline: 'middle',
-        ...rendererTextStyle(style),
-        rotation: rightAxis ? 90 : -90,
-      },
-    );
   }
   options.annotations?.forEach((annotation) => {
     const color = annotation.color ?? theme.mutedText;
@@ -818,7 +857,8 @@ export function drawVerticalFrame(
         labelOptions?.overflow ?? (options.scales?.x?.tickSkip === 'auto' ? 'truncate' : 'show'),
       ),
       plot.left + step * (index + 0.5),
-      plot.bottom + 16 + (labelOptions?.offset ?? 0),
+      (xAxis.position === 'top' ? plot.top - 16 : plot.bottom + 16) +
+        (xAxis.position === 'top' ? -1 : 1) * (labelOptions?.offset ?? 0),
       {
         align: 'center',
         baseline: 'middle',
@@ -849,7 +889,9 @@ export function drawVerticalFrame(
     renderer.text(
       options.scales.x.title,
       plot.left + plot.width / 2,
-      plot.bottom + 38 + (options.scales.x.titleOffset ?? 0),
+      xAxis.position === 'top'
+        ? plot.top - 38 - (options.scales.x.titleOffset ?? 0)
+        : plot.bottom + 38 + (options.scales.x.titleOffset ?? 0),
       {
         align: 'center',
         baseline: 'middle',

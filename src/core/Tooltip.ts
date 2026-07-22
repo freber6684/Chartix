@@ -6,7 +6,7 @@ export class Tooltip {
   private readonly element: HTMLDivElement;
   private pinned = false;
 
-  public constructor(canvas: HTMLCanvasElement) {
+  public constructor(private readonly canvas: HTMLCanvasElement) {
     const parent = canvas.parentElement;
     this.element = document.createElement('div');
     this.element.className = 'chartix-tooltip';
@@ -75,18 +75,27 @@ export class Tooltip {
     this.element.style.textShadow =
       style?.effect === 'soft-shadow' ? `0 2px 5px ${style.effectColor ?? '#00000066'}` : 'none';
     const parent = this.element.parentElement;
+    const canvasRect = this.canvas.getBoundingClientRect();
+    const parentRect = parent?.getBoundingClientRect();
+    const ratio = Math.min(globalThis.devicePixelRatio || 1, 2);
+    const displayX =
+      (parentRect ? canvasRect.left - parentRect.left : 0) +
+      (primary.x * canvasRect.width * ratio) / this.canvas.width;
+    const displayY =
+      (parentRect ? canvasRect.top - parentRect.top : 0) +
+      (primary.y * canvasRect.height * ratio) / this.canvas.height;
     const tooltipWidth = this.element.offsetWidth;
     const tooltipHeight = this.element.offsetHeight;
     const parentWidth = parent?.clientWidth ?? tooltipWidth;
     const parentHeight = parent?.clientHeight ?? tooltipHeight;
     const x = Math.max(
       tooltipWidth / 2 + 8,
-      Math.min(parentWidth - tooltipWidth / 2 - 8, primary.x),
+      Math.min(parentWidth - tooltipWidth / 2 - 8, displayX),
     );
-    const placeBelow = primary.y - tooltipHeight - 14 < 8;
+    const placeBelow = displayY - tooltipHeight - 14 < 8;
     const top = placeBelow
-      ? Math.min(parentHeight - tooltipHeight - 8, primary.y + 14)
-      : primary.y - 14;
+      ? Math.min(parentHeight - tooltipHeight - 8, displayY + 14)
+      : displayY - 14;
     this.element.style.left = `${x}px`;
     this.element.style.top = `${Math.max(8, top)}px`;
     this.element.style.transform = placeBelow ? 'translate(-50%, 0)' : 'translate(-50%, -100%)';

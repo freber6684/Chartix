@@ -42,6 +42,15 @@ describe('advanced scales', () => {
     expect(band.project('B')).toBe(75);
   });
 
+  it('keeps percentage values above 100 inside the scale and expands one log decade', () => {
+    const percentage = createPercentageScale([40, 175], 100, 0);
+    expect(percentage.max).toBeGreaterThanOrEqual(175);
+    expect(percentage.project(175)).toBeGreaterThanOrEqual(0);
+    const logarithmic = createLogScale([5, 5], 100, 0);
+    expect(logarithmic.ticks.length).toBeGreaterThan(1);
+    expect(logarithmic.project(5)).toBeGreaterThan(0);
+  });
+
   it('registers custom scale factories by name', () => {
     registerScale('constant-test', (_values, outputStart) => ({
       min: 0,

@@ -120,8 +120,12 @@ export function createLogScale(
   if (minValue <= 0 || minValue > maxValue) {
     throw new Error('Chartix: logarithmic scale bounds must be positive and ordered.');
   }
-  const minPower = Math.floor(Math.log10(minValue));
-  const maxPower = Math.ceil(Math.log10(maxValue));
+  let minPower = Math.floor(Math.log10(minValue));
+  let maxPower = Math.ceil(Math.log10(maxValue));
+  if (minPower === maxPower) {
+    minPower -= 1;
+    maxPower += 1;
+  }
   const min = options.min ?? 10 ** minPower;
   const max = options.max ?? 10 ** maxPower;
   const ticks = Array.from(
@@ -147,9 +151,10 @@ export function createPercentageScale(
   outputEnd: number,
   options: ContinuousScaleOptions = {},
 ): LinearScale {
+  const finiteMaximum = Math.max(100, ...values.filter(Number.isFinite));
   return createLinearScale(values, outputStart, outputEnd, false, options.desiredTicks ?? 5, {
     min: options.min ?? 0,
-    max: options.max ?? 100,
+    max: options.max ?? finiteMaximum,
     ...(options.reverse !== undefined ? { reverse: options.reverse } : {}),
   });
 }

@@ -1,10 +1,4 @@
-import {
-  createAxisScale,
-  drawVerticalFrame,
-  font,
-  formatTick,
-  numericValues,
-} from './cartesian.js';
+import { createAxisScale, drawYAxis, drawVerticalFrame, numericValues } from './cartesian.js';
 import type { ChartModule } from './types.js';
 
 /** Mixed/combo chart supporting bar, line, area, and scatter datasets with two y axes. */
@@ -30,20 +24,13 @@ export const ComboChart: ChartModule = {
     const y1Scale = secondaryValues.length
       ? createAxisScale(secondaryValues, plot.bottom, plot.top, options.scales?.y1)
       : yScale;
-    if (secondaryValues.length) {
-      y1Scale.ticks.forEach((tick) => {
-        renderer.text(
-          formatTick(tick, options.scales?.y1),
-          plot.right + 10,
-          y1Scale.project(tick),
-          {
-            align: 'left',
-            baseline: 'middle',
-            color: theme.mutedText,
-            font: font(450, theme.fontSize.tick, theme.fontFamily),
-          },
-        );
-      });
+    if (secondaryValues.length && options.scales?.y1?.display !== false) {
+      const axis = options.scales?.y1 ?? {};
+      const rightAxis = axis.position !== 'left';
+      const primary = options.scales?.y ?? {};
+      const sameSide = (primary.position === 'right') === rightAxis;
+      const slotOffset = sameSide ? 44 + (primary.title ? 22 + (primary.titleOffset ?? 0) : 0) : 0;
+      drawYAxis(renderer, y1Scale, axis, plot, options, theme, slotOffset);
     }
     const categoryWidth = plot.width / Math.max(1, data.labels.length);
     const pointStep = data.labels.length > 1 ? plot.width / (data.labels.length - 1) : plot.width;

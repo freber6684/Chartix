@@ -434,6 +434,16 @@ export class CanvasRenderer implements Renderer {
     this.context.font = options.font;
     this.context.textAlign = options.align ?? 'left';
     this.context.textBaseline = options.baseline ?? 'alphabetic';
+    const lines = value.split('\n');
+    const fontSize = Number.parseFloat(this.context.font.match(/(\d+(?:\.\d+)?)px/)?.[1] ?? '12');
+    const lineHeight = Math.max(
+      1,
+      options.lineHeight === undefined
+        ? fontSize * 1.25
+        : options.lineHeight <= 4
+          ? fontSize * options.lineHeight
+          : options.lineHeight,
+    );
     const spacing =
       typeof options.padding === 'number'
         ? {
@@ -449,25 +459,29 @@ export class CanvasRenderer implements Renderer {
             left: options.padding?.left ?? 4,
           };
     if (options.backgroundColor) {
-      const metrics = this.context.measureText(value);
-      const height = metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent;
+      const metrics = lines.map((line) => this.context.measureText(line));
+      const width = Math.max(0, ...metrics.map((metric) => metric.width));
+      const firstMetrics = metrics[0]!;
+      const glyphHeight =
+        firstMetrics.actualBoundingBoxAscent + firstMetrics.actualBoundingBoxDescent || fontSize;
+      const height = glyphHeight + Math.max(0, lines.length - 1) * lineHeight;
       const left =
         this.context.textAlign === 'center'
-          ? -metrics.width / 2
+          ? -width / 2
           : this.context.textAlign === 'right' || this.context.textAlign === 'end'
-            ? -metrics.width
+            ? -width
             : 0;
       const top =
         this.context.textBaseline === 'middle'
           ? -height / 2
           : this.context.textBaseline === 'top' || this.context.textBaseline === 'hanging'
             ? 0
-            : -metrics.actualBoundingBoxAscent;
+            : -firstMetrics.actualBoundingBoxAscent;
       this.context.fillStyle = options.backgroundColor;
       this.context.fillRect(
         left - spacing.left,
         top - spacing.top,
-        metrics.width + spacing.left + spacing.right,
+        width + spacing.left + spacing.right,
         height + spacing.top + spacing.bottom,
       );
     }
@@ -485,12 +499,6 @@ export class CanvasRenderer implements Renderer {
       fill.addColorStop(1, options.color);
     }
     this.context.fillStyle = fill;
-    const lines = value.split('\n');
-    const lineHeight = Math.max(
-      12,
-      options.lineHeight ??
-        Number.parseFloat(this.context.font.match(/\d+(?:\.\d+)?px/)?.[0] ?? '12') * 1.25,
-    );
     lines.forEach((line, index) => {
       const lineY = index * lineHeight;
       if (options.effect === 'outline' || options.effect === 'emboss') {

@@ -85,6 +85,35 @@ describe('advanced renderer appearance', () => {
     expect(context.stroke).toHaveBeenCalled();
   });
 
+  it('treats a small line-height value as a font multiplier for multiline text', () => {
+    const context = {
+      save: vi.fn(),
+      restore: vi.fn(),
+      translate: vi.fn(),
+      rotate: vi.fn(),
+      measureText: vi.fn(() => ({
+        width: 36,
+        actualBoundingBoxAscent: 8,
+        actualBoundingBoxDescent: 2,
+      })),
+      fillRect: vi.fn(),
+      fillText: vi.fn(),
+    };
+    vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(
+      context as unknown as CanvasRenderingContext2D,
+    );
+    const renderer = new CanvasRenderer(document.createElement('canvas'));
+    renderer.text('First\nSecond', 0, 0, {
+      color: '#111827',
+      font: '400 20px Inter',
+      backgroundColor: '#ffffff',
+      lineHeight: 1.5,
+    });
+    expect(context.fillText).toHaveBeenNthCalledWith(1, 'First', 0, 0);
+    expect(context.fillText).toHaveBeenNthCalledWith(2, 'Second', 0, 30);
+    expect(context.fillRect).toHaveBeenCalledWith(-4, -10, 44, 44);
+  });
+
   it('draws smooth lines through every data point', () => {
     const context = {
       beginPath: vi.fn(),

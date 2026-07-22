@@ -750,6 +750,7 @@ function freshEditor(chart) {
     yTitle:
       chart.options.scales?.y?.title ??
       (caps.axes ? (chart.type === 'scatter' ? 'Y value' : horizontal ? 'Category' : 'Value') : ''),
+    y1Title: chart.options.scales?.y1?.title ?? 'Secondary value',
     textStyles: Object.fromEntries(TEXT_ROLES.map(([role]) => [role, defaultTextStyle(role)])),
     showLabels: Boolean(chart.options.dataLabels?.show),
     labelPosition: chart.options.dataLabels?.position ?? 'outside',
@@ -763,7 +764,12 @@ function freshEditor(chart) {
     yAxisWidth: chart.options.scales?.y?.line?.width ?? 1,
     padding: { top: 24, right: 24, bottom: 24, left: 24 },
     titleOffset: 12,
-    axisOffset: 12,
+    xAxisOffset: chart.options.scales?.x?.titleOffset ?? 12,
+    yAxisOffset: chart.options.scales?.y?.titleOffset ?? 12,
+    y1AxisOffset: chart.options.scales?.y1?.titleOffset ?? 12,
+    xAxisPosition: chart.options.scales?.x?.position ?? 'bottom',
+    yAxisPosition: chart.options.scales?.y?.position ?? 'left',
+    y1AxisPosition: chart.options.scales?.y1?.position ?? 'right',
     plotGap: 0,
     layout: { title: {}, subtitle: {}, plot: { widthScale: 1, heightScale: 1 } },
     lineStyle: chart.datasets[0]?.lineStyle ?? 'straight',
@@ -888,6 +894,7 @@ function renderControls() {
   const editor = state.editor;
   const style = editor.textStyles[state.activeRole];
   const caps = chartCapabilities(state.selected);
+  const hasY1 = state.selected.datasets.some((dataset) => dataset.yAxisId === 'y1');
   const axes = caps.axes
     ? controlSection(
         'Axes and labels',
@@ -898,14 +905,36 @@ function renderControls() {
             ['center', 'Center'],
           ],
           editor.labelPosition,
-        )}</select></label>${toggleControl('Show X axis', 'showXAxis', editor.showXAxis)}<label>X-axis title<input type="text" data-setting="xTitle" value="${escapeHTML(editor.xTitle)}"></label>${rangeControl('X label angle', 'xAngle', editor.xAngle, -90, 90, 1, '°')}${rangeControl('X-axis line width', 'xAxisWidth', editor.xAxisWidth, 0, 6, 0.5, 'px')}${colorEditor('X-axis line', 'xAxisColor', editor.xAxisColor)}${toggleControl('Show Y axis', 'showYAxis', editor.showYAxis)}<label>Y-axis title<input type="text" data-setting="yTitle" value="${escapeHTML(editor.yTitle)}"></label>${rangeControl('Y label angle', 'yAngle', editor.yAngle, -90, 90, 1, '°')}${rangeControl('Y-axis line width', 'yAxisWidth', editor.yAxisWidth, 0, 6, 0.5, 'px')}${colorEditor('Y-axis line', 'yAxisColor', editor.yAxisColor)}<label>Y scale<select data-setting="yScale">${selectOptions(
+        )}</select></label>${toggleControl('Show X axis', 'showXAxis', editor.showXAxis)}<label>X-axis title<input type="text" data-setting="xTitle" value="${escapeHTML(editor.xTitle)}"></label><label>X-axis side<select data-setting="xAxisPosition">${selectOptions(
+          [
+            ['bottom', 'Bottom'],
+            ['top', 'Top'],
+          ],
+          editor.xAxisPosition,
+        )}</select></label>${rangeControl('X title spacing', 'xAxisOffset', editor.xAxisOffset, 0, 100, 1, 'px')}${rangeControl('X label angle', 'xAngle', editor.xAngle, -90, 90, 1, '°')}${rangeControl('X-axis line width', 'xAxisWidth', editor.xAxisWidth, 0, 6, 0.5, 'px')}${colorEditor('X-axis line', 'xAxisColor', editor.xAxisColor)}${toggleControl('Show Y axis', 'showYAxis', editor.showYAxis)}<label>Y-axis title<input type="text" data-setting="yTitle" value="${escapeHTML(editor.yTitle)}"></label><label>Y-axis side<select data-setting="yAxisPosition">${selectOptions(
+          [
+            ['left', 'Left'],
+            ['right', 'Right'],
+          ],
+          editor.yAxisPosition,
+        )}</select></label>${rangeControl('Y title spacing', 'yAxisOffset', editor.yAxisOffset, 0, 100, 1, 'px')}${rangeControl('Y label angle', 'yAngle', editor.yAngle, -90, 90, 1, '°')}${rangeControl('Y-axis line width', 'yAxisWidth', editor.yAxisWidth, 0, 6, 0.5, 'px')}${colorEditor('Y-axis line', 'yAxisColor', editor.yAxisColor)}<label>Y scale<select data-setting="yScale">${selectOptions(
           [
             ['linear', 'Linear'],
             ['logarithmic', 'Logarithmic'],
             ['percentage', 'Percentage'],
           ],
           editor.yScale,
-        )}</select></label>${toggleControl('Reverse Y axis', 'reverseAxis', editor.reverseAxis)}`,
+        )}</select></label>${toggleControl('Reverse Y direction', 'reverseAxis', editor.reverseAxis)}${
+          hasY1
+            ? `<label>Y2-axis title<input type="text" data-setting="y1Title" value="${escapeHTML(editor.y1Title)}"></label><label>Y2-axis side<select data-setting="y1AxisPosition">${selectOptions(
+                [
+                  ['left', 'Left'],
+                  ['right', 'Right'],
+                ],
+                editor.y1AxisPosition,
+              )}</select></label>${rangeControl('Y2 title spacing', 'y1AxisOffset', editor.y1AxisOffset, 0, 100, 1, 'px')}`
+            : ''
+        }`,
         true,
       )
     : '';
@@ -964,7 +993,7 @@ function renderControls() {
       )}</select></label>`,
       true,
     )}${controlSection('Text colors', `${colorEditor('Font color', 'text.color', style.color)}${colorEditor('Text background', 'text.backgroundColor', style.backgroundColor)}${colorEditor('Effect color', 'text.effectColor', style.effectColor)}`)}${controlSection('Spacing and link', `<label>Hyperlink<input type="url" data-text-setting="href" value="${escapeHTML(style.href)}" placeholder="https://example.com"></label>${rangeControl('Line height', 'text.lineHeight', style.lineHeight, 0.8, 3, 0.1)}${rangeControl('Letter spacing', 'text.letterSpacing', style.letterSpacing, -2, 12, 0.5, 'px')}<div class="spacing-grid"><span>Text padding</span>${['top', 'right', 'bottom', 'left'].map((side) => `<label>${side}<input type="number" min="0" max="80" data-text-padding="${side}" value="${style.padding[side]}"></label>`).join('')}</div><button class="apply-all-button" type="button" data-apply-all>Apply this text style to all</button>`)}`,
-    layout: `${controlSection('Titles', `<label>Title<input type="text" data-setting="title" value="${escapeHTML(editor.title)}"><small>Double-click the preview title to edit it in place.</small></label><label>Subtitle<input type="text" data-setting="subtitle" value="${escapeHTML(editor.subtitle)}"></label>`, true)}${controlSection('Chart spacing', `<div class="spacing-grid"><span>Chart padding</span>${['top', 'right', 'bottom', 'left'].map((side) => `<label>${side}<input type="number" min="0" max="120" data-padding="${side}" value="${editor.padding[side]}"></label>`).join('')}</div>${rangeControl('Title spacing', 'titleOffset', editor.titleOffset, 0, 80)}${rangeControl('Axis-title spacing', 'axisOffset', editor.axisOffset, 0, 80)}${rangeControl('Plot spacing', 'plotGap', editor.plotGap, -40, 100)}`, true)}${controlSection('Direct manipulation', `<button class="copy-button" type="button" data-reset-layout>Reset dragged positions</button><p class="panel-intro">Drag the title, subtitle, or plot in the preview. Use the corner handle to resize the plot.</p>`)}`,
+    layout: `${controlSection('Titles', `<label>Title<input type="text" data-setting="title" value="${escapeHTML(editor.title)}"><small>Double-click the preview title to edit it in place.</small></label><label>Subtitle<input type="text" data-setting="subtitle" value="${escapeHTML(editor.subtitle)}"></label>`, true)}${controlSection('Chart spacing', `<div class="spacing-grid"><span>Chart padding</span>${['top', 'right', 'bottom', 'left'].map((side) => `<label>${side}<input type="number" min="0" max="120" data-padding="${side}" value="${editor.padding[side]}"></label>`).join('')}</div>${rangeControl('Title spacing', 'titleOffset', editor.titleOffset, 0, 80)}${rangeControl('Plot spacing', 'plotGap', editor.plotGap, -40, 100)}`, true)}${controlSection('Direct manipulation', `<div class="spacing-grid"><span>Title position (synced with dragging)</span><label>X<input type="number" min="0" max="1600" data-layout-position="title.x" value="${Math.round(editor.layout.title.x ?? editor.padding.left)}"></label><label>Y<input type="number" min="0" max="1200" data-layout-position="title.y" value="${Math.round(editor.layout.title.y ?? editor.padding.top)}"></label></div><div class="spacing-grid"><span>Subtitle position</span><label>X<input type="number" min="0" max="1600" data-layout-position="subtitle.x" value="${Math.round(editor.layout.subtitle.x ?? editor.padding.left)}"></label><label>Y<input type="number" min="0" max="1200" data-layout-position="subtitle.y" value="${Math.round(editor.layout.subtitle.y ?? editor.padding.top + editor.textStyles.title.fontSize + editor.titleOffset)}"></label></div><button class="copy-button" type="button" data-reset-layout>Reset dragged positions</button><p class="panel-intro">Position fields and dragging update the same layout values. Text padding remains the inner space around the selected text.</p>`)}`,
     chart: `${axes}${line}${bar}${points}${radial || ''}${controlSection(
       'Motion and annotations',
       `${rangeControl('Animation duration', 'duration', editor.duration, 0, 2000, 20, 'ms')}${rangeControl('Series stagger', 'stagger', editor.stagger, 0, 300, 10, 'ms')}${
@@ -1191,18 +1220,30 @@ function currentConfig() {
       ...config.options.scales?.x,
       display: editor.showXAxis,
       title: editor.xTitle,
-      titleOffset: editor.axisOffset,
+      titleOffset: editor.xAxisOffset,
+      position: editor.xAxisPosition,
       line: { color: editor.xAxisColor, width: Number(editor.xAxisWidth) },
     },
     y: {
       ...config.options.scales?.y,
       display: editor.showYAxis,
       title: editor.yTitle,
-      titleOffset: editor.axisOffset,
+      titleOffset: editor.yAxisOffset,
+      position: editor.yAxisPosition,
       type: editor.yScale,
       reverse: editor.reverseAxis,
       line: { color: editor.yAxisColor, width: Number(editor.yAxisWidth) },
     },
+    ...(config.options.scales?.y1
+      ? {
+          y1: {
+            ...config.options.scales.y1,
+            title: editor.y1Title,
+            titleOffset: editor.y1AxisOffset,
+            position: editor.y1AxisPosition,
+          },
+        }
+      : {}),
   };
   config.options.padding = undefined;
   config.options.layout = resolvedEditorLayout();
@@ -1400,9 +1441,10 @@ function installDirectEditor(host, canvas) {
   plot.innerHTML =
     '<button type="button" class="plot-grip" aria-label="Move chart plot"><span aria-hidden="true">⠿</span></button><button type="button" class="plot-resize" aria-label="Resize chart plot"></button>';
   host.append(title, subtitle, plot);
+  const resolvedLayout = resolvedEditorLayout();
   const positions = {
-    title: editor.layout.title,
-    subtitle: editor.layout.subtitle,
+    title: resolvedLayout.title,
+    subtitle: resolvedLayout.subtitle,
     plot: editor.layout.plot,
   };
   title.style.left = `${positions.title.x ?? editor.padding.left}px`;
@@ -1519,6 +1561,7 @@ function beginDrag(event) {
     handle.removeEventListener('pointercancel', end);
     handle.classList.remove('is-dragging');
     commitEditorLayout();
+    if (role === 'title' || role === 'subtitle') renderControls();
   };
   handle.classList.add('is-dragging');
   handle.addEventListener('pointermove', move);
@@ -1801,7 +1844,7 @@ document.querySelector('#chart-controls').addEventListener('input', (event) => {
   const target = event.target;
   if (
     target.matches('input[type="text"][data-setting]') &&
-    ['title', 'subtitle', 'xTitle', 'yTitle'].includes(target.dataset.setting)
+    ['title', 'subtitle', 'xTitle', 'yTitle', 'y1Title'].includes(target.dataset.setting)
   ) {
     state.editor[target.dataset.setting] = target.value;
     rerenderFromEditor();
@@ -1832,6 +1875,12 @@ document.querySelector('#chart-controls').addEventListener('input', (event) => {
   }
   if (target.matches('[data-padding]')) {
     state.editor.padding[target.dataset.padding] = Number(target.value);
+    rerenderFromEditor();
+    return;
+  }
+  if (target.matches('[data-layout-position]')) {
+    const [role, coordinate] = target.dataset.layoutPosition.split('.');
+    state.editor.layout[role][coordinate] = Number(target.value);
     rerenderFromEditor();
     return;
   }

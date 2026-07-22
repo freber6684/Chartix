@@ -115,6 +115,9 @@ changes so the next session can resume without reconstructing history.
       with meaningful titles in the primary bar examples.
 - [x] Replace fixed primary/accent controls with data-driven series and slice colors, add visible and
       editable Cartesian axes, and provide full legend layout, container, marker, and text styling.
+- [x] Synchronize typed and dragged title positions, repair multiline line-height and text padding,
+      add independent X/Y/Y2 title spacing and axis sides, stabilize logarithmic/percentage/reversed
+      scales, and align tooltips correctly when responsive previews are visually scaled.
 
 ## Remaining for v0.1
 
@@ -183,10 +186,10 @@ formatting, lint, strict types, unit tests, production bundles, and separate lea
 ## Latest validation
 
 - Formatting, ESLint, and strict TypeScript: passed with no warnings or errors.
-- Unit tests: 151 passed across 35 test files, including 45 chart/theme visual baselines.
+- Unit tests: 153 passed across 35 test files, including 45 chart/theme visual baselines.
 - Production build: ESM, CJS, standalone embed ESM, browser IIFE, minified browser IIFE, and TypeScript declarations generated.
 - Lean original-family core: measured on every build against a 35 KB gzip budget.
-- Complete library and public embed: measured against 70 KB and 40 KB gzip budgets respectively.
+- Complete library and public embed: measured against 71 KB and 40 KB gzip budgets respectively.
 - Browser check: the public demo rendered bar, line, pie, doughnut, and scatter charts without page errors.
 - Accessibility check: all five canvases had generated `role="img"` labels and matching data tables.
 - GitHub-hosted CI: push and pull-request checks completed successfully.

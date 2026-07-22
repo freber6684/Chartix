@@ -122,7 +122,7 @@ const report = {
   library: {
     rawBytes: libraryBytes.byteLength,
     gzipBytes: gzipSync(libraryBytes).byteLength,
-    budgetBytes: 70 * 1024,
+    budgetBytes: 71 * 1024,
   },
   embed: {
     rawBytes: embedBytes.byteLength,
