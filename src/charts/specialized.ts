@@ -2,7 +2,7 @@ import { LineChart } from './line.js';
 import { BarChart } from './bar.js';
 import { DendrogramChart, DensityChart, NetworkChart } from './advanced.js';
 import { GaugeChart, HeatmapChart, StackedAreaChart } from './catalog.js';
-import { contourCells, geoMercator, layoutChord, layoutSankey } from '../layouts/primitives.js';
+import { contourCells, layoutChord, layoutSankey } from '../layouts/primitives.js';
 import type { ChartModule, ChartRenderContext } from './types.js';
 
 const delegate = (
@@ -601,22 +601,31 @@ const WORLD_LANDMASSES: Array<Array<[number, number]>> = [
   ],
 ];
 
+function worldFrame(context: ChartRenderContext) {
+  const top = context.plot.top + Math.min(86, context.plot.height * 0.24);
+  return {
+    left: context.plot.left + 8,
+    top,
+    width: Math.max(1, context.plot.width - 16),
+    height: Math.max(1, context.plot.bottom - top - 8),
+  };
+}
+
 function projectGeo(context: ChartRenderContext, longitude: number, latitude: number) {
-  return geoMercator(longitude, Math.max(-82, Math.min(82, latitude)), {
-    scale: context.plot.width / (Math.PI * 2),
-    translate: [
-      context.plot.left + context.plot.width / 2,
-      context.plot.top + context.plot.height / 2,
-    ],
-  });
+  const frame = worldFrame(context);
+  return {
+    x: frame.left + ((Math.max(-180, Math.min(180, longitude)) + 180) / 360) * frame.width,
+    y: frame.top + ((82 - Math.max(-82, Math.min(82, latitude))) / 164) * frame.height,
+  };
 }
 
 function renderWorldBase(context: ChartRenderContext): void {
+  const frame = worldFrame(context);
   context.renderer.roundedRect(
-    context.plot.left,
-    context.plot.top,
-    context.plot.width,
-    context.plot.height,
+    frame.left,
+    frame.top,
+    frame.width,
+    frame.height,
     Math.min(12, context.theme.radius + 4),
     context.theme.background,
   );
