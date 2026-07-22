@@ -118,6 +118,29 @@ function renderVertical(context: ChartRenderContext): void {
         );
       const drawnWidth = Math.max(1, barWidth - gap);
       const radius = markRadius(context, drawnWidth, height);
+      const track = options.barTrack;
+      if (track?.enabled && !options.stacked) {
+        const trackTarget = scale.project(scale.max);
+        const trackY = Math.min(baseline, trackTarget);
+        const trackHeight = Math.abs(trackTarget - baseline);
+        const trackColor = track.color ?? theme.grid;
+        const trackFill =
+          track.pattern && renderer.pattern
+            ? renderer.pattern(
+                trackColor,
+                options.backgroundColor ?? theme.background,
+                track.pattern,
+              )
+            : trackColor;
+        renderer.roundedRect(
+          x,
+          trackY,
+          drawnWidth,
+          trackHeight,
+          Math.max(0, track.cornerRadius ?? radius),
+          trackFill,
+        );
+      }
       if (active)
         renderer.roundedRect(
           x - 2,
@@ -360,6 +383,29 @@ function renderHorizontal(context: ChartRenderContext): void {
         );
       const drawnHeight = Math.max(1, barHeight - gap);
       const radius = markRadius(context, width, drawnHeight);
+      const track = options.barTrack;
+      if (track?.enabled && !options.stacked) {
+        const trackTarget = scale.project(scale.max);
+        const trackX = Math.min(baseline, trackTarget);
+        const trackWidth = Math.abs(trackTarget - baseline);
+        const trackColor = track.color ?? theme.grid;
+        const trackFill =
+          track.pattern && renderer.pattern
+            ? renderer.pattern(
+                trackColor,
+                options.backgroundColor ?? theme.background,
+                track.pattern,
+              )
+            : trackColor;
+        renderer.roundedRect(
+          trackX,
+          y,
+          trackWidth,
+          drawnHeight,
+          Math.max(0, track.cornerRadius ?? radius),
+          trackFill,
+        );
+      }
       if (active)
         renderer.roundedRect(
           x - 2,

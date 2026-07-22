@@ -71,6 +71,7 @@ export function normalizeConfig(config: ChartConfig): ChartConfig & { options: C
       },
       ...(config.options?.colors ? { colors: [...config.options.colors] } : {}),
       ...(config.options?.canvas ? { canvas: { ...config.options.canvas } } : {}),
+      ...(config.options?.barTrack ? { barTrack: { ...config.options.barTrack } } : {}),
       ...(config.options?.explodedSlices
         ? { explodedSlices: [...config.options.explodedSlices] }
         : {}),
@@ -171,6 +172,9 @@ export function normalizeConfig(config: ChartConfig): ChartConfig & { options: C
               ...config.options.layout,
               ...(config.options.layout.padding
                 ? { padding: { ...config.options.layout.padding } }
+                : {}),
+              ...(config.options.layout.kicker
+                ? { kicker: { ...config.options.layout.kicker } }
                 : {}),
               ...(config.options.layout.title ? { title: { ...config.options.layout.title } } : {}),
               ...(config.options.layout.subtitle

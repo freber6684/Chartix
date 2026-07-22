@@ -84,6 +84,39 @@ const config = {
 included. Use `options.colors` for any palette, `dataset.color` for one series, or a complete custom
 `ThemeObject` for full design-system control.
 
+## Ready-made bar designs
+
+The public playground includes four selectable vertical/horizontal bar presets: a dark aurora
+scorecard, an editorial report, a terminal monitor, and a quarterly poster. They are ordinary
+Chartix configurations, so the Code tab reproduces the selected design without special demo CSS.
+
+```ts
+const scorecard = {
+  type: 'bar',
+  data: {
+    labels: ['Product Design', 'Engineering', 'Marketing', 'Operations'],
+    datasets: [
+      {
+        label: 'Score',
+        values: [94, 78, 64, 47],
+        colors: ['#f6bd3f', '#5767f7', '#5869f5', '#5969ef'],
+      },
+    ],
+  },
+  options: {
+    horizontal: true,
+    kicker: 'Q3 PERFORMANCE REVIEW',
+    title: 'Department Score',
+    subtitle: 'Composite score by department, indexed to 100',
+    showLegend: false,
+    showGrid: false,
+    cornerRadius: 12,
+    barTrack: { enabled: true, color: '#18223a', cornerRadius: 12 },
+    scales: { x: { min: 0, max: 100 }, y: { display: true } },
+  },
+};
+```
+
 ## Labels
 
 - `xLabels` controls category or x-axis labels.

@@ -6,6 +6,10 @@ All notable Chartix changes are documented here. The project follows semantic ve
 
 ### Added
 
+- Four selectable, copy-ready bar/column design presets inspired by executive, editorial,
+  terminal, and poster scorecards.
+- Reusable full-domain bar tracks with solid or patterned fills, independent roundness, and a
+  contextual kicker line above chart titles.
 - Independent horizontal and vertical gridline visibility in the public API and playground.
 - Vertical/horizontal bar category-gap and grouped-series spacing controls.
 - Power BI-style automatic, categorical, and continuous dense-axis label modes with adjustable

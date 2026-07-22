@@ -38,6 +38,7 @@ export type {
   AccessibilityOptions,
   AnnotationOptions,
   AxisOptions,
+  BarTrackOptions,
   ChartConfig,
   ChartData,
   ChartDataset,

@@ -23,6 +23,209 @@ const themeBackgrounds = {
   rose: '#fff7fa',
 };
 
+const barDesignExamples = [
+  {
+    id: 'bar-design-aurora',
+    designLabel: 'Example 1',
+    designName: 'Aurora scorecard',
+    showcaseOnly: true,
+    name: 'Aurora scorecard',
+    type: 'bar',
+    family: 'cartesian',
+    tag: 'Bar design',
+    theme: 'dark',
+    summary: 'A luminous dark scorecard with rounded progress tracks and ranked values.',
+    bestFor: 'Executive scorecards, department rankings, KPI reviews, and dark dashboards.',
+    options: {
+      horizontal: true,
+      kicker: '●  Q3 PERFORMANCE REVIEW',
+      title: 'Department Score',
+      subtitle: 'Composite score by department, indexed to 100',
+      source: 'internal scorecard · Updated Jul 2026',
+      backgroundColor: '#0f172a',
+      showLegend: false,
+      showGrid: false,
+      exportToolbar: { enabled: false },
+      cornerRadius: 12,
+      barGapRatio: 0.58,
+      barTrack: { enabled: true, color: '#18223a', cornerRadius: 12 },
+      dataLabels: { show: true, position: 'outside', offset: 8 },
+      scales: {
+        x: { display: true },
+        y: { display: true, min: 0, max: 100, beginAtZero: true },
+      },
+      xLabels: { color: '#7c849b', fontSize: 11 },
+      yLabels: { color: '#f8fafc', fontSize: 15, fontWeight: 650, maxWidth: 130 },
+      typography: {
+        fontFamily: 'Inter, system-ui, sans-serif',
+        kicker: { color: '#7c849b', fontSize: 11, fontWeight: 700, letterSpacing: 2 },
+        title: { color: '#f8fafc', fontSize: 31, fontWeight: 750 },
+        subtitle: { color: '#929bb2', fontSize: 16, fontWeight: 400 },
+        dataLabel: { color: '#f8fafc', fontSize: 17, fontWeight: 750 },
+      },
+      layout: { padding: { top: 34, right: 64, bottom: 38, left: 36 } },
+    },
+    labels: ['Product Design', 'Engineering', 'Marketing', 'Operations'],
+    datasets: [
+      {
+        label: 'Score',
+        values: [94, 78, 64, 47],
+        colors: ['#f6bd3f', '#5767f7', '#5869f5', '#5969ef'],
+        shadow: { color: '#3b82f644', blur: 12, offsetX: 5 },
+      },
+    ],
+  },
+  {
+    id: 'bar-design-editorial',
+    designLabel: 'Example 2',
+    designName: 'Editorial report',
+    showcaseOnly: true,
+    name: 'Editorial report',
+    type: 'bar',
+    family: 'cartesian',
+    tag: 'Bar design',
+    theme: 'minimal',
+    summary: 'An editorial scorecard with serif hierarchy, restrained color, and clean tracks.',
+    bestFor: 'Board reports, annual reviews, print-inspired stories, and formal publications.',
+    options: {
+      horizontal: true,
+      kicker: 'THE QUARTERLY SCORECARD',
+      title: 'Department Score',
+      subtitle: 'A composite index of performance across four departments, Q3 2026.',
+      source: 'internal scorecard',
+      footnote: 'Index, 0–100',
+      backgroundColor: '#f8f7f3',
+      showLegend: false,
+      showGrid: false,
+      exportToolbar: { enabled: false },
+      cornerRadius: 0,
+      barGapRatio: 0.72,
+      barTrack: { enabled: true, color: '#e9e5db', cornerRadius: 0 },
+      dataLabels: { show: true, position: 'outside', offset: 8 },
+      scales: {
+        x: { display: false },
+        y: { display: true, min: 0, max: 100, beginAtZero: true },
+      },
+      yLabels: { color: '#1d1d1a', fontFamily: 'Georgia, serif', fontSize: 15, fontWeight: 700 },
+      typography: {
+        fontFamily: 'Georgia, serif',
+        kicker: { color: '#a84636', fontSize: 10, fontWeight: 700, letterSpacing: 2.3 },
+        title: { color: '#171714', fontSize: 29, fontWeight: 750 },
+        subtitle: { color: '#6f7068', fontSize: 15, fontWeight: 600, fontStyle: 'italic' },
+        dataLabel: { color: '#171714', fontSize: 16, fontWeight: 750 },
+      },
+      layout: { padding: { top: 32, right: 62, bottom: 38, left: 34 } },
+    },
+    labels: ['Product Design', 'Engineering', 'Marketing', 'Operations'],
+    datasets: [
+      {
+        label: 'Score',
+        values: [94, 78, 64, 47],
+        colors: ['#b74331', '#1b1b18', '#1b1b18', '#1b1b18'],
+      },
+    ],
+  },
+  {
+    id: 'bar-design-terminal',
+    designLabel: 'Example 3',
+    designName: 'Terminal monitor',
+    showcaseOnly: true,
+    name: 'Terminal monitor',
+    type: 'bar',
+    family: 'cartesian',
+    tag: 'Bar design',
+    theme: 'dark',
+    summary:
+      'A command-line monitor with patterned remainder tracks and high-contrast status color.',
+    bestFor: 'Developer tools, operations monitors, cyber dashboards, and technical status pages.',
+    options: {
+      horizontal: true,
+      kicker: '$ ./scorecard --quarter Q3 --format bar',
+      title: 'DEPARTMENT_SCORE.LOG',
+      subtitle: 'index: 0–100 · run: 2026-07-22T09:14:02',
+      footnote: '----------------------------------------',
+      backgroundColor: '#061009',
+      showLegend: false,
+      showGrid: false,
+      exportToolbar: { enabled: false },
+      cornerRadius: 0,
+      barGapRatio: 0.62,
+      barTrack: { enabled: true, color: '#43f17a', pattern: 'dots', cornerRadius: 0 },
+      dataLabels: { show: true, position: 'outside', offset: 8 },
+      scales: {
+        x: { display: false },
+        y: { display: true, min: 0, max: 100, beginAtZero: true },
+      },
+      yLabels: { color: '#d9fbe4', fontSize: 14, fontWeight: 500, maxWidth: 190 },
+      typography: {
+        fontFamily: "'Space Mono', monospace",
+        kicker: { color: '#48d878', fontSize: 13, fontWeight: 500 },
+        title: { color: '#45f27d', fontSize: 26, fontWeight: 700 },
+        subtitle: { color: '#355a40', fontSize: 12, fontWeight: 500 },
+        dataLabel: { color: '#43f17a', fontSize: 17, fontWeight: 700 },
+      },
+      layout: { padding: { top: 32, right: 70, bottom: 34, left: 34 } },
+    },
+    labels: ['01 · product_design', '02 · engineering', '03 · marketing', '04 · operations'],
+    datasets: [
+      {
+        label: 'Score',
+        values: [94, 78, 64, 47],
+        colors: ['#f7c545', '#43ed7c', '#43ed7c', '#43ed7c'],
+      },
+    ],
+  },
+  {
+    id: 'bar-design-poster',
+    designLabel: 'Example 4',
+    designName: 'Quarterly poster',
+    showcaseOnly: true,
+    name: 'Quarterly poster',
+    type: 'bar',
+    family: 'cartesian',
+    tag: 'Column design',
+    theme: 'minimal',
+    summary: 'A bold vertical scorecard with ranked columns and a restrained editorial palette.',
+    bestFor: 'Presentation slides, campaign reports, infographics, and quarterly scorecards.',
+    options: {
+      horizontal: false,
+      kicker: 'Q3 2026 · INTERNAL SCORECARD',
+      title: 'Department\nScore',
+      subtitle: 'Composite performance index across four departments, scaled 0–100.',
+      source: 'INTERNAL SCORECARD',
+      footnote: 'INDEX 0–100',
+      backgroundColor: '#f7f7f4',
+      showLegend: false,
+      showGrid: false,
+      exportToolbar: { enabled: false },
+      cornerRadius: 0,
+      barGapRatio: 0.12,
+      dataLabels: { show: true, position: 'outside', offset: 7 },
+      scales: {
+        x: { display: true, line: { color: '#171714', width: 3 } },
+        y: { display: false, min: 0, max: 100, beginAtZero: true },
+      },
+      xLabels: { color: '#171714', fontSize: 12, fontWeight: 700, maxWidth: 130 },
+      typography: {
+        fontFamily: 'Inter, system-ui, sans-serif',
+        kicker: { color: '#d94d2c', fontSize: 11, fontWeight: 750, letterSpacing: 2 },
+        title: { color: '#111110', fontSize: 34, fontWeight: 800, lineHeight: 1.02 },
+        subtitle: { color: '#5f605a', fontSize: 16, fontWeight: 450, lineHeight: 1.35 },
+        dataLabel: { color: '#111110', fontSize: 20, fontWeight: 800 },
+      },
+      layout: { padding: { top: 30, right: 34, bottom: 42, left: 34 } },
+    },
+    labels: ['PRODUCT\nDESIGN', 'ENGINEERING', 'MARKETING', 'OPERATIONS'],
+    datasets: [
+      {
+        label: 'Score',
+        values: [94, 78, 64, 47],
+        colors: ['#dc4c2b', '#36342d', '#62615a', '#969488'],
+      },
+    ],
+  },
+];
+
 const charts = [
   {
     id: 'bar',
@@ -53,6 +256,7 @@ const charts = [
     labels: ['Product design', 'Engineering', 'Marketing', 'Operations'],
     datasets: [{ label: 'Score', values: [88, 74, 63, 46] }],
   },
+  ...barDesignExamples,
   {
     id: 'grouped-bar',
     name: 'Grouped bar',
@@ -599,6 +803,7 @@ const FONT_CATALOG = [
   'Bebas Neue',
 ];
 const TEXT_ROLES = [
+  ['kicker', 'Kicker'],
   ['title', 'Title'],
   ['subtitle', 'Subtitle'],
   ['xAxis', 'X-axis labels'],
@@ -639,6 +844,7 @@ const themeText = {
 function defaultTextStyle(role, theme) {
   const color = theme === 'dark' ? themeText.dark : themeText.light;
   const presets = {
+    kicker: { fontSize: 10, fontWeight: 700, color: color.muted, lineHeight: 1.2 },
     title: { fontSize: 20, fontWeight: 700, color: color.strong, lineHeight: 1.2 },
     subtitle: { fontSize: 12, fontWeight: 400, color: color.muted, lineHeight: 1.45 },
     xAxis: { fontSize: 11, fontWeight: 400, color: color.muted, lineHeight: 1.3 },
@@ -806,13 +1012,44 @@ function freshEditor(chart) {
           bottom: legendPadding?.bottom ?? 8,
           left: legendPadding?.left ?? 8,
         };
+  const presetTypography = chart.options.typography ?? {};
+  const presetAll = presetTypography.all ?? {};
+  const presetPadding = chart.options.layout?.padding ?? {};
+  const textStyles = Object.fromEntries(
+    TEXT_ROLES.map(([role]) => {
+      const optionRole =
+        role === 'xAxis'
+          ? chart.options.xLabels
+          : role === 'yAxis'
+            ? chart.options.yLabels
+            : role === 'dataLabel'
+              ? chart.options.dataLabels
+              : {};
+      return [
+        role,
+        {
+          ...defaultTextStyle(role, chart.theme),
+          ...(presetTypography.fontFamily ? { fontFamily: presetTypography.fontFamily } : {}),
+          ...presetAll,
+          ...optionRole,
+          ...(presetTypography[role] ?? {}),
+          padding: {
+            ...defaultTextStyle(role, chart.theme).padding,
+            ...presetAll.padding,
+            ...optionRole?.padding,
+            ...(presetTypography[role]?.padding ?? {}),
+          },
+        },
+      ];
+    }),
+  );
   return {
     theme: chart.theme,
     seriesColors: initialSeriesColors(chart),
-    background: themeBackgrounds[chart.theme],
-    canvasBorderColor: '#d7dce5',
-    canvasBorderWidth: 0,
-    canvasBorderRadius: 8,
+    background: chart.options.backgroundColor ?? themeBackgrounds[chart.theme],
+    canvasBorderColor: chart.options.canvas?.borderColor ?? '#d7dce5',
+    canvasBorderWidth: chart.options.canvas?.borderWidth ?? 0,
+    canvasBorderRadius: chart.options.canvas?.borderRadius ?? 8,
     highlightType: chart.options.highlight?.type ?? 'outline',
     highlightColor: chart.options.highlight?.color ?? '#111827',
     highlightBackground: chart.options.highlight?.backgroundColor ?? '#a8ff1a',
@@ -820,8 +1057,12 @@ function freshEditor(chart) {
     highlightBorderRadius: chart.options.highlight?.borderRadius ?? 8,
     highlightOpacity: chart.options.highlight?.opacity ?? 0.16,
     highlightGlowBlur: chart.options.highlight?.glowBlur ?? 14,
-    title: `${chart.name} example`,
-    subtitle: 'Interactive Chartix visualization',
+    kicker: chart.options.kicker ?? '',
+    title: chart.options.title ?? `${chart.name} example`,
+    subtitle: chart.options.subtitle ?? 'Interactive Chartix visualization',
+    source: chart.options.source ?? '',
+    footnote: chart.options.footnote ?? '',
+    watermark: chart.options.watermark ?? '',
     xTitle:
       chart.options.scales?.x?.title ??
       (caps.axes ? (chart.type === 'scatter' ? 'X value' : horizontal ? 'Value' : 'Category') : ''),
@@ -829,13 +1070,11 @@ function freshEditor(chart) {
       chart.options.scales?.y?.title ??
       (caps.axes ? (chart.type === 'scatter' ? 'Y value' : horizontal ? 'Category' : 'Value') : ''),
     y1Title: chart.options.scales?.y1?.title ?? 'Secondary value',
-    textStyles: Object.fromEntries(
-      TEXT_ROLES.map(([role]) => [role, defaultTextStyle(role, chart.theme)]),
-    ),
+    textStyles,
     showLabels: Boolean(chart.options.dataLabels?.show),
     labelPosition: chart.options.dataLabels?.position ?? 'outside',
-    xAngle: 0,
-    yAngle: 0,
+    xAngle: chart.options.xLabels?.rotation ?? 0,
+    yAngle: chart.options.yLabels?.rotation ?? 0,
     showXAxis: chart.options.scales?.x?.display !== false,
     showYAxis: chart.options.scales?.y?.display !== false,
     showHorizontalGrid:
@@ -848,7 +1087,12 @@ function freshEditor(chart) {
     yAxisColor: chart.options.scales?.y?.line?.color ?? '#cbd5e1',
     xAxisWidth: chart.options.scales?.x?.line?.width ?? 1,
     yAxisWidth: chart.options.scales?.y?.line?.width ?? 1,
-    padding: { top: 24, right: 24, bottom: 24, left: 24 },
+    padding: {
+      top: presetPadding.top ?? 24,
+      right: presetPadding.right ?? 24,
+      bottom: presetPadding.bottom ?? 24,
+      left: presetPadding.left ?? 24,
+    },
     titleOffset: 12,
     xAxisOffset: chart.options.scales?.x?.titleOffset ?? 12,
     yAxisOffset: chart.options.scales?.y?.titleOffset ?? 12,
@@ -857,7 +1101,12 @@ function freshEditor(chart) {
     yAxisPosition: chart.options.scales?.y?.position ?? 'left',
     y1AxisPosition: chart.options.scales?.y1?.position ?? 'right',
     plotGap: 0,
-    layout: { title: {}, subtitle: {}, plot: { widthScale: 1, heightScale: 1 } },
+    layout: {
+      kicker: { ...(chart.options.layout?.kicker ?? {}) },
+      title: { ...(chart.options.layout?.title ?? {}) },
+      subtitle: { ...(chart.options.layout?.subtitle ?? {}) },
+      plot: { widthScale: 1, heightScale: 1, ...(chart.options.layout?.plot ?? {}) },
+    },
     lineStyle: chart.datasets[0]?.lineStyle ?? 'straight',
     borderWidth: chart.datasets[0]?.borderWidth ?? 2,
     pointSize: chart.datasets[0]?.pointSizes?.[0] ?? 4,
@@ -871,6 +1120,10 @@ function freshEditor(chart) {
     cornerRadius: chart.options.cornerRadius ?? 8,
     barGapPercent: Math.round((chart.options.barGapRatio ?? (horizontal ? 0.36 : 0.32)) * 100),
     barDatasetGap: chart.options.barDatasetGap ?? 3,
+    barTrackEnabled: Boolean(chart.options.barTrack?.enabled),
+    barTrackColor: chart.options.barTrack?.color ?? '#e2e8f0',
+    barTrackPattern: chart.options.barTrack?.pattern ?? 'none',
+    barTrackRadius: chart.options.barTrack?.cornerRadius ?? chart.options.cornerRadius ?? 8,
     categoryMode:
       (horizontal
         ? chart.options.scales?.y?.categoryMode
@@ -913,7 +1166,7 @@ function freshEditor(chart) {
     dataTableSort: true,
     dataTablePageSize: 10,
     importEnabled: true,
-    exportToolbar: true,
+    exportToolbar: chart.options.exportToolbar?.enabled ?? true,
     exportCSV: true,
     exportJSON: true,
     exportPNG: true,
@@ -1107,7 +1360,19 @@ function renderControls() {
   const bar = caps.bar
     ? controlSection(
         'Bars',
-        `${toggleControl('Stack datasets', 'stacked', editor.stacked)}${rangeControl('Corner roundness', 'cornerRadius', editor.cornerRadius, 0, 30, 1, 'px')}${
+        `${toggleControl('Stack datasets', 'stacked', editor.stacked)}${rangeControl('Corner roundness', 'cornerRadius', editor.cornerRadius, 0, 30, 1, 'px')}${toggleControl('Show full-value tracks', 'barTrackEnabled', editor.barTrackEnabled)}${
+          editor.barTrackEnabled
+            ? `${colorEditor('Track color', 'barTrackColor', editor.barTrackColor)}<label>Track texture<select data-setting="barTrackPattern">${selectOptions(
+                [
+                  ['none', 'Solid'],
+                  ['dots', 'Dots'],
+                  ['diagonal', 'Diagonal'],
+                  ['crosshatch', 'Crosshatch'],
+                ],
+                editor.barTrackPattern,
+              )}</select></label>${rangeControl('Track roundness', 'barTrackRadius', editor.barTrackRadius, 0, 30, 1, 'px')}`
+            : ''
+        }${
           caps.barSpacing
             ? `${rangeControl('Gap between categories', 'barGapPercent', editor.barGapPercent, 0, 90, 1, '%')}${rangeControl('Gap between series', 'barDatasetGap', editor.barDatasetGap, 0, 24, 1, 'px')}<label>Dense-axis display<select data-setting="categoryMode">${selectOptions(
                 [
@@ -1179,7 +1444,7 @@ function renderControls() {
       )}</select></label>`,
       true,
     )}${controlSection('Text colors', `${colorEditor('Font color', 'text.color', style.color)}${colorEditor('Text background', 'text.backgroundColor', style.backgroundColor)}${colorEditor('Effect color', 'text.effectColor', style.effectColor)}`)}${controlSection('Border and spacing', `${colorEditor('Border color', 'text.borderColor', style.borderColor)}${rangeControl('Border width', 'text.borderWidth', style.borderWidth, 0, 12, 1, 'px')}${rangeControl('Corner roundness', 'text.borderRadius', style.borderRadius, 0, 40, 1, 'px')}<label>Hyperlink<input type="url" data-text-setting="href" value="${escapeHTML(style.href)}" placeholder="https://example.com"></label>${rangeControl('Line height', 'text.lineHeight', style.lineHeight, 0.8, 3, 0.1)}${rangeControl('Letter spacing', 'text.letterSpacing', style.letterSpacing, -2, 12, 0.5, 'px')}<div class="spacing-grid"><span>Text box padding</span>${['top', 'right', 'bottom', 'left'].map((side) => `<label>${side}<input type="number" min="0" max="80" data-text-padding="${side}" value="${style.padding[side]}"></label>`).join('')}</div><button class="apply-all-button" type="button" data-apply-all>Apply this text style to all</button>`)}`,
-    layout: `${controlSection('Titles', `<label>Title<input type="text" data-setting="title" value="${escapeHTML(editor.title)}"></label><label>Subtitle<input type="text" data-setting="subtitle" value="${escapeHTML(editor.subtitle)}"></label>`, true)}${controlSection('Chart spacing', `<div class="spacing-grid"><span>Chart padding</span>${['top', 'right', 'bottom', 'left'].map((side) => `<label>${side}<input type="number" min="0" max="120" data-padding="${side}" value="${editor.padding[side]}"></label>`).join('')}</div>${rangeControl('Title spacing', 'titleOffset', editor.titleOffset, 0, 80)}${rangeControl('Plot spacing', 'plotGap', editor.plotGap, -40, 100)}`, true)}`,
+    layout: `${controlSection('Titles and context', `<label>Kicker<input type="text" data-setting="kicker" value="${escapeHTML(editor.kicker)}" placeholder="Q3 PERFORMANCE REVIEW"></label><label>Title<input type="text" data-setting="title" value="${escapeHTML(editor.title)}"></label><label>Subtitle<input type="text" data-setting="subtitle" value="${escapeHTML(editor.subtitle)}"></label><label>Source<input type="text" data-setting="source" value="${escapeHTML(editor.source)}"></label><label>Footnote<input type="text" data-setting="footnote" value="${escapeHTML(editor.footnote)}"></label><label>Watermark<input type="text" data-setting="watermark" value="${escapeHTML(editor.watermark)}"></label>`, true)}${controlSection('Chart spacing', `<div class="spacing-grid"><span>Chart padding</span>${['top', 'right', 'bottom', 'left'].map((side) => `<label>${side}<input type="number" min="0" max="120" data-padding="${side}" value="${editor.padding[side]}"></label>`).join('')}</div>${rangeControl('Title spacing', 'titleOffset', editor.titleOffset, 0, 80)}${rangeControl('Plot spacing', 'plotGap', editor.plotGap, -40, 100)}`, true)}`,
     chart: `${chartDesign}${axes}${line}${bar}${points}${radial || ''}${controlSection(
       'Motion and annotations',
       `${rangeControl('Animation duration', 'duration', editor.duration, 0, 2000, 20, 'ms')}${rangeControl('Series stagger', 'stagger', editor.stagger, 0, 300, 10, 'ms')}${
@@ -1262,6 +1527,7 @@ function renderControls() {
 }
 
 function deepClone(value) {
+  if (value === undefined) return undefined;
   return JSON.parse(JSON.stringify(value));
 }
 function baseConfig(chart, compact = false) {
@@ -1278,17 +1544,21 @@ function baseConfig(chart, compact = false) {
       responsive: true,
       showDataTable: !compact,
       showLegend: chart.options.showLegend ?? (!compact || chart.datasets.length > 1),
-      showGrid: chart.family !== 'radial',
-      padding: compact ? 12 : 24,
-      title: compact ? undefined : `${chart.name} example`,
-      typography: { fontFamily: "'Space Mono', monospace" },
+      showGrid: chart.options.showGrid ?? chart.family !== 'radial',
+      padding: compact ? 12 : (chart.options.padding ?? 24),
+      title: compact ? undefined : (chart.options.title ?? `${chart.name} example`),
+      typography: {
+        fontFamily: "'Space Mono', monospace",
+        ...(chart.options.typography ? deepClone(chart.options.typography) : {}),
+      },
     },
   };
 }
 
 function renderGallery() {
   const grid = document.querySelector('#chart-grid');
-  grid.innerHTML = charts
+  const galleryCharts = charts.filter((chart) => !chart.showcaseOnly);
+  grid.innerHTML = galleryCharts
     .map(
       (chart, index) => `
     <article class="chart-card" data-family="${chart.family}">
@@ -1302,7 +1572,7 @@ function renderGallery() {
     )
     .join('');
 
-  charts.forEach((chart) => {
+  galleryCharts.forEach((chart) => {
     const host = document.querySelector(`#preview-${chart.id}`);
     const canvas = document.createElement('canvas');
     canvas.style.cssText = 'display:block;width:100%;height:184px';
@@ -1313,7 +1583,11 @@ function renderGallery() {
 
 function renderDetailNavigation() {
   const groups = charts.reduce((result, chart) => {
-    const group = chart.family === 'radial' ? 'Radial charts' : 'Cartesian charts';
+    const group = chart.showcaseOnly
+      ? 'Bar design presets'
+      : chart.family === 'radial'
+        ? 'Radial charts'
+        : 'Cartesian charts';
     (result[group] ??= []).push(chart);
     return result;
   }, {});
@@ -1321,6 +1595,23 @@ function renderDetailNavigation() {
     .map(
       ([label, items]) =>
         `<optgroup label="${label}">${items.map((chart) => `<option value="${chart.id}" ${chart.id === state.selected.id ? 'selected' : ''}>${escapeHTML(chart.name)}</option>`).join('')}</optgroup>`,
+    )
+    .join('');
+}
+
+function renderBarDesignTabs() {
+  const switcher = document.querySelector('#bar-design-switcher');
+  const tabs = document.querySelector('#bar-design-tabs');
+  const visible = chartCapabilities(state.selected).barSpacing;
+  switcher.hidden = !visible;
+  if (!visible) {
+    tabs.innerHTML = '';
+    return;
+  }
+  tabs.innerHTML = barDesignExamples
+    .map(
+      (example) =>
+        `<button type="button" role="tab" data-bar-design="${example.id}" aria-selected="${state.selected.id === example.id}" class="bar-design-tab ${state.selected.id === example.id ? 'is-active' : ''}"><span>${example.designLabel}</span><small>${example.designName}</small></button>`,
     )
     .join('');
 }
@@ -1339,14 +1630,34 @@ function resetControls() {
 
 function resolvedEditorLayout() {
   const editor = state.editor;
+  const textHeight = (value, style) => {
+    const lines = String(value || '').split('\n').length;
+    return (
+      lines * Number(style.fontSize) * Number(style.lineHeight ?? 1.2) +
+      Number(style.padding?.top ?? 0) +
+      Number(style.padding?.bottom ?? 0) +
+      Number(style.borderWidth ?? 0) * 2
+    );
+  };
+  const kickerY = editor.layout.kicker.y ?? editor.padding.top;
+  const titleY =
+    editor.layout.title.y ??
+    (editor.kicker
+      ? Math.max(
+          editor.padding.top + 22,
+          kickerY + textHeight(editor.kicker, editor.textStyles.kicker) + 8,
+        )
+      : editor.padding.top);
+  const subtitleY =
+    editor.layout.subtitle.y ??
+    titleY + textHeight(editor.title, editor.textStyles.title) + Number(editor.titleOffset);
   return {
     padding: deepClone(editor.padding),
-    title: deepClone(editor.layout.title),
+    kicker: deepClone(editor.layout.kicker),
+    title: { ...deepClone(editor.layout.title), y: titleY },
     subtitle: {
       ...deepClone(editor.layout.subtitle),
-      ...(editor.layout.subtitle.y === undefined
-        ? { y: editor.padding.top + editor.textStyles.title.fontSize + editor.titleOffset }
-        : {}),
+      y: subtitleY,
     },
     plot: {
       ...deepClone(editor.layout.plot),
@@ -1384,10 +1695,23 @@ function currentConfig() {
   delete textStyles.tooltip;
   config.options.title = editor.title;
   config.options.subtitle = editor.subtitle;
+  config.options.kicker = editor.kicker || undefined;
+  config.options.source = editor.source || undefined;
+  config.options.footnote = editor.footnote || undefined;
+  config.options.watermark = editor.watermark || undefined;
   config.options.typography = textStyles;
-  config.options.xLabels = { ...textStyles.xAxis, rotation: Number(editor.xAngle) };
-  config.options.yLabels = { ...textStyles.yAxis, rotation: Number(editor.yAngle) };
+  config.options.xLabels = {
+    ...config.options.xLabels,
+    ...textStyles.xAxis,
+    rotation: Number(editor.xAngle),
+  };
+  config.options.yLabels = {
+    ...config.options.yLabels,
+    ...textStyles.yAxis,
+    rotation: Number(editor.yAngle),
+  };
   config.options.dataLabels = {
+    ...config.options.dataLabels,
     ...textStyles.dataLabel,
     show: editor.showLabels,
     position: editor.labelPosition,
@@ -1554,6 +1878,16 @@ function currentConfig() {
   config.options.radialGap = Number(editor.radialGap);
   config.options.radialCornerRadius = Number(editor.radialCornerRadius);
   config.options.cornerRadius = Number(editor.cornerRadius);
+  if (caps.bar) {
+    config.options.barTrack = {
+      enabled: editor.barTrackEnabled,
+      color: editor.barTrackColor,
+      ...(editor.barTrackPattern === 'none' ? {} : { pattern: editor.barTrackPattern }),
+      cornerRadius: Number(editor.barTrackRadius),
+    };
+  } else {
+    delete config.options.barTrack;
+  }
   if (chartCapabilities(state.selected).barSpacing) {
     config.options.barGapRatio = Number(editor.barGapPercent) / 100;
     config.options.barDatasetGap = Number(editor.barDatasetGap);
@@ -1769,6 +2103,7 @@ function openChart(id, updateHash = true) {
   document.querySelector('#detail-category').textContent = `${chart.tag} · ${chart.family}`;
   document.querySelector('#detail-summary').textContent = chart.summary;
   renderDetailNavigation();
+  renderBarDesignTabs();
   renderDocumentation();
   resetControls();
   switchTab('playground');
@@ -1959,6 +2294,8 @@ function applyImportedData() {
 }
 
 document.addEventListener('click', (event) => {
+  const barDesign = event.target.closest('[data-bar-design]');
+  if (barDesign) openChart(barDesign.dataset.barDesign);
   const openButton = event.target.closest('[data-open-chart]');
   if (openButton) openChart(openButton.dataset.openChart);
   const filter = event.target.closest('[data-filter]');

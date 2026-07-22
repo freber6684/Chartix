@@ -195,6 +195,42 @@ describe('built-in chart modules', () => {
     expect(titledPlot.bottom).toBeLessThan(untitledPlot.bottom);
   });
 
+  it('renders reusable full-domain tracks behind vertical and horizontal bars', () => {
+    for (const horizontal of [false, true]) {
+      const renderer = new RecordingRenderer();
+      const value = context(renderer);
+      value.options = {
+        horizontal,
+        showGrid: false,
+        dataLabels: { show: false },
+        scales: { x: { display: false }, y: { display: false, min: 0, max: 100 } },
+        barTrack: { enabled: true, color: '#e2e8f0', cornerRadius: 9 },
+      };
+      BarChart.render(value);
+      expect(renderer.rectangles).toBe(6);
+      expect(renderer.radii.filter((radius) => radius === 9)).toHaveLength(3);
+    }
+  });
+
+  it('renders a styled kicker above the chart title', () => {
+    const renderer = new RecordingRenderer();
+    const value = context(renderer);
+    value.options = {
+      kicker: 'Q3 PERFORMANCE REVIEW',
+      title: 'Department Score',
+      typography: { kicker: { fontWeight: 700, letterSpacing: 2 } },
+    };
+    createPlotArea(renderer, value.data, value.options, value.theme);
+    expect(renderer.labels).toEqual(
+      expect.arrayContaining(['Q3 PERFORMANCE REVIEW', 'Department Score']),
+    );
+    expect(
+      renderer.textStyles.some(
+        (style) => style.font.startsWith('700') && style.letterSpacing === 2,
+      ),
+    ).toBe(true);
+  });
+
   it('shows horizontal and vertical gridlines independently', () => {
     const horizontalRenderer = new RecordingRenderer();
     const horizontal = context(horizontalRenderer);

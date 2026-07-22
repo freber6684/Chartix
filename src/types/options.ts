@@ -385,6 +385,8 @@ export interface TypographyOptions {
   /** Axis tick size in CSS pixels. */
   tickSize?: number;
   all?: TextStyleOptions;
+  /** Small contextual line displayed above the chart title. */
+  kicker?: TextStyleOptions;
   title?: TextStyleOptions;
   subtitle?: TextStyleOptions;
   xAxis?: TextStyleOptions;
@@ -458,9 +460,23 @@ export interface PositionOptions {
 /** Manual layout controls used by visual editors and responsive compositions. */
 export interface LayoutOptions {
   padding?: Partial<SpacingOptions>;
+  /** Optional manual kicker position. */
+  kicker?: PositionOptions;
   title?: PositionOptions;
   subtitle?: PositionOptions;
   plot?: PositionOptions & { widthScale?: number; heightScale?: number };
+}
+
+/** Background track drawn behind rectangular bar marks. */
+export interface BarTrackOptions {
+  /** Draw a full-domain track behind every bar. */
+  enabled?: boolean;
+  /** Track fill color. Alpha colors are supported. */
+  color?: string;
+  /** Optional accessible texture for the remaining track. */
+  pattern?: 'diagonal' | 'dots' | 'crosshatch';
+  /** Track corner radius in CSS pixels. */
+  cornerRadius?: number;
 }
 
 /** Styling and placement for a family of chart labels. */
@@ -607,6 +623,8 @@ export interface ChartOptions {
   barGapRatio?: number;
   /** Space between series inside a grouped bar category, in CSS pixels. */
   barDatasetGap?: number;
+  /** Full-domain background tracks behind bar and column marks. */
+  barTrack?: BarTrackOptions;
   /** Guides drawn through an active Cartesian mark. */
   crosshair?: CrosshairOptions;
   /** Values displayed on or near marks such as bars, points, and slices. */
@@ -683,6 +701,8 @@ export interface ChartOptions {
   explodeOffset?: number;
   /** Optional secondary heading. */
   subtitle?: string;
+  /** Small contextual heading rendered above the chart title. */
+  kicker?: string;
   /** Small footer note rendered below the plot. */
   footnote?: string;
   /** Data-source note rendered below the plot. */

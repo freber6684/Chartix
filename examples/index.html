@@ -15,9 +15,9 @@
       href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="./styles.css?v=quality-19" />
-    <script src="../dist/chartix.min.js?v=quality-19" defer></script>
-    <script src="./app.js?v=quality-19" defer></script>
+    <link rel="stylesheet" href="./styles.css?v=quality-21" />
+    <script src="../dist/chartix.min.js?v=quality-21" defer></script>
+    <script src="./app.js?v=quality-21" defer></script>
   </head>
   <body>
     <header class="site-header">
@@ -190,6 +190,18 @@ Chartix.register(BarChart);
           </aside>
 
           <div class="preview-column">
+            <section class="bar-design-switcher" id="bar-design-switcher" hidden>
+              <div>
+                <span>Ready-made bar designs</span>
+                <small>Select a preset, customize it, then copy its exact code.</small>
+              </div>
+              <div
+                class="bar-design-tabs"
+                id="bar-design-tabs"
+                role="tablist"
+                aria-label="Bar design examples"
+              ></div>
+            </section>
             <div class="preview-card">
               <div class="preview-toolbar">
                 <div><span class="preview-dot"></span><strong>Live preview</strong></div>

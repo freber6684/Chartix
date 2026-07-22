@@ -28,6 +28,7 @@ gaps. Scatter and bubble datasets may additionally use `points: [{x, y, r?}]`. D
 | `backgroundColor`      | theme token                   | Canvas background override.                                           |
 | `barGapRatio`          | `0.32`                        | Empty share of each vertical or horizontal bar category slot.         |
 | `barDatasetGap`        | `3`                           | Pixel gap between series inside a grouped bar category.               |
+| `barTrack`             | disabled                      | Full-domain solid or patterned tracks behind bar/column marks.        |
 | `colors`               | `string[]`                    | Dataset or slice palette override.                                    |
 | `cornerRadius`         | theme token                   | Rounded corners for bar, column, and combo-bar marks.                 |
 | `crosshair`            | disabled                      | Optional x, y, or two-axis guides through the active Cartesian mark.  |
@@ -41,6 +42,7 @@ gaps. Scatter and bubble datasets may additionally use `points: [{x, y, r?}]`. D
 | `horizontal`           | `false`                       | Switch a bar chart to horizontal layout.                              |
 | `innerRadius`          | chart default                 | Doughnut hole ratio from `0` through `0.9`.                           |
 | `interaction`          | enabled                       | Pointer hit-testing, keyboard navigation, and intersection behavior.  |
+| `kicker`               | unset                         | Small contextual line rendered above the chart title.                 |
 | `legend`               | interactive                   | Legend series-toggle behavior.                                        |
 | `padding`              | `24`                          | Internal CSS-pixel spacing.                                           |
 | `performance`          | auto optimized                | Animation threshold and completed-render telemetry.                   |
@@ -67,6 +69,13 @@ gaps. Scatter and bubble datasets may additionally use `points: [{x, y, r?}]`. D
 `LabelOptions` supports `show`, `color`, `backgroundColor`, `fontFamily`, `fontSize`, `fontWeight`,
 `rotation`, `offset`, and `position`. Data-label positions are `auto`, `inside`, `outside`, and
 `center`; axis labels use rotation and offset.
+
+## Bar tracks and scorecards
+
+`barTrack` turns bars and columns into progress-style scorecards while keeping the same data and
+interaction model. Set `enabled`, `color`, optional `pattern` (`dots`, `diagonal`, or `crosshatch`),
+and `cornerRadius`. Tracks span the configured value domain and are intentionally disabled for
+stacked charts. Per-point `dataset.colors` can give every bar an independent color.
 
 ## Axes and scales
 

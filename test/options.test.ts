@@ -41,7 +41,9 @@ describe('normalizeConfig', () => {
           actions: { png: { label: 'Image', padding: { bottom: 7 } } },
         },
         dataTable: { enabled: true, pageSize: 8 },
-        typography: { fontFamily: 'Inter' },
+        typography: { fontFamily: 'Inter', kicker: { color: '#64748b' } },
+        barTrack: { enabled: true, color: '#e2e8f0', pattern: 'dots' as const },
+        layout: { kicker: { x: 24 }, padding: { top: 18 } },
       },
     };
     const normalized = normalizeConfig(config);
@@ -55,6 +57,9 @@ describe('normalizeConfig', () => {
     normalized.options.exportToolbar!.buttonStyle!.padding!.left = 30;
     normalized.options.exportToolbar!.actions!.png!.padding!.bottom = 20;
     normalized.options.dataTable!.pageSize = 20;
+    normalized.options.barTrack!.color = '#000000';
+    normalized.options.layout!.kicker!.x = 80;
+    normalized.options.typography!.kicker!.color = '#ffffff';
     expect(config.options.colors[0]).toBe('#123456');
     expect(config.options.canvas.borderWidth).toBe(2);
     expect(config.options.dataLabels.rotation).toBe(15);
@@ -65,6 +70,9 @@ describe('normalizeConfig', () => {
     expect(config.options.exportToolbar.buttonStyle.padding.left).toBe(9);
     expect(config.options.exportToolbar.actions.png.padding.bottom).toBe(7);
     expect(config.options.dataTable.pageSize).toBe(8);
+    expect(config.options.barTrack.color).toBe('#e2e8f0');
+    expect(config.options.layout.kicker.x).toBe(24);
+    expect(config.options.typography.kicker.color).toBe('#64748b');
   });
 
   it('deep-clones drill-down data and gesture options', () => {

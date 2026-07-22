@@ -32,7 +32,15 @@ export function textStyle(
   options: ChartOptions,
   role: keyof Pick<
     NonNullable<ChartOptions['typography']>,
-    'title' | 'subtitle' | 'xAxis' | 'yAxis' | 'xAxisTitle' | 'yAxisTitle' | 'dataLabel' | 'legend'
+    | 'kicker'
+    | 'title'
+    | 'subtitle'
+    | 'xAxis'
+    | 'yAxis'
+    | 'xAxisTitle'
+    | 'yAxisTitle'
+    | 'dataLabel'
+    | 'legend'
   >,
   fallback: TextStyleOptions,
 ): TextStyleOptions {
@@ -455,6 +463,21 @@ export function drawHeader(
   const topPadding = typeof padding === 'number' ? padding : padding.top;
   const leftPadding = typeof padding === 'number' ? padding : padding.left;
   let y = topPadding;
+  if (options.kicker) {
+    const style = textStyle(options, 'kicker', {
+      color: theme.mutedText,
+      fontFamily: options.typography?.fontFamily ?? theme.fontFamily,
+      fontSize: Math.max(9, theme.fontSize.label - 1),
+      fontWeight: 650,
+      letterSpacing: 1.5,
+    });
+    const kickerY = options.layout?.kicker?.y ?? y;
+    renderer.text(options.kicker, options.layout?.kicker?.x ?? leftPadding, kickerY, {
+      baseline: 'top',
+      ...rendererTextStyle(style),
+    });
+    y = Math.max(y + 22, kickerY + textBoxHeight(style, theme.fontSize.label) + 8);
+  }
   if (options.title) {
     const style = textStyle(options, 'title', {
       color: theme.text,

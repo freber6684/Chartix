@@ -335,6 +335,16 @@
         "cornerRadius": { "type": "number", "minimum": 0 },
         "barGapRatio": { "type": "number", "minimum": 0, "maximum": 0.9 },
         "barDatasetGap": { "type": "number", "minimum": 0 },
+        "barTrack": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "enabled": { "type": "boolean" },
+            "color": { "$ref": "#/$defs/color" },
+            "pattern": { "enum": ["diagonal", "dots", "crosshatch"] },
+            "cornerRadius": { "type": "number", "minimum": 0 }
+          }
+        },
         "crosshair": {
           "type": "object",
           "additionalProperties": false,
@@ -458,6 +468,7 @@
           "additionalProperties": false,
           "properties": {
             "padding": { "$ref": "#/$defs/spacing" },
+            "kicker": { "$ref": "#/$defs/position" },
             "title": { "$ref": "#/$defs/position" },
             "subtitle": { "$ref": "#/$defs/position" },
             "plot": {
@@ -534,6 +545,7 @@
         },
         "explodeOffset": { "type": "number", "minimum": 0 },
         "subtitle": { "type": "string" },
+        "kicker": { "type": "string" },
         "footnote": { "type": "string" },
         "source": { "type": "string" },
         "watermark": { "type": "string" },
@@ -644,6 +656,7 @@
             "labelSize": { "type": "number", "exclusiveMinimum": 0 },
             "tickSize": { "type": "number", "exclusiveMinimum": 0 },
             "all": { "$ref": "#/$defs/textStyle" },
+            "kicker": { "$ref": "#/$defs/textStyle" },
             "title": { "$ref": "#/$defs/textStyle" },
             "subtitle": { "$ref": "#/$defs/textStyle" },
             "xAxis": { "$ref": "#/$defs/textStyle" },

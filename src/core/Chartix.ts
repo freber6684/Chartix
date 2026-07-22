@@ -47,6 +47,7 @@ const validOptionKeys = new Set<keyof ChartOptions>([
   'canvas',
   'barDatasetGap',
   'barGapRatio',
+  'barTrack',
   'colors',
   'cornerRadius',
   'crosshair',
@@ -66,6 +67,7 @@ const validOptionKeys = new Set<keyof ChartOptions>([
   'horizontal',
   'innerRadius',
   'interaction',
+  'kicker',
   'legend',
   'layout',
   'messages',
@@ -330,6 +332,9 @@ export class Chartix {
               ...options.layout,
               ...(options.layout.padding
                 ? { padding: { ...this.config.options.layout?.padding, ...options.layout.padding } }
+                : {}),
+              ...(options.layout.kicker
+                ? { kicker: { ...this.config.options.layout?.kicker, ...options.layout.kicker } }
                 : {}),
               ...(options.layout.title
                 ? { title: { ...this.config.options.layout?.title, ...options.layout.title } }
