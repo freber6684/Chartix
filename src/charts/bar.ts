@@ -155,6 +155,7 @@ function renderHorizontal(context: ChartRenderContext): void {
   const scale = createAxisScale(allValues, plot.left, plot.right, options.scales?.y);
   const baseline = scale.project(Math.max(scale.min, Math.min(0, scale.max)));
   scale.ticks.forEach((tick) => {
+    if (options.scales?.x?.display === false) return;
     const x = scale.project(tick);
     if (options.showGrid !== false)
       renderer.line(
@@ -195,6 +196,7 @@ function renderHorizontal(context: ChartRenderContext): void {
   const positiveOffsets = new Array<number>(data.labels.length).fill(0);
   const negativeOffsets = new Array<number>(data.labels.length).fill(0);
   data.labels.forEach((label, index) => {
+    if (options.scales?.y?.display === false) return;
     const labels = options.yLabels;
     if (labels?.show === false) return;
     const style = {
@@ -223,7 +225,29 @@ function renderHorizontal(context: ChartRenderContext): void {
       },
     );
   });
-  if (options.scales?.y?.title) {
+  if (options.scales?.x?.display !== false && options.scales?.x?.line) {
+    const axis = options.scales?.x;
+    renderer.line(
+      [
+        { x: plot.left, y: plot.bottom },
+        { x: plot.right, y: plot.bottom },
+      ],
+      axis?.line?.color ?? theme.grid,
+      axis?.line?.width ?? 1,
+    );
+  }
+  if (options.scales?.y?.display !== false && options.scales?.y?.line) {
+    const axis = options.scales?.y;
+    renderer.line(
+      [
+        { x: plot.left, y: plot.top },
+        { x: plot.left, y: plot.bottom },
+      ],
+      axis?.line?.color ?? theme.grid,
+      axis?.line?.width ?? 1,
+    );
+  }
+  if (options.scales?.y?.display !== false && options.scales?.y?.title) {
     const style = textStyle(options, 'yAxisTitle', {
       color: theme.mutedText,
       fontFamily: theme.fontFamily,
@@ -242,7 +266,7 @@ function renderHorizontal(context: ChartRenderContext): void {
       },
     );
   }
-  if (options.scales?.x?.title) {
+  if (options.scales?.x?.display !== false && options.scales?.x?.title) {
     const style = textStyle(options, 'xAxisTitle', {
       color: theme.mutedText,
       fontFamily: theme.fontFamily,

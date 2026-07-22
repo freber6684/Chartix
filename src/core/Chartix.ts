@@ -885,12 +885,32 @@ export class Chartix {
     const legend = document.createElement('div');
     legend.className = 'chartix-html-legend';
     legend.setAttribute('role', 'list');
+    const legendOptions = this.config.options.legend;
+    const legendText = this.config.options.typography?.legend;
+    Object.assign(legend.style, {
+      display: 'flex',
+      flexWrap: 'wrap',
+      gap: `${legendOptions.itemGap ?? 18}px`,
+      padding: `${legendOptions.padding ?? 0}px`,
+      background: legendOptions.backgroundColor ?? 'transparent',
+      border: `${legendOptions.borderWidth ?? 0}px solid ${legendOptions.borderColor ?? 'transparent'}`,
+      borderRadius: `${legendOptions.cornerRadius ?? 0}px`,
+    });
     this.config.data.datasets.forEach((dataset, index) => {
       const button = document.createElement('button');
       button.type = 'button';
       button.setAttribute('role', 'listitem');
       button.setAttribute('aria-pressed', String(!this.hiddenDatasets.has(index)));
       button.textContent = dataset.label;
+      Object.assign(button.style, {
+        color: legendText?.color ?? theme.mutedText,
+        background: legendText?.backgroundColor ?? 'transparent',
+        fontFamily: legendText?.fontFamily ?? theme.fontFamily,
+        fontSize: `${legendText?.fontSize ?? theme.fontSize.label}px`,
+        fontWeight: String(legendText?.fontWeight ?? 500),
+        fontStyle: legendText?.fontStyle ?? 'normal',
+        textDecoration: legendText?.underline ? 'underline' : 'none',
+      });
       button.style.setProperty(
         '--chartix-legend-color',
         dataset.color ?? theme.palette[index % theme.palette.length] ?? theme.text,

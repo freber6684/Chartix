@@ -37,6 +37,7 @@ function renderScatter(context: Parameters<ChartModule['render']>[0]): void {
   const yScale = createAxisScale(yValues, plot.bottom, plot.top, options.scales?.y);
 
   yScale.ticks.forEach((tick) => {
+    if (options.scales?.y?.display === false) return;
     const y = yScale.project(tick);
     if (options.showGrid !== false) {
       renderer.line(
@@ -73,6 +74,7 @@ function renderScatter(context: Parameters<ChartModule['render']>[0]): void {
     }
   });
   xScale.ticks.forEach((tick) => {
+    if (options.scales?.x?.display === false) return;
     const x = xScale.project(tick);
     if (options.showGrid !== false) {
       renderer.line(
@@ -108,7 +110,29 @@ function renderScatter(context: Parameters<ChartModule['render']>[0]): void {
       );
     }
   });
-  if (options.scales?.y?.title) {
+  if (options.scales?.y?.display !== false && options.scales?.y?.line) {
+    const axis = options.scales?.y;
+    renderer.line(
+      [
+        { x: plot.left, y: plot.top },
+        { x: plot.left, y: plot.bottom },
+      ],
+      axis?.line?.color ?? theme.grid,
+      axis?.line?.width ?? 1,
+    );
+  }
+  if (options.scales?.x?.display !== false && options.scales?.x?.line) {
+    const axis = options.scales?.x;
+    renderer.line(
+      [
+        { x: plot.left, y: plot.bottom },
+        { x: plot.right, y: plot.bottom },
+      ],
+      axis?.line?.color ?? theme.grid,
+      axis?.line?.width ?? 1,
+    );
+  }
+  if (options.scales?.y?.display !== false && options.scales?.y?.title) {
     const style = textStyle(options, 'yAxisTitle', {
       color: theme.mutedText,
       fontFamily: theme.fontFamily,
@@ -127,7 +151,7 @@ function renderScatter(context: Parameters<ChartModule['render']>[0]): void {
       },
     );
   }
-  if (options.scales?.x?.title) {
+  if (options.scales?.x?.display !== false && options.scales?.x?.title) {
     const style = textStyle(options, 'xAxisTitle', {
       color: theme.mutedText,
       fontFamily: theme.fontFamily,

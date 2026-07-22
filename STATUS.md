@@ -113,6 +113,8 @@ changes so the next session can resume without reconstructing history.
       for typefaces that do not publish every combination.
 - [x] Show and live-edit X/Y axis titles across vertical bars, horizontal bars, and scatter charts,
       with meaningful titles in the primary bar examples.
+- [x] Replace fixed primary/accent controls with data-driven series and slice colors, add visible and
+      editable Cartesian axes, and provide full legend layout, container, marker, and text styling.
 
 ## Remaining for v0.1
 
@@ -181,7 +183,7 @@ formatting, lint, strict types, unit tests, production bundles, and separate lea
 ## Latest validation
 
 - Formatting, ESLint, and strict TypeScript: passed with no warnings or errors.
-- Unit tests: 149 passed across 35 test files, including 45 chart/theme visual baselines.
+- Unit tests: 151 passed across 35 test files, including 45 chart/theme visual baselines.
 - Production build: ESM, CJS, standalone embed ESM, browser IIFE, minified browser IIFE, and TypeScript declarations generated.
 - Lean original-family core: measured on every build against a 35 KB gzip budget.
 - Complete library and public embed: measured against 70 KB and 40 KB gzip budgets respectively.

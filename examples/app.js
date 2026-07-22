@@ -606,6 +606,7 @@ const TEXT_ROLES = [
   ['xAxisTitle', 'X-axis title'],
   ['yAxisTitle', 'Y-axis title'],
   ['dataLabel', 'Data labels'],
+  ['legend', 'Legend'],
   ['tooltip', 'Tooltip'],
 ];
 const PALETTE = [
@@ -637,6 +638,24 @@ const defaultTextStyle = (role) => ({
   lineHeight: 1.3,
   letterSpacing: 0,
 });
+
+function colorTargets(chart) {
+  const caps = chartCapabilities(chart);
+  if (caps.radial && chart.datasets.length === 1)
+    return chart.labels.map((label, index) => ({
+      label,
+      color: chart.datasets[0]?.colors?.[index],
+    }));
+  return chart.datasets.map((dataset) => ({ label: dataset.label, color: dataset.color }));
+}
+
+function initialSeriesColors(chart) {
+  return colorTargets(chart).map(({ color }, index) => color ?? PALETTE[index % PALETTE.length]);
+}
+
+function editorAccent(editor) {
+  return editor.seriesColors[1] ?? editor.seriesColors[0] ?? PALETTE[1];
+}
 const state = {
   selected: charts[0],
   playground: null,
@@ -717,20 +736,31 @@ function chartCapabilities(chart) {
 }
 
 function freshEditor(chart) {
+  const caps = chartCapabilities(chart);
+  const horizontal = chart.options.horizontal || chart.type === 'horizontal-bar';
   return {
     theme: chart.theme,
-    primary: '#625bf6',
-    accent: '#0f9f8f',
+    seriesColors: initialSeriesColors(chart),
     background: themeBackgrounds[chart.theme],
     title: `${chart.name} example`,
     subtitle: 'Interactive Chartix visualization',
-    xTitle: chart.options.scales?.x?.title ?? '',
-    yTitle: chart.options.scales?.y?.title ?? '',
+    xTitle:
+      chart.options.scales?.x?.title ??
+      (caps.axes ? (chart.type === 'scatter' ? 'X value' : horizontal ? 'Value' : 'Category') : ''),
+    yTitle:
+      chart.options.scales?.y?.title ??
+      (caps.axes ? (chart.type === 'scatter' ? 'Y value' : horizontal ? 'Category' : 'Value') : ''),
     textStyles: Object.fromEntries(TEXT_ROLES.map(([role]) => [role, defaultTextStyle(role)])),
     showLabels: Boolean(chart.options.dataLabels?.show),
     labelPosition: chart.options.dataLabels?.position ?? 'outside',
     xAngle: 0,
     yAngle: 0,
+    showXAxis: chart.options.scales?.x?.display !== false,
+    showYAxis: chart.options.scales?.y?.display !== false,
+    xAxisColor: chart.options.scales?.x?.line?.color ?? '#cbd5e1',
+    yAxisColor: chart.options.scales?.y?.line?.color ?? '#cbd5e1',
+    xAxisWidth: chart.options.scales?.x?.line?.width ?? 1,
+    yAxisWidth: chart.options.scales?.y?.line?.width ?? 1,
     padding: { top: 24, right: 24, bottom: 24, left: 24 },
     titleOffset: 12,
     axisOffset: 12,
@@ -752,7 +782,16 @@ function freshEditor(chart) {
     pinTooltip: false,
     crosshair: chart.family === 'cartesian',
     interactionMode: chart.datasets.length > 1 ? 'index' : 'nearest',
-    legendPosition: 'top',
+    showLegend: chart.options.showLegend ?? true,
+    legendPosition: chart.options.legend?.position ?? 'top',
+    legendBackgroundEnabled: Boolean(chart.options.legend?.backgroundColor),
+    legendBackground: chart.options.legend?.backgroundColor ?? '#ffffff',
+    legendBorderColor: chart.options.legend?.borderColor ?? '#d7dce5',
+    legendBorderWidth: chart.options.legend?.borderWidth ?? 0,
+    legendCornerRadius: chart.options.legend?.cornerRadius ?? 8,
+    legendPadding: chart.options.legend?.padding ?? 8,
+    legendItemGap: chart.options.legend?.itemGap ?? 18,
+    legendMarkerSize: chart.options.legend?.markerSize ?? 10,
     zoom: false,
     htmlLegend: false,
     selection: 'off',
@@ -859,7 +898,7 @@ function renderControls() {
             ['center', 'Center'],
           ],
           editor.labelPosition,
-        )}</select></label>${rangeControl('X label angle', 'xAngle', editor.xAngle, -90, 90, 1, '°')}${rangeControl('Y label angle', 'yAngle', editor.yAngle, -90, 90, 1, '°')}<label>X-axis title<input type="text" data-setting="xTitle" value="${escapeHTML(editor.xTitle)}"></label><label>Y-axis title<input type="text" data-setting="yTitle" value="${escapeHTML(editor.yTitle)}"></label><label>Y scale<select data-setting="yScale">${selectOptions(
+        )}</select></label>${toggleControl('Show X axis', 'showXAxis', editor.showXAxis)}<label>X-axis title<input type="text" data-setting="xTitle" value="${escapeHTML(editor.xTitle)}"></label>${rangeControl('X label angle', 'xAngle', editor.xAngle, -90, 90, 1, '°')}${rangeControl('X-axis line width', 'xAxisWidth', editor.xAxisWidth, 0, 6, 0.5, 'px')}${colorEditor('X-axis line', 'xAxisColor', editor.xAxisColor)}${toggleControl('Show Y axis', 'showYAxis', editor.showYAxis)}<label>Y-axis title<input type="text" data-setting="yTitle" value="${escapeHTML(editor.yTitle)}"></label>${rangeControl('Y label angle', 'yAngle', editor.yAngle, -90, 90, 1, '°')}${rangeControl('Y-axis line width', 'yAxisWidth', editor.yAxisWidth, 0, 6, 0.5, 'px')}${colorEditor('Y-axis line', 'yAxisColor', editor.yAxisColor)}<label>Y scale<select data-setting="yScale">${selectOptions(
           [
             ['linear', 'Linear'],
             ['logarithmic', 'Logarithmic'],
@@ -900,7 +939,17 @@ function renderControls() {
       )
     : '';
   const panels = {
-    design: `${controlSection('Theme', `<label>Theme<select data-setting="theme">${selectOptions(themes, editor.theme)}</select></label>`, true)}${controlSection('Chart colors', `${colorEditor('Primary', 'primary', editor.primary)}${colorEditor('Accent', 'accent', editor.accent)}${colorEditor('Canvas background', 'background', editor.background)}`, true)}`,
+    design: `${controlSection(
+      'Chart colors',
+      `${colorTargets(state.selected)
+        .map(({ label }, index) =>
+          colorEditor(label, `seriesColors.${index}`, editor.seriesColors[index]),
+        )
+        .join(
+          '',
+        )}<small class="panel-intro">Colors follow the chart data. Every new series receives its own distinct color automatically.</small>${colorEditor('Canvas background', 'background', editor.background)}`,
+      true,
+    )}${controlSection('Legend', `${toggleControl('Show legend', 'showLegend', editor.showLegend)}<label>Position<select data-setting="legendPosition">${selectOptions(['top', 'bottom', 'left', 'right', 'inside'], editor.legendPosition)}</select></label>${toggleControl('Background panel', 'legendBackgroundEnabled', editor.legendBackgroundEnabled)}${colorEditor('Legend background', 'legendBackground', editor.legendBackground)}${colorEditor('Legend border', 'legendBorderColor', editor.legendBorderColor)}${rangeControl('Border width', 'legendBorderWidth', editor.legendBorderWidth, 0, 6, 1, 'px')}${rangeControl('Corner roundness', 'legendCornerRadius', editor.legendCornerRadius, 0, 24, 1, 'px')}${rangeControl('Inner padding', 'legendPadding', editor.legendPadding, 0, 30, 1, 'px')}${rangeControl('Item spacing', 'legendItemGap', editor.legendItemGap, 0, 48, 1, 'px')}${rangeControl('Marker size', 'legendMarkerSize', editor.legendMarkerSize, 4, 24, 1, 'px')}<small class="panel-intro">Use Text → Legend for font, size, style, text color, and text background.</small>`, true)}`,
     text: `${controlSection('Text target', `<label>Editing<select data-role>${selectOptions(TEXT_ROLES, state.activeRole)}</select></label><div class="text-preview" style="font-family:'${escapeHTML(style.fontFamily)}';font-size:${style.fontSize}px;font-weight:${style.fontWeight};font-style:${style.fontStyle};color:${style.color};background:${style.backgroundColor};text-decoration:${style.underline ? 'underline' : 'none'}">Chartix typography</div>`, true)}${controlSection(
       'Font and style',
       `<label>Font family<select data-text-setting="fontFamily" class="font-select" style="font-family:'${escapeHTML(style.fontFamily)}', sans-serif">${fontOptions(style.fontFamily)}</select><small>${FONT_CATALOG.length} fonts. Every name is previewed in its own typeface when supported by the browser.</small></label>${rangeControl('Font size', 'text.fontSize', style.fontSize, 8, 72, 1, 'px')}<div class="button-group" aria-label="Text style"><button type="button" data-text-toggle="fontWeight" class="${style.fontWeight >= 700 ? 'is-active' : ''}" aria-label="Bold" aria-pressed="${style.fontWeight >= 700}" title="Toggle bold"><strong>B</strong></button><button type="button" data-text-toggle="fontStyle" class="${style.fontStyle === 'italic' ? 'is-active' : ''}" aria-label="Italic" aria-pressed="${style.fontStyle === 'italic'}" title="Toggle italic"><em>I</em></button><button type="button" data-text-toggle="underline" class="${style.underline ? 'is-active' : ''}" aria-label="Underline" aria-pressed="${style.underline}" title="Toggle underline"><u>U</u></button></div><small class="style-status">Active for ${escapeHTML(TEXT_ROLES.find(([role]) => role === state.activeRole)?.[1] ?? state.activeRole)}: ${[style.fontWeight >= 700 ? 'Bold' : '', style.fontStyle === 'italic' ? 'Italic' : '', style.underline ? 'Underline' : ''].filter(Boolean).join(', ') || 'Regular'}</small><label>Text effect<select data-text-setting="effect">${selectOptions(
@@ -944,7 +993,7 @@ function renderControls() {
           ['intersect', 'Intersect'],
         ],
         editor.interactionMode,
-      )}</select></label><label>Legend position<select data-setting="legendPosition">${selectOptions(['top', 'bottom', 'left', 'right', 'inside'], editor.legendPosition)}</select></label>${toggleControl('HTML legend', 'htmlLegend', editor.htmlLegend)}`,
+      )}</select></label>${toggleControl('HTML legend', 'htmlLegend', editor.htmlLegend)}`,
       true,
     )}${controlSection(
       'Navigation and selection',
@@ -1064,7 +1113,10 @@ function currentConfig() {
   const editor = state.editor;
   config.theme = editor.theme;
   config.options.backgroundColor = editor.background;
-  config.options.colors = [editor.primary, editor.accent, '#e78a2f', '#d94f70', '#3b82d0'];
+  const targetCount = colorTargets(state.selected).length;
+  while (editor.seriesColors.length < targetCount)
+    editor.seriesColors.push(PALETTE[editor.seriesColors.length % PALETTE.length]);
+  config.options.colors = editor.seriesColors.slice(0, targetCount);
   const textStyles = deepClone(editor.textStyles);
   const tooltipStyle = textStyles.tooltip;
   delete textStyles.tooltip;
@@ -1096,7 +1148,15 @@ function currentConfig() {
     interactive: true,
     position: editor.legendPosition,
     html: editor.htmlLegend,
+    backgroundColor: editor.legendBackgroundEnabled ? editor.legendBackground : undefined,
+    borderColor: editor.legendBorderColor,
+    borderWidth: Number(editor.legendBorderWidth),
+    cornerRadius: Number(editor.legendCornerRadius),
+    padding: Number(editor.legendPadding),
+    itemGap: Number(editor.legendItemGap),
+    markerSize: Number(editor.legendMarkerSize),
   };
+  config.options.showLegend = editor.showLegend;
   config.options.zoom = {
     enabled: editor.zoom,
     wheel: true,
@@ -1127,13 +1187,21 @@ function currentConfig() {
   };
   config.options.scales = {
     ...config.options.scales,
-    x: { ...config.options.scales?.x, title: editor.xTitle, titleOffset: editor.axisOffset },
+    x: {
+      ...config.options.scales?.x,
+      display: editor.showXAxis,
+      title: editor.xTitle,
+      titleOffset: editor.axisOffset,
+      line: { color: editor.xAxisColor, width: Number(editor.xAxisWidth) },
+    },
     y: {
       ...config.options.scales?.y,
+      display: editor.showYAxis,
       title: editor.yTitle,
       titleOffset: editor.axisOffset,
       type: editor.yScale,
       reverse: editor.reverseAxis,
+      line: { color: editor.yAxisColor, width: Number(editor.yAxisWidth) },
     },
   };
   config.options.padding = undefined;
@@ -1146,8 +1214,12 @@ function currentConfig() {
   else delete config.options.innerRadius;
   config.options.width = state.previewWidth || undefined;
   config.options.height = state.previewHeight;
-  config.data.datasets = config.data.datasets.map((dataset) => ({
+  config.data.datasets = config.data.datasets.map((dataset, index) => ({
     ...dataset,
+    color: editor.seriesColors[index] ?? dataset.color,
+    ...(chartCapabilities(state.selected).radial && config.data.datasets.length === 1
+      ? { colors: editor.seriesColors.slice(0, dataset.values.length) }
+      : {}),
     lineStyle: editor.lineStyle,
     borderWidth: Number(editor.borderWidth),
     pointSizes: Array(dataset.values.length).fill(Number(editor.pointSize)),
@@ -1155,7 +1227,7 @@ function currentConfig() {
   config.options.selection = {
     enabled: editor.selection !== 'off',
     mode: editor.selection === 'lasso' ? 'lasso' : 'brush',
-    color: editor.accent,
+    color: editorAccent(editor),
   };
   if (state.selected.id === 'bar') {
     config.options.drilldown = {
@@ -1168,7 +1240,7 @@ function currentConfig() {
   const annotationType = editor.annotation;
   if (annotationType === 'line')
     config.options.annotations = [
-      { type: 'line', value: 300, label: 'Target', color: editor.accent, width: 1.5 },
+      { type: 'line', value: 300, label: 'Target', color: editorAccent(editor), width: 1.5 },
     ];
   else if (annotationType === 'box')
     config.options.annotations = [
@@ -1176,11 +1248,11 @@ function currentConfig() {
     ];
   else if (annotationType === 'point')
     config.options.annotations = [
-      { type: 'point', x: 2, value: 200, label: 'Review', color: editor.accent },
+      { type: 'point', x: 2, value: 200, label: 'Review', color: editorAccent(editor) },
     ];
   else if (annotationType === 'arrow')
     config.options.annotations = [
-      { type: 'arrow', x: 1, value: 150, x2: 3, y2: 275, color: editor.accent },
+      { type: 'arrow', x: 1, value: 150, x2: 3, y2: 275, color: editorAccent(editor) },
     ];
   else if (annotationType === 'image' && editor.annotationImage)
     config.options.annotations = [
@@ -1302,6 +1374,8 @@ function updateColorEditor(container, color) {
 function setColor(key, color, container) {
   const normalized = updateColorEditor(container, color);
   if (key.startsWith('text.')) state.editor.textStyles[state.activeRole][key.slice(5)] = normalized;
+  else if (key.startsWith('seriesColors.'))
+    state.editor.seriesColors[Number(key.slice('seriesColors.'.length))] = normalized;
   else state.editor[key] = normalized;
   rerenderFromEditor();
 }

@@ -96,6 +96,8 @@ export interface AnimationOptions {
 
 /** Axis options available in the first Chartix alpha. */
 export interface AxisOptions {
+  /** Display this axis, including its line, ticks, labels, and title. */
+  display?: boolean;
   /** Include zero in the numeric domain. */
   beginAtZero?: boolean;
   /** Scale transformation. */
@@ -128,6 +130,8 @@ export interface AxisOptions {
   tickFormatter?: (value: number, index: number) => string;
   /** Grid-line appearance. */
   grid?: { color?: string; width?: number; dash?: number };
+  /** Axis baseline appearance. */
+  line?: { color?: string; width?: number };
   /** Draw a lighter tick between each pair of major ticks. */
   minorTicks?: boolean;
   /** Distance between the axis title and plot in CSS pixels. */
@@ -207,6 +211,20 @@ export interface LegendOptions {
   position?: 'top' | 'bottom' | 'left' | 'right' | 'inside';
   /** Render an accessible DOM legend in addition to the canvas layout. */
   html?: boolean;
+  /** Optional background behind the complete legend. */
+  backgroundColor?: string;
+  /** Optional outline around the complete legend. */
+  borderColor?: string;
+  /** Legend outline width in CSS pixels. */
+  borderWidth?: number;
+  /** Legend container corner radius in CSS pixels. */
+  cornerRadius?: number;
+  /** Inner spacing around legend items in CSS pixels. */
+  padding?: number;
+  /** Horizontal or vertical distance between legend items. */
+  itemGap?: number;
+  /** Size of each legend color marker. */
+  markerSize?: number;
 }
 
 /** A horizontal reference line or highlighted numeric range. */
@@ -362,6 +380,7 @@ export interface TypographyOptions {
   xAxisTitle?: TextStyleOptions;
   yAxisTitle?: TextStyleOptions;
   dataLabel?: TextStyleOptions;
+  legend?: TextStyleOptions;
 }
 
 /** Rich but professional text styling shared by every textual chart role. */

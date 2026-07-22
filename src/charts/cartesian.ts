@@ -32,7 +32,7 @@ export function textStyle(
   options: ChartOptions,
   role: keyof Pick<
     NonNullable<ChartOptions['typography']>,
-    'title' | 'subtitle' | 'xAxis' | 'yAxis' | 'xAxisTitle' | 'yAxisTitle' | 'dataLabel'
+    'title' | 'subtitle' | 'xAxis' | 'yAxis' | 'xAxisTitle' | 'yAxisTitle' | 'dataLabel' | 'legend'
   >,
   fallback: TextStyleOptions,
 ): TextStyleOptions {
@@ -72,6 +72,20 @@ export function dataLabelRendererStyle(
     }),
     ...options.dataLabels,
   });
+}
+
+function hasCustomLegendStyling(options: ChartOptions): boolean {
+  const legend = options.legend;
+  return Boolean(
+    options.typography?.legend ||
+    legend?.backgroundColor ||
+    legend?.borderColor ||
+    legend?.borderWidth ||
+    legend?.cornerRadius ||
+    legend?.padding ||
+    legend?.itemGap !== undefined ||
+    legend?.markerSize !== undefined,
+  );
 }
 
 /** Remove intentional gaps before calculating a numeric domain. */
@@ -256,15 +270,72 @@ export function drawHeader(
     data.datasets.length > 0 &&
     (options.legend?.position ?? 'top') === 'top'
   ) {
+    if (!hasCustomLegendStyling(options)) {
+      data.datasets.forEach((dataset, index) => {
+        const x = leftPadding + index * 132;
+        const color = dataset.color ?? theme.palette[index % theme.palette.length] ?? theme.text;
+        const markerColor = hiddenDatasets.has(index) ? theme.grid : color;
+        renderer.roundedRect(x, y + 2, 10, 10, 4, markerColor);
+        renderer.text(dataset.label, x + 16, y + 7, {
+          baseline: 'middle',
+          color: hiddenDatasets.has(index) ? theme.grid : theme.mutedText,
+          font: font(500, theme.fontSize.label, theme.fontFamily),
+        });
+        interactions?.add({
+          kind: 'legend',
+          datasetIndex: index,
+          label: dataset.label,
+          datasetLabel: dataset.label,
+          value: 0,
+          color,
+          x: x + 50,
+          y: y + 8,
+          bounds: { x: x - 4, y: y - 4, width: 124, height: 22 },
+        });
+      });
+      return y + 28;
+    }
+    const legend = options.legend ?? {};
+    const markerSize = Math.max(4, legend.markerSize ?? 10);
+    const itemGap = Math.max(0, legend.itemGap ?? 18);
+    const legendPadding = Math.max(0, legend.padding ?? 0);
+    const legendStyle = textStyle(options, 'legend', {
+      color: theme.mutedText,
+      fontFamily: theme.fontFamily,
+      fontSize: theme.fontSize.label,
+      fontWeight: 500,
+    });
+    const itemWidths = data.datasets.map(
+      (dataset) =>
+        markerSize +
+        8 +
+        dataset.label.length * (legendStyle.fontSize ?? theme.fontSize.label) * 0.62,
+    );
+    const contentWidth =
+      itemWidths.reduce((sum, width) => sum + width, 0) +
+      Math.max(0, itemWidths.length - 1) * itemGap;
+    const boxWidth = Math.min(renderer.width - leftPadding * 2, contentWidth + legendPadding * 2);
+    const boxHeight =
+      Math.max(markerSize, legendStyle.fontSize ?? theme.fontSize.label) + legendPadding * 2 + 6;
+    drawLegendBackground(renderer, leftPadding, y - 3, boxWidth, boxHeight, legend);
+    let x = leftPadding + legendPadding;
     data.datasets.forEach((dataset, index) => {
-      const x = leftPadding + index * 132;
       const color = dataset.color ?? theme.palette[index % theme.palette.length] ?? theme.text;
       const markerColor = hiddenDatasets.has(index) ? theme.grid : color;
-      renderer.roundedRect(x, y + 2, 10, 10, 4, markerColor);
-      renderer.text(dataset.label, x + 16, y + 7, {
+      renderer.roundedRect(
+        x,
+        y + 2,
+        markerSize,
+        markerSize,
+        Math.min(4, markerSize / 2),
+        markerColor,
+      );
+      renderer.text(dataset.label, x + markerSize + 8, y + 2 + markerSize / 2, {
         baseline: 'middle',
-        color: hiddenDatasets.has(index) ? theme.grid : theme.mutedText,
-        font: font(500, theme.fontSize.label, theme.fontFamily),
+        ...rendererTextStyle({
+          ...legendStyle,
+          color: hiddenDatasets.has(index) ? theme.grid : (legendStyle.color ?? theme.mutedText),
+        }),
       });
       interactions?.add({
         kind: 'legend',
@@ -273,12 +344,13 @@ export function drawHeader(
         datasetLabel: dataset.label,
         value: 0,
         color,
-        x: x + 50,
-        y: y + 8,
-        bounds: { x: x - 4, y: y - 4, width: 124, height: 22 },
+        x: x + (itemWidths[index] ?? 80) / 2,
+        y: y + 2 + markerSize / 2,
+        bounds: { x: x - 4, y: y - 4, width: itemWidths[index] ?? 80, height: boxHeight },
       });
+      x += (itemWidths[index] ?? 80) + itemGap;
     });
-    y += 28;
+    y += boxHeight + 4;
   }
   return y;
 }
@@ -315,10 +387,15 @@ export function createPlotArea(
   const baseRight =
     renderer.width - boxPadding.right - (legendPosition === 'right' ? sideLegendWidth : 0);
   const xRotation = Math.abs(options.xLabels?.rotation ?? 0);
+  const xTitleSpace =
+    options.scales?.x?.display !== false && options.scales?.x?.title
+      ? 30 + (options.scales.x.titleOffset ?? 0)
+      : 0;
   const bottom =
     renderer.height -
     boxPadding.bottom -
     24 -
+    xTitleSpace -
     Math.min(34, xRotation * 0.35) -
     (legendPosition === 'bottom' ? 28 : 0) -
     (options.footnote || options.source ? 22 : 0);
@@ -335,7 +412,16 @@ export function createPlotArea(
     height,
   };
   if (legendPosition && legendPosition !== 'top') {
-    drawPositionedLegend(renderer, data, theme, plot, legendPosition, interactions, hiddenDatasets);
+    drawPositionedLegend(
+      renderer,
+      data,
+      options,
+      theme,
+      plot,
+      legendPosition,
+      interactions,
+      hiddenDatasets,
+    );
   }
   if (options.watermark) {
     renderer.text(options.watermark, plot.left + plot.width / 2, plot.top + plot.height / 2, {
@@ -361,32 +447,96 @@ export function createPlotArea(
 function drawPositionedLegend(
   renderer: Renderer,
   data: ChartData,
+  options: ChartOptions,
   theme: ThemeObject,
   plot: PlotArea,
   position: 'bottom' | 'left' | 'right' | 'inside',
   interactions?: InteractionRegistry,
   hiddenDatasets: ReadonlySet<number> = new Set(),
 ): void {
+  if (!hasCustomLegendStyling(options)) {
+    data.datasets.forEach((dataset, index) => {
+      const x =
+        position === 'left'
+          ? plot.left - 132
+          : position === 'right'
+            ? plot.right + 12
+            : plot.left + 8 + index * 132;
+      const y =
+        position === 'bottom'
+          ? plot.bottom + 40
+          : position === 'inside'
+            ? plot.top + 10
+            : plot.top + index * 24;
+      const color = dataset.color ?? theme.palette[index % theme.palette.length] ?? theme.text;
+      const markerColor = hiddenDatasets.has(index) ? theme.grid : color;
+      renderer.roundedRect(x, y, 10, 10, 4, markerColor);
+      renderer.text(dataset.label, x + 16, y + 5, {
+        baseline: 'middle',
+        color: hiddenDatasets.has(index) ? theme.grid : theme.mutedText,
+        font: font(500, theme.fontSize.label, theme.fontFamily),
+      });
+      interactions?.add({
+        kind: 'legend',
+        datasetIndex: index,
+        label: dataset.label,
+        datasetLabel: dataset.label,
+        value: 0,
+        color,
+        x: x + 50,
+        y: y + 5,
+        bounds: { x: x - 4, y: y - 6, width: 124, height: 22 },
+      });
+    });
+    return;
+  }
+  const legend = options.legend ?? {};
+  const markerSize = Math.max(4, legend.markerSize ?? 10);
+  const itemGap = Math.max(0, legend.itemGap ?? 14);
+  const padding = Math.max(0, legend.padding ?? 0);
+  const legendStyle = textStyle(options, 'legend', {
+    color: theme.mutedText,
+    fontFamily: theme.fontFamily,
+    fontSize: theme.fontSize.label,
+    fontWeight: 500,
+  });
+  const vertical = position === 'left' || position === 'right';
+  const itemWidths = data.datasets.map(
+    (dataset) => markerSize + 8 + dataset.label.length * (legendStyle.fontSize ?? 11) * 0.62,
+  );
+  const contentWidth = vertical
+    ? Math.max(...itemWidths, 0)
+    : itemWidths.reduce((sum, width) => sum + width, 0) +
+      Math.max(0, itemWidths.length - 1) * itemGap;
+  const contentHeight = vertical
+    ? data.datasets.length * Math.max(markerSize + 8, (legendStyle.fontSize ?? 11) + 8) +
+      Math.max(0, data.datasets.length - 1) * itemGap
+    : Math.max(markerSize, legendStyle.fontSize ?? 11) + 6;
+  const boxX =
+    position === 'left' ? plot.left - 132 : position === 'right' ? plot.right + 12 : plot.left + 8;
+  const boxY =
+    position === 'bottom' ? plot.bottom + 30 : position === 'inside' ? plot.top + 8 : plot.top;
+  drawLegendBackground(
+    renderer,
+    boxX - padding,
+    boxY - padding,
+    contentWidth + padding * 2,
+    contentHeight + padding * 2,
+    legend,
+  );
+  let cursor = 0;
   data.datasets.forEach((dataset, index) => {
-    const x =
-      position === 'left'
-        ? plot.left - 132
-        : position === 'right'
-          ? plot.right + 12
-          : plot.left + 8 + index * 132;
-    const y =
-      position === 'bottom'
-        ? plot.bottom + 40
-        : position === 'inside'
-          ? plot.top + 10
-          : plot.top + index * 24;
+    const x = boxX + (vertical ? 0 : cursor);
+    const y = boxY + (vertical ? cursor : 0);
     const color = dataset.color ?? theme.palette[index % theme.palette.length] ?? theme.text;
     const markerColor = hiddenDatasets.has(index) ? theme.grid : color;
-    renderer.roundedRect(x, y, 10, 10, 4, markerColor);
-    renderer.text(dataset.label, x + 16, y + 5, {
+    renderer.roundedRect(x, y, markerSize, markerSize, Math.min(4, markerSize / 2), markerColor);
+    renderer.text(dataset.label, x + markerSize + 8, y + markerSize / 2, {
       baseline: 'middle',
-      color: hiddenDatasets.has(index) ? theme.grid : theme.mutedText,
-      font: font(500, theme.fontSize.label, theme.fontFamily),
+      ...rendererTextStyle({
+        ...legendStyle,
+        color: hiddenDatasets.has(index) ? theme.grid : (legendStyle.color ?? theme.mutedText),
+      }),
     });
     interactions?.add({
       kind: 'legend',
@@ -395,11 +545,38 @@ function drawPositionedLegend(
       datasetLabel: dataset.label,
       value: 0,
       color,
-      x: x + 50,
-      y: y + 5,
-      bounds: { x: x - 4, y: y - 6, width: 124, height: 22 },
+      x: x + (itemWidths[index] ?? 80) / 2,
+      y: y + markerSize / 2,
+      bounds: { x: x - 4, y: y - 6, width: itemWidths[index] ?? 80, height: markerSize + 12 },
     });
+    cursor +=
+      (vertical
+        ? Math.max(markerSize + 8, (legendStyle.fontSize ?? 11) + 8)
+        : (itemWidths[index] ?? 80)) + itemGap;
   });
+}
+
+function drawLegendBackground(
+  renderer: Renderer,
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+  legend: NonNullable<ChartOptions['legend']>,
+): void {
+  const borderWidth = Math.max(0, legend.borderWidth ?? 0);
+  const radius = Math.max(0, legend.cornerRadius ?? 0);
+  if (legend.borderColor && borderWidth > 0)
+    renderer.roundedRect(x, y, width, height, radius, legend.borderColor);
+  if (legend.backgroundColor)
+    renderer.roundedRect(
+      x + borderWidth,
+      y + borderWidth,
+      Math.max(1, width - borderWidth * 2),
+      Math.max(1, height - borderWidth * 2),
+      Math.max(0, radius - borderWidth),
+      legend.backgroundColor,
+    );
 }
 
 export function drawVerticalFrame(
@@ -411,8 +588,10 @@ export function drawVerticalFrame(
   theme: ThemeObject,
 ): LinearScale {
   const axis = options.scales?.y ?? {};
+  const xAxis = options.scales?.x ?? {};
   const scale = createAxisScale(values, plot.bottom, plot.top, axis);
   scale.ticks.forEach((tick, tickIndex) => {
+    if (axis.display === false) return;
     const y = scale.project(tick);
     if (options.showGrid !== false) drawHorizontalGrid(renderer, plot, y, axis, theme.grid);
     const labels = options.yLabels;
@@ -448,7 +627,7 @@ export function drawVerticalFrame(
       },
     );
   });
-  if (axis.minorTicks) {
+  if (axis.display !== false && axis.minorTicks) {
     scale.ticks.slice(1).forEach((tick, index) => {
       const previous = scale.ticks[index];
       if (previous === undefined) return;
@@ -461,7 +640,19 @@ export function drawVerticalFrame(
       );
     });
   }
-  if (axis.title) {
+  if (axis.display !== false && axis.line) {
+    const rightAxis = axis.position === 'right';
+    const axisX = rightAxis ? plot.right : plot.left;
+    renderer.line(
+      [
+        { x: axisX, y: plot.top },
+        { x: axisX, y: plot.bottom },
+      ],
+      axis.line?.color ?? theme.grid,
+      axis.line?.width ?? 1,
+    );
+  }
+  if (axis.display !== false && axis.title) {
     const rightAxis = axis.position === 'right';
     const style = textStyle(options, 'yAxisTitle', {
       color: theme.mutedText,
@@ -606,6 +797,7 @@ export function drawVerticalFrame(
       ? Math.max(1, Math.ceil(labels.length / Math.max(1, Math.floor(plot.width / 72))))
       : Math.max(1, options.scales?.x?.tickSkip ?? 1);
   labels.forEach((label, index) => {
+    if (xAxis.display === false) return;
     if (index % skip !== 0) return;
     const labelOptions = options.xLabels;
     if (labelOptions?.show === false) return;
@@ -635,7 +827,19 @@ export function drawVerticalFrame(
       },
     );
   });
-  if (options.scales?.x?.title) {
+  if (xAxis.display !== false && xAxis.line) {
+    const topAxis = xAxis.position === 'top';
+    const axisY = topAxis ? plot.top : plot.bottom;
+    renderer.line(
+      [
+        { x: plot.left, y: axisY },
+        { x: plot.right, y: axisY },
+      ],
+      xAxis.line?.color ?? theme.grid,
+      xAxis.line?.width ?? 1,
+    );
+  }
+  if (xAxis.display !== false && options.scales?.x?.title) {
     const style = textStyle(options, 'xAxisTitle', {
       color: theme.mutedText,
       fontFamily: theme.fontFamily,
