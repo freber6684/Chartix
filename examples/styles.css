@@ -864,6 +864,18 @@ a {
   border-color: var(--accent);
   color: var(--accent);
 }
+.button-group button.is-active {
+  background: rgb(182 255 40 / 10%);
+  box-shadow: inset 0 0 0 1px rgb(182 255 40 / 18%);
+}
+.button-group button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.style-status {
+  margin-top: -6px;
+  color: #b8bac3;
+}
 .text-preview {
   min-height: 70px;
   padding: 16px;

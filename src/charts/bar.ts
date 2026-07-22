@@ -3,9 +3,10 @@ import {
   dataLabelRendererStyle,
   drawVerticalFrame,
   fitAxisLabel,
-  font,
   formatTick,
   numericValues,
+  rendererTextStyle,
+  textStyle,
 } from './cartesian.js';
 import type { ChartModule, ChartRenderContext } from './types.js';
 
@@ -166,6 +167,15 @@ function renderHorizontal(context: ChartRenderContext): void {
       );
     const labels = options.xLabels;
     if (labels?.show === false) return;
+    const style = {
+      ...textStyle(options, 'xAxis', {
+        color: theme.mutedText,
+        fontFamily: theme.fontFamily,
+        fontSize: theme.fontSize.tick,
+        fontWeight: 450,
+      }),
+      ...labels,
+    };
     renderer.text(
       formatTick(tick, options.scales?.y),
       x,
@@ -173,14 +183,8 @@ function renderHorizontal(context: ChartRenderContext): void {
       {
         align: 'center',
         baseline: 'middle',
-        color: labels?.color ?? theme.mutedText,
-        backgroundColor: labels?.backgroundColor,
         rotation: labels?.rotation,
-        font: font(
-          labels?.fontWeight ?? 450,
-          labels?.fontSize ?? theme.fontSize.tick,
-          labels?.fontFamily ?? theme.fontFamily,
-        ),
+        ...rendererTextStyle(style),
       },
     );
   });
@@ -193,6 +197,15 @@ function renderHorizontal(context: ChartRenderContext): void {
   data.labels.forEach((label, index) => {
     const labels = options.yLabels;
     if (labels?.show === false) return;
+    const style = {
+      ...textStyle(options, 'yAxis', {
+        color: theme.mutedText,
+        fontFamily: theme.fontFamily,
+        fontSize: theme.fontSize.tick,
+        fontWeight: 450,
+      }),
+      ...labels,
+    };
     renderer.text(
       fitAxisLabel(
         label,
@@ -205,14 +218,8 @@ function renderHorizontal(context: ChartRenderContext): void {
       {
         align: 'right',
         baseline: 'middle',
-        color: labels?.color ?? theme.mutedText,
-        backgroundColor: labels?.backgroundColor,
         rotation: labels?.rotation,
-        font: font(
-          labels?.fontWeight ?? 450,
-          labels?.fontSize ?? theme.fontSize.tick,
-          labels?.fontFamily ?? theme.fontFamily,
-        ),
+        ...rendererTextStyle(style),
       },
     );
   });

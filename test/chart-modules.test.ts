@@ -14,6 +14,7 @@ class RecordingRenderer implements Renderer {
   public segments = 0;
   public circles = 0;
   public labels: string[] = [];
+  public textStyles: Array<Parameters<Renderer['text']>[3]> = [];
   public rectangles = 0;
   public radii: number[] = [];
   public clear(): void {}
@@ -38,8 +39,14 @@ class RecordingRenderer implements Renderer {
     this.rectangles += 1;
     this.radii.push(radius);
   }
-  public text(value: string): void {
+  public text(
+    value: string,
+    _x: number,
+    _y: number,
+    options: Parameters<Renderer['text']>[3],
+  ): void {
     this.labels.push(value);
+    this.textStyles.push(options);
   }
   public resize(): void {}
 }
@@ -82,6 +89,37 @@ describe('built-in chart modules', () => {
     ScatterChart.render(context(renderer));
     expect(renderer.circles).toBe(3);
     expect(renderer.labels).toContain('12');
+  });
+
+  it('applies bold, italic, and underline to scatter axis labels', () => {
+    const renderer = new RecordingRenderer();
+    const value = context(renderer);
+    value.options = {
+      xLabels: { fontWeight: 700, fontStyle: 'italic', underline: true },
+      yLabels: { fontWeight: 700, fontStyle: 'italic', underline: true },
+    };
+    ScatterChart.render(value);
+    const styledAxes = renderer.textStyles.filter(
+      (style) => style.font.includes('italic 700') && style.underline,
+    );
+    expect(styledAxes.length).toBeGreaterThan(1);
+  });
+
+  it('applies rich text styles to horizontal bar axes', () => {
+    const renderer = new RecordingRenderer();
+    const value = context(renderer);
+    value.options = {
+      horizontal: true,
+      xLabels: { fontStyle: 'italic', underline: true },
+      yLabels: { fontWeight: 700, underline: true },
+    };
+    BarChart.render(value);
+    expect(
+      renderer.textStyles.some((style) => style.font.startsWith('italic') && style.underline),
+    ).toBe(true);
+    expect(
+      renderer.textStyles.some((style) => style.font.startsWith('700') && style.underline),
+    ).toBe(true);
   });
 
   it('renders null values as gaps and object-form bubble points', () => {

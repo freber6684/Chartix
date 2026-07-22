@@ -1,9 +1,10 @@
 import {
   createAxisScale,
   dataLabelRendererStyle,
-  font,
   formatTick,
   numericValues,
+  rendererTextStyle,
+  textStyle,
 } from './cartesian.js';
 import type { ChartModule } from './types.js';
 
@@ -49,6 +50,15 @@ function renderScatter(context: Parameters<ChartModule['render']>[0]): void {
     }
     const labels = options.yLabels;
     if (labels?.show !== false) {
+      const style = {
+        ...textStyle(options, 'yAxis', {
+          color: theme.mutedText,
+          fontFamily: theme.fontFamily,
+          fontSize: theme.fontSize.tick,
+          fontWeight: 450,
+        }),
+        ...labels,
+      };
       renderer.text(
         formatTick(tick, options.scales?.y),
         plot.left - 10 - (labels?.offset ?? 0),
@@ -56,14 +66,8 @@ function renderScatter(context: Parameters<ChartModule['render']>[0]): void {
         {
           align: 'right',
           baseline: 'middle',
-          color: labels?.color ?? theme.mutedText,
-          backgroundColor: labels?.backgroundColor,
           rotation: labels?.rotation,
-          font: font(
-            labels?.fontWeight ?? 450,
-            labels?.fontSize ?? theme.fontSize.tick,
-            labels?.fontFamily ?? theme.fontFamily,
-          ),
+          ...rendererTextStyle(style),
         },
       );
     }
@@ -82,6 +86,15 @@ function renderScatter(context: Parameters<ChartModule['render']>[0]): void {
     }
     const labels = options.xLabels;
     if (labels?.show !== false) {
+      const style = {
+        ...textStyle(options, 'xAxis', {
+          color: theme.mutedText,
+          fontFamily: theme.fontFamily,
+          fontSize: theme.fontSize.tick,
+          fontWeight: 450,
+        }),
+        ...labels,
+      };
       renderer.text(
         formatTick(tick, options.scales?.x),
         x,
@@ -89,14 +102,8 @@ function renderScatter(context: Parameters<ChartModule['render']>[0]): void {
         {
           align: 'center',
           baseline: 'middle',
-          color: labels?.color ?? theme.mutedText,
-          backgroundColor: labels?.backgroundColor,
           rotation: labels?.rotation,
-          font: font(
-            labels?.fontWeight ?? 450,
-            labels?.fontSize ?? theme.fontSize.tick,
-            labels?.fontFamily ?? theme.fontFamily,
-          ),
+          ...rendererTextStyle(style),
         },
       );
     }
