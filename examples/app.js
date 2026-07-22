@@ -623,21 +623,51 @@ const PALETTE = [
   '#3b82f6',
   '#a855f7',
 ];
-const defaultTextStyle = (role) => ({
-  fontFamily: 'Space Mono',
-  fontSize: role === 'title' ? 18 : role === 'subtitle' ? 12 : 11,
-  fontWeight: role === 'title' ? 700 : 400,
-  fontStyle: 'normal',
-  color: '#172033',
-  backgroundColor: '#ffffff00',
-  underline: false,
-  href: '',
-  effect: 'none',
-  effectColor: '#625bf6',
-  padding: { top: 0, right: 0, bottom: 0, left: 0 },
-  lineHeight: 1.3,
-  letterSpacing: 0,
-});
+const themeText = {
+  dark: { strong: '#f8fafc', muted: '#a7b2c3', subtle: '#cbd5e1' },
+  light: { strong: '#172033', muted: '#64748b', subtle: '#334155' },
+};
+
+function defaultTextStyle(role, theme) {
+  const color = theme === 'dark' ? themeText.dark : themeText.light;
+  const presets = {
+    title: { fontSize: 20, fontWeight: 700, color: color.strong, lineHeight: 1.2 },
+    subtitle: { fontSize: 12, fontWeight: 400, color: color.muted, lineHeight: 1.45 },
+    xAxis: { fontSize: 11, fontWeight: 400, color: color.muted, lineHeight: 1.3 },
+    yAxis: { fontSize: 11, fontWeight: 400, color: color.muted, lineHeight: 1.3 },
+    xAxisTitle: { fontSize: 11, fontWeight: 600, color: color.subtle, lineHeight: 1.3 },
+    yAxisTitle: { fontSize: 11, fontWeight: 600, color: color.subtle, lineHeight: 1.3 },
+    dataLabel: {
+      fontSize: 11,
+      fontWeight: 600,
+      color: color.strong,
+      lineHeight: 1.25,
+      padding: { top: 3, right: 5, bottom: 3, left: 5 },
+    },
+    legend: { fontSize: 11, fontWeight: 500, color: color.muted, lineHeight: 1.3 },
+    tooltip: {
+      fontSize: 12,
+      fontWeight: 600,
+      color: '#f8fafc',
+      backgroundColor: '#0f172a',
+      lineHeight: 1.45,
+      padding: { top: 10, right: 12, bottom: 10, left: 12 },
+    },
+  };
+  const preset = presets[role] ?? presets.legend;
+  return {
+    fontFamily: 'Space Mono',
+    fontStyle: 'normal',
+    backgroundColor: '#ffffff00',
+    underline: false,
+    href: '',
+    effect: 'none',
+    effectColor: '#625bf6',
+    padding: { top: 0, right: 0, bottom: 0, left: 0 },
+    letterSpacing: 0,
+    ...preset,
+  };
+}
 
 function colorTargets(chart) {
   const caps = chartCapabilities(chart);
@@ -665,7 +695,6 @@ const state = {
   activeRole: 'title',
   controlTab: 'design',
   editor: null,
-  activePoint: null,
 };
 
 function chartCapabilities(chart) {
@@ -751,7 +780,9 @@ function freshEditor(chart) {
       chart.options.scales?.y?.title ??
       (caps.axes ? (chart.type === 'scatter' ? 'Y value' : horizontal ? 'Category' : 'Value') : ''),
     y1Title: chart.options.scales?.y1?.title ?? 'Secondary value',
-    textStyles: Object.fromEntries(TEXT_ROLES.map(([role]) => [role, defaultTextStyle(role)])),
+    textStyles: Object.fromEntries(
+      TEXT_ROLES.map(([role]) => [role, defaultTextStyle(role, chart.theme)]),
+    ),
     showLabels: Boolean(chart.options.dataLabels?.show),
     labelPosition: chart.options.dataLabels?.position ?? 'outside',
     xAngle: 0,
@@ -807,7 +838,6 @@ function freshEditor(chart) {
     annotation: typeSupportsAnnotations(chart) ? 'none' : 'none',
     annotationImage: '',
     adaptive: true,
-    resizable: false,
     rtl: false,
     highContrast: false,
     dyslexia: false,
@@ -993,7 +1023,7 @@ function renderControls() {
       )}</select></label>`,
       true,
     )}${controlSection('Text colors', `${colorEditor('Font color', 'text.color', style.color)}${colorEditor('Text background', 'text.backgroundColor', style.backgroundColor)}${colorEditor('Effect color', 'text.effectColor', style.effectColor)}`)}${controlSection('Spacing and link', `<label>Hyperlink<input type="url" data-text-setting="href" value="${escapeHTML(style.href)}" placeholder="https://example.com"></label>${rangeControl('Line height', 'text.lineHeight', style.lineHeight, 0.8, 3, 0.1)}${rangeControl('Letter spacing', 'text.letterSpacing', style.letterSpacing, -2, 12, 0.5, 'px')}<div class="spacing-grid"><span>Text padding</span>${['top', 'right', 'bottom', 'left'].map((side) => `<label>${side}<input type="number" min="0" max="80" data-text-padding="${side}" value="${style.padding[side]}"></label>`).join('')}</div><button class="apply-all-button" type="button" data-apply-all>Apply this text style to all</button>`)}`,
-    layout: `${controlSection('Titles', `<label>Title<input type="text" data-setting="title" value="${escapeHTML(editor.title)}"><small>Double-click the preview title to edit it in place.</small></label><label>Subtitle<input type="text" data-setting="subtitle" value="${escapeHTML(editor.subtitle)}"></label>`, true)}${controlSection('Chart spacing', `<div class="spacing-grid"><span>Chart padding</span>${['top', 'right', 'bottom', 'left'].map((side) => `<label>${side}<input type="number" min="0" max="120" data-padding="${side}" value="${editor.padding[side]}"></label>`).join('')}</div>${rangeControl('Title spacing', 'titleOffset', editor.titleOffset, 0, 80)}${rangeControl('Plot spacing', 'plotGap', editor.plotGap, -40, 100)}`, true)}${controlSection('Direct manipulation', `<div class="spacing-grid"><span>Title position (synced with dragging)</span><label>X<input type="number" min="0" max="1600" data-layout-position="title.x" value="${Math.round(editor.layout.title.x ?? editor.padding.left)}"></label><label>Y<input type="number" min="0" max="1200" data-layout-position="title.y" value="${Math.round(editor.layout.title.y ?? editor.padding.top)}"></label></div><div class="spacing-grid"><span>Subtitle position</span><label>X<input type="number" min="0" max="1600" data-layout-position="subtitle.x" value="${Math.round(editor.layout.subtitle.x ?? editor.padding.left)}"></label><label>Y<input type="number" min="0" max="1200" data-layout-position="subtitle.y" value="${Math.round(editor.layout.subtitle.y ?? editor.padding.top + editor.textStyles.title.fontSize + editor.titleOffset)}"></label></div><button class="copy-button" type="button" data-reset-layout>Reset dragged positions</button><p class="panel-intro">Position fields and dragging update the same layout values. Text padding remains the inner space around the selected text.</p>`)}`,
+    layout: `${controlSection('Titles', `<label>Title<input type="text" data-setting="title" value="${escapeHTML(editor.title)}"></label><label>Subtitle<input type="text" data-setting="subtitle" value="${escapeHTML(editor.subtitle)}"></label>`, true)}${controlSection('Chart spacing', `<div class="spacing-grid"><span>Chart padding</span>${['top', 'right', 'bottom', 'left'].map((side) => `<label>${side}<input type="number" min="0" max="120" data-padding="${side}" value="${editor.padding[side]}"></label>`).join('')}</div>${rangeControl('Title spacing', 'titleOffset', editor.titleOffset, 0, 80)}${rangeControl('Plot spacing', 'plotGap', editor.plotGap, -40, 100)}`, true)}`,
     chart: `${axes}${line}${bar}${points}${radial || ''}${controlSection(
       'Motion and annotations',
       `${rangeControl('Animation duration', 'duration', editor.duration, 0, 2000, 20, 'ms')}${rangeControl('Series stagger', 'stagger', editor.stagger, 0, 300, 10, 'ms')}${
@@ -1033,7 +1063,7 @@ function renderControls() {
           ['lasso', 'Lasso selection'],
         ],
         editor.selection,
-      )}</select></label>${toggleControl('Adaptive layout', 'adaptive', editor.adaptive)}${toggleControl('Resizable chart', 'resizable', editor.resizable)}`,
+      )}</select></label>${toggleControl('Adaptive layout', 'adaptive', editor.adaptive)}`,
     )}${controlSection('Accessibility', `${toggleControl('Accessible patterns', 'patterns', editor.patterns)}${toggleControl('Screen-reader table', 'dataTable', editor.dataTable)}${toggleControl('High contrast', 'highContrast', editor.highContrast)}${toggleControl('Dyslexia-friendly text', 'dyslexia', editor.dyslexia)}${toggleControl('Right-to-left layout', 'rtl', editor.rtl)}`)}`,
   };
   const tabs = [
@@ -1163,6 +1193,8 @@ function currentConfig() {
     enabled: editor.tooltips,
     pinOnClick: editor.pinTooltip,
     textStyle: tooltipStyle,
+    backgroundColor: tooltipStyle.backgroundColor,
+    color: tooltipStyle.color,
     rowGap: 5,
   };
   config.options.crosshair = {
@@ -1202,7 +1234,7 @@ function currentConfig() {
     easing: 'easeOutCubic',
   };
   config.options.responsiveMode = editor.adaptive ? 'adaptive' : 'fixed';
-  config.options.resizable = editor.resizable;
+  config.options.resizable = false;
   config.options.direction = editor.rtl ? 'rtl' : 'ltr';
   config.options.showDataTable = editor.dataTable;
   config.options.editable = true;
@@ -1319,7 +1351,6 @@ function renderPlayground() {
   host.append(canvas);
   const config = currentConfig();
   state.playground = new window.Chartix(canvas, config);
-  installDirectEditor(host, canvas);
   updateGeneratedCode(config);
 }
 
@@ -1421,221 +1452,6 @@ function setColor(key, color, container) {
   rerenderFromEditor();
 }
 
-function installDirectEditor(host, canvas) {
-  const editor = state.editor;
-  const title = document.createElement('button');
-  title.className = 'direct-handle direct-title';
-  title.type = 'button';
-  title.dataset.dragRole = 'title';
-  title.setAttribute('aria-label', 'Move chart title');
-  title.innerHTML = '<span aria-hidden="true">⠿</span>';
-  const subtitle = document.createElement('button');
-  subtitle.className = 'direct-handle direct-subtitle';
-  subtitle.type = 'button';
-  subtitle.dataset.dragRole = 'subtitle';
-  subtitle.setAttribute('aria-label', 'Move chart subtitle');
-  subtitle.innerHTML = '<span aria-hidden="true">⠿</span>';
-  const plot = document.createElement('div');
-  plot.className = 'plot-handle';
-  plot.dataset.dragRole = 'plot';
-  plot.innerHTML =
-    '<button type="button" class="plot-grip" aria-label="Move chart plot"><span aria-hidden="true">⠿</span></button><button type="button" class="plot-resize" aria-label="Resize chart plot"></button>';
-  host.append(title, subtitle, plot);
-  const resolvedLayout = resolvedEditorLayout();
-  const positions = {
-    title: resolvedLayout.title,
-    subtitle: resolvedLayout.subtitle,
-    plot: editor.layout.plot,
-  };
-  title.style.left = `${positions.title.x ?? editor.padding.left}px`;
-  title.style.top = `${positions.title.y ?? editor.padding.top + 4}px`;
-  subtitle.style.left = `${positions.subtitle.x ?? editor.padding.left}px`;
-  subtitle.style.top = `${positions.subtitle.y ?? editor.padding.top + 34}px`;
-  plot.style.left = `${editor.padding.left + 54 + (positions.plot.x ?? 0)}px`;
-  plot.style.top = `${editor.padding.top + 95 + editor.plotGap + (positions.plot.y ?? 0)}px`;
-  plot.style.width = `${Math.max(120, (host.clientWidth - editor.padding.left - editor.padding.right - 70) * (positions.plot.widthScale ?? 1))}px`;
-  plot.style.height = `${Math.max(100, 300 * (positions.plot.heightScale ?? 1))}px`;
-  canvas.addEventListener('chartix:active', (event) => {
-    state.activePoint = event.detail?.region ?? null;
-  });
-  canvas.addEventListener('chartix:inactive', () => {
-    state.activePoint = null;
-  });
-  canvas.addEventListener('dblclick', (event) => {
-    if (!state.activePoint || state.activePoint.valueIndex === undefined) return;
-    const current =
-      state.selected.datasets[state.activePoint.datasetIndex]?.values[state.activePoint.valueIndex];
-    showInlineEditor(
-      host,
-      event.offsetX,
-      event.offsetY,
-      current ?? '',
-      (value) => {
-        const parsed = Number(value);
-        if (!Number.isFinite(parsed)) return;
-        state.selected.datasets[state.activePoint.datasetIndex].values[
-          state.activePoint.valueIndex
-        ] = parsed;
-        rerenderFromEditor();
-      },
-      'number',
-    );
-  });
-  host.querySelectorAll('[data-drag-role]').forEach((handle) => {
-    handle.addEventListener('pointerdown', beginDrag);
-    if (handle.matches('.direct-handle'))
-      handle.addEventListener('dblclick', (event) => {
-        event.stopPropagation();
-        const role = handle.dataset.dragRole;
-        showInlineEditor(
-          host,
-          parseFloat(handle.style.left),
-          parseFloat(handle.style.top),
-          editor[role],
-          (value) => {
-            editor[role] = value;
-            renderControls();
-            rerenderFromEditor();
-          },
-        );
-      });
-  });
-  plot.querySelector('.plot-resize').addEventListener('pointerdown', beginResize);
-}
-
-let layoutPreviewFrame = 0;
-
-function previewEditorLayout() {
-  if (layoutPreviewFrame) return;
-  layoutPreviewFrame = window.requestAnimationFrame(() => {
-    layoutPreviewFrame = 0;
-    state.playground?.updateOptions({
-      animation: false,
-      layout: resolvedEditorLayout(),
-    });
-  });
-}
-
-function commitEditorLayout() {
-  if (layoutPreviewFrame) {
-    window.cancelAnimationFrame(layoutPreviewFrame);
-    layoutPreviewFrame = 0;
-  }
-  state.playground?.updateOptions({
-    animation: false,
-    layout: resolvedEditorLayout(),
-  });
-  updateGeneratedCode(currentConfig());
-}
-
-function beginDrag(event) {
-  if (event.target.closest('.plot-resize')) return;
-  event.preventDefault();
-  const handle = event.currentTarget;
-  const role = handle.dataset.dragRole;
-  const host = handle.closest('.playground-canvas');
-  state.playground?.unpinTooltip();
-  state.activePoint = null;
-  const start = {
-    x: event.clientX,
-    y: event.clientY,
-    left: parseFloat(handle.style.left),
-    top: parseFloat(handle.style.top),
-  };
-  handle.setPointerCapture(event.pointerId);
-  const move = (pointer) => {
-    const x = Math.max(0, Math.min(host.clientWidth - 40, start.left + pointer.clientX - start.x));
-    const y = Math.max(0, Math.min(host.clientHeight - 30, start.top + pointer.clientY - start.y));
-    handle.style.left = `${x}px`;
-    handle.style.top = `${y}px`;
-    state.editor.layout[role] = {
-      ...state.editor.layout[role],
-      x: role === 'plot' ? x - state.editor.padding.left - 54 : x,
-      y: role === 'plot' ? y - state.editor.padding.top - 95 - state.editor.plotGap : y,
-    };
-    previewEditorLayout();
-  };
-  const end = () => {
-    handle.removeEventListener('pointermove', move);
-    handle.removeEventListener('pointerup', end);
-    handle.removeEventListener('pointercancel', end);
-    handle.classList.remove('is-dragging');
-    commitEditorLayout();
-    if (role === 'title' || role === 'subtitle') renderControls();
-  };
-  handle.classList.add('is-dragging');
-  handle.addEventListener('pointermove', move);
-  handle.addEventListener('pointerup', end);
-  handle.addEventListener('pointercancel', end);
-}
-
-function beginResize(event) {
-  event.preventDefault();
-  event.stopPropagation();
-  const handle = event.currentTarget;
-  const plot = handle.parentElement;
-  const host = plot.closest('.playground-canvas');
-  state.playground?.unpinTooltip();
-  state.activePoint = null;
-  const start = {
-    x: event.clientX,
-    y: event.clientY,
-    width: plot.offsetWidth,
-    height: plot.offsetHeight,
-  };
-  handle.setPointerCapture(event.pointerId);
-  const move = (pointer) => {
-    const width = Math.max(
-      120,
-      Math.min(host.clientWidth - plot.offsetLeft, start.width + pointer.clientX - start.x),
-    );
-    const height = Math.max(
-      100,
-      Math.min(host.clientHeight - plot.offsetTop, start.height + pointer.clientY - start.y),
-    );
-    plot.style.width = `${width}px`;
-    plot.style.height = `${height}px`;
-    state.editor.layout.plot.widthScale =
-      width /
-      Math.max(120, host.clientWidth - state.editor.padding.left - state.editor.padding.right - 70);
-    state.editor.layout.plot.heightScale = height / 300;
-    previewEditorLayout();
-  };
-  const end = () => {
-    handle.removeEventListener('pointermove', move);
-    handle.removeEventListener('pointerup', end);
-    handle.removeEventListener('pointercancel', end);
-    plot.classList.remove('is-resizing');
-    commitEditorLayout();
-  };
-  plot.classList.add('is-resizing');
-  handle.addEventListener('pointermove', move);
-  handle.addEventListener('pointerup', end);
-  handle.addEventListener('pointercancel', end);
-}
-
-function showInlineEditor(host, x, y, value, save, type = 'text') {
-  host.querySelector('.inline-chart-editor')?.remove();
-  const input = document.createElement('input');
-  input.className = 'inline-chart-editor';
-  input.type = type;
-  input.value = value;
-  input.style.left = `${x}px`;
-  input.style.top = `${y}px`;
-  host.append(input);
-  input.focus();
-  input.select();
-  const finish = () => {
-    save(input.value);
-    input.remove();
-  };
-  input.addEventListener('keydown', (event) => {
-    if (event.key === 'Enter') finish();
-    if (event.key === 'Escape') input.remove();
-  });
-  input.addEventListener('blur', finish, { once: true });
-}
-
 function renderDocumentation() {
   const chart = state.selected;
   document.querySelector('#chart-documentation').innerHTML = `
@@ -1645,7 +1461,7 @@ function renderDocumentation() {
       <li><code>theme</code> selects any of nine built-in visual systems.</li>
       <li><code>colors</code> replaces the categorical palette.</li>
       <li><code>dataLabels</code> controls visibility, placement, fonts, angles, and color.</li>
-      <li><code>responsive</code> follows the container; <code>resizable</code> adds a drag handle.</li>
+      <li><code>responsive</code> follows the container; the preview controls test exact custom widths and heights.</li>
       <li><code>tooltip</code>, <code>crosshair</code>, and <code>interaction</code> configure pointer, touch, and keyboard exploration.</li>
       <li><code>annotations</code> adds reference lines or highlighted numeric ranges.</li>
       <li><code>scales</code> supports time, logarithmic, percentage, reversed, bounded, dual, formatted, and discontinuous axes.</li>
@@ -1769,10 +1585,6 @@ document.addEventListener('click', (event) => {
     });
     rerenderFromEditor(true);
   }
-  if (event.target.closest('[data-reset-layout]')) {
-    state.editor.layout = { title: {}, subtitle: {}, plot: { widthScale: 1, heightScale: 1 } };
-    rerenderFromEditor();
-  }
   const swatch = event.target.closest('[data-palette]');
   if (swatch)
     setColor(
@@ -1875,12 +1687,6 @@ document.querySelector('#chart-controls').addEventListener('input', (event) => {
   }
   if (target.matches('[data-padding]')) {
     state.editor.padding[target.dataset.padding] = Number(target.value);
-    rerenderFromEditor();
-    return;
-  }
-  if (target.matches('[data-layout-position]')) {
-    const [role, coordinate] = target.dataset.layoutPosition.split('.');
-    state.editor.layout[role][coordinate] = Number(target.value);
     rerenderFromEditor();
     return;
   }

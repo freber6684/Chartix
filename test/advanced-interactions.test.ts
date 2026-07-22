@@ -24,10 +24,23 @@ describe('advanced interaction utilities', () => {
           y: 40,
         },
       ],
-      { formatter: ({ datasetLabel, value }) => `${datasetLabel} is ${value}` },
+      {
+        formatter: ({ datasetLabel, value }) => `${datasetLabel} is ${value}`,
+        backgroundColor: '#0f172a',
+        textStyle: {
+          color: '#f8fafc',
+          fontFamily: 'Space Mono',
+          fontSize: 12,
+          fontWeight: 600,
+          padding: { top: 10, right: 12, bottom: 10, left: 12 },
+        },
+      },
     );
     const element = parent.querySelector('.chartix-tooltip') as HTMLElement;
     expect(element.textContent).toContain('Revenue is 24');
+    expect(element.style.background).toBe('rgb(15, 23, 42)');
+    expect(element.style.color).toBe('rgb(248, 250, 252)');
+    expect(element.style.padding).toBe('10px 12px');
     tooltip.pin();
     tooltip.hide();
     expect(element.style.display).toBe('block');

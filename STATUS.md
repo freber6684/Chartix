@@ -118,6 +118,8 @@ changes so the next session can resume without reconstructing history.
 - [x] Synchronize typed and dragged title positions, repair multiline line-height and text padding,
       add independent X/Y/Y2 title spacing and axis sides, stabilize logarithmic/percentage/reversed
       scales, and align tooltips correctly when responsive previews are visually scaled.
+- [x] Replace generic typography with professional role-aware light/dark defaults, guarantee readable
+      dark-tooltip contrast and spacing, and remove direct title/plot dragging from the playground.
 
 ## Remaining for v0.1
 
