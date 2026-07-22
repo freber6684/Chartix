@@ -223,6 +223,43 @@ function renderHorizontal(context: ChartRenderContext): void {
       },
     );
   });
+  if (options.scales?.y?.title) {
+    const style = textStyle(options, 'yAxisTitle', {
+      color: theme.mutedText,
+      fontFamily: theme.fontFamily,
+      fontSize: theme.fontSize.label,
+      fontWeight: 600,
+    });
+    renderer.text(
+      options.scales.y.title,
+      plot.left - 42 - (options.scales.y.titleOffset ?? 0),
+      plot.top + plot.height / 2,
+      {
+        align: 'center',
+        baseline: 'middle',
+        rotation: -90,
+        ...rendererTextStyle(style),
+      },
+    );
+  }
+  if (options.scales?.x?.title) {
+    const style = textStyle(options, 'xAxisTitle', {
+      color: theme.mutedText,
+      fontFamily: theme.fontFamily,
+      fontSize: theme.fontSize.label,
+      fontWeight: 600,
+    });
+    renderer.text(
+      options.scales.x.title,
+      plot.left + plot.width / 2,
+      plot.bottom + 38 + (options.scales.x.titleOffset ?? 0),
+      {
+        align: 'center',
+        baseline: 'middle',
+        ...rendererTextStyle(style),
+      },
+    );
+  }
   data.datasets.forEach((dataset, datasetIndex) => {
     if (context.hiddenDatasets.has(datasetIndex)) return;
     const color = dataset.color ?? theme.palette[datasetIndex % theme.palette.length] ?? theme.text;

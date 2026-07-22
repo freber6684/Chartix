@@ -122,6 +122,23 @@ describe('built-in chart modules', () => {
     ).toBe(true);
   });
 
+  it('renders axis titles for horizontal bars and scatter charts', () => {
+    const barRenderer = new RecordingRenderer();
+    const bar = context(barRenderer);
+    bar.options = {
+      horizontal: true,
+      scales: { x: { title: 'Score' }, y: { title: 'Department' } },
+    };
+    BarChart.render(bar);
+    expect(barRenderer.labels).toEqual(expect.arrayContaining(['Score', 'Department']));
+
+    const scatterRenderer = new RecordingRenderer();
+    const scatter = context(scatterRenderer);
+    scatter.options = { scales: { x: { title: 'Age' }, y: { title: 'Income' } } };
+    ScatterChart.render(scatter);
+    expect(scatterRenderer.labels).toEqual(expect.arrayContaining(['Age', 'Income']));
+  });
+
   it('renders null values as gaps and object-form bubble points', () => {
     const renderer = new RecordingRenderer();
     const value = context(renderer);

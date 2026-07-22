@@ -111,6 +111,8 @@ changes so the next session can resume without reconstructing history.
       tooltips remain aligned after direct manipulation and plot resizing.
 - [x] Load true regular, bold, italic, and bold-italic webfont faces while allowing style synthesis
       for typefaces that do not publish every combination.
+- [x] Show and live-edit X/Y axis titles across vertical bars, horizontal bars, and scatter charts,
+      with meaningful titles in the primary bar examples.
 
 ## Remaining for v0.1
 
@@ -179,7 +181,7 @@ formatting, lint, strict types, unit tests, production bundles, and separate lea
 ## Latest validation
 
 - Formatting, ESLint, and strict TypeScript: passed with no warnings or errors.
-- Unit tests: 148 passed across 35 test files, including 45 chart/theme visual baselines.
+- Unit tests: 149 passed across 35 test files, including 45 chart/theme visual baselines.
 - Production build: ESM, CJS, standalone embed ESM, browser IIFE, minified browser IIFE, and TypeScript declarations generated.
 - Lean original-family core: measured on every build against a 35 KB gzip budget.
 - Complete library and public embed: measured against 70 KB and 40 KB gzip budgets respectively.

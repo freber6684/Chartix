@@ -33,7 +33,7 @@ const charts = [
     theme: 'minimal',
     summary: 'Compare values across clear, discrete categories.',
     bestFor: 'Rankings, monthly totals, survey results, and side-by-side category comparisons.',
-    options: {},
+    options: { scales: { x: { title: 'Month' }, y: { title: 'Revenue' } } },
     labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
     datasets: [{ label: 'Revenue', values: [120, 190, 164, 245, 278, 338] }],
   },
@@ -46,7 +46,10 @@ const charts = [
     theme: 'corporate',
     summary: 'Make long category names and ranked values easy to scan.',
     bestFor: 'Leaderboards, feature comparisons, survey choices, and long category labels.',
-    options: { horizontal: true },
+    options: {
+      horizontal: true,
+      scales: { x: { title: 'Score' }, y: { title: 'Department' } },
+    },
     labels: ['Product design', 'Engineering', 'Marketing', 'Operations'],
     datasets: [{ label: 'Score', values: [88, 74, 63, 46] }],
   },
@@ -1718,6 +1721,16 @@ document.querySelector('#chart-controls').addEventListener('change', (event) => 
     else state.editor[key] = value;
     if (key === 'theme') state.editor.background = themeBackgrounds[target.value];
     rerenderFromEditor(key === 'theme');
+  }
+});
+document.querySelector('#chart-controls').addEventListener('input', (event) => {
+  const target = event.target;
+  if (
+    target.matches('input[type="text"][data-setting]') &&
+    ['title', 'subtitle', 'xTitle', 'yTitle'].includes(target.dataset.setting)
+  ) {
+    state.editor[target.dataset.setting] = target.value;
+    rerenderFromEditor();
   }
 });
 document.querySelector('#chart-controls').addEventListener('input', (event) => {
