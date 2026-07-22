@@ -1112,9 +1112,27 @@ a {
 }
 #chart-controls input[type='text'],
 #chart-controls input[type='url'],
-#chart-controls input[type='number'] {
+#chart-controls input[type='number'],
+#chart-controls textarea {
   font: inherit;
   text-transform: none;
+}
+#chart-controls textarea {
+  width: 100%;
+  min-height: 58px;
+  padding: 10px;
+  resize: vertical;
+  border: 1px solid #303138;
+  border-radius: 0;
+  background: #17181d;
+  color: #dedfe4;
+  line-height: 1.55;
+}
+.content-intro {
+  margin: 0 0 4px;
+  padding: 10px;
+  border-left: 2px solid var(--accent);
+  background: rgb(182 255 40 / 5%);
 }
 #chart-controls input[type='color'] {
   padding: 4px;
@@ -1172,7 +1190,7 @@ a {
   top: 0;
   z-index: 8;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   padding: 8px;
   gap: 4px;
   border-bottom: 1px solid var(--line);

@@ -79,13 +79,14 @@ export class Tooltip {
     const parent = this.element.parentElement;
     const canvasRect = this.canvas.getBoundingClientRect();
     const parentRect = parent?.getBoundingClientRect();
-    const ratio = Math.min(globalThis.devicePixelRatio || 1, 2);
+    const logicalWidth = Number.parseFloat(this.canvas.style.width) || this.canvas.clientWidth;
+    const logicalHeight = Number.parseFloat(this.canvas.style.height) || this.canvas.clientHeight;
     const displayX =
       (parentRect ? canvasRect.left - parentRect.left : 0) +
-      (primary.x * canvasRect.width * ratio) / this.canvas.width;
+      (primary.x * canvasRect.width) / logicalWidth;
     const displayY =
       (parentRect ? canvasRect.top - parentRect.top : 0) +
-      (primary.y * canvasRect.height * ratio) / this.canvas.height;
+      (primary.y * canvasRect.height) / logicalHeight;
     const tooltipWidth = this.element.offsetWidth;
     const tooltipHeight = this.element.offsetHeight;
     const parentWidth = parent?.clientWidth ?? tooltipWidth;

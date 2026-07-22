@@ -51,10 +51,14 @@ export class EventManager {
 
   private point(event: PointerEvent | WheelEvent): Point {
     const rect = this.canvas.getBoundingClientRect();
-    const ratio = Math.min(globalThis.devicePixelRatio || 1, 2);
+    // Renderer coordinates are CSS pixels. The canvas may itself be visually scaled by
+    // a responsive preview, so map through its declared logical size instead of the
+    // current device-pixel ratio (which can change when a window moves between screens).
+    const logicalWidth = Number.parseFloat(this.canvas.style.width) || this.canvas.clientWidth;
+    const logicalHeight = Number.parseFloat(this.canvas.style.height) || this.canvas.clientHeight;
     return {
-      x: rect.width ? ((event.clientX - rect.left) * this.canvas.width) / rect.width / ratio : 0,
-      y: rect.height ? ((event.clientY - rect.top) * this.canvas.height) / rect.height / ratio : 0,
+      x: rect.width ? ((event.clientX - rect.left) * logicalWidth) / rect.width : 0,
+      y: rect.height ? ((event.clientY - rect.top) * logicalHeight) / rect.height : 0,
     };
   }
 

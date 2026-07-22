@@ -40,7 +40,7 @@ const barDesignExamples = [
       horizontal: true,
       kicker: '●  Q3 PERFORMANCE REVIEW',
       title: 'Department Score',
-      subtitle: 'Composite score by department, indexed to 100',
+      subtitle: 'Composite score by department,\nindexed to 100',
       source: 'internal scorecard · Updated Jul 2026',
       backgroundColor: '#0f172a',
       showLegend: false,
@@ -50,18 +50,21 @@ const barDesignExamples = [
       barGapRatio: 0.58,
       barTrack: { enabled: true, color: '#18223a', cornerRadius: 12 },
       dataLabels: { show: true, position: 'outside', offset: 8 },
+      interaction: { mode: 'intersect', keyboard: true },
+      crosshair: { enabled: false },
+      highlight: { type: 'fill', backgroundColor: '#ffffff', opacity: 0.08, borderRadius: 12 },
       scales: {
         x: { display: true },
         y: { display: true, min: 0, max: 100, beginAtZero: true },
       },
       xLabels: { color: '#7c849b', fontSize: 11 },
-      yLabels: { color: '#f8fafc', fontSize: 15, fontWeight: 650, maxWidth: 130 },
+      yLabels: { color: '#f8fafc', fontSize: 13, fontWeight: 650, maxWidth: 150 },
       typography: {
         fontFamily: 'Inter, system-ui, sans-serif',
         kicker: { color: '#7c849b', fontSize: 11, fontWeight: 700, letterSpacing: 2 },
-        title: { color: '#f8fafc', fontSize: 31, fontWeight: 750 },
-        subtitle: { color: '#929bb2', fontSize: 16, fontWeight: 400 },
-        dataLabel: { color: '#f8fafc', fontSize: 17, fontWeight: 750 },
+        title: { color: '#f8fafc', fontSize: 27, fontWeight: 750 },
+        subtitle: { color: '#929bb2', fontSize: 14, fontWeight: 400 },
+        dataLabel: { color: '#f8fafc', fontSize: 14, fontWeight: 750 },
       },
       layout: { padding: { top: 34, right: 64, bottom: 38, left: 36 } },
     },
@@ -91,7 +94,7 @@ const barDesignExamples = [
       horizontal: true,
       kicker: 'THE QUARTERLY SCORECARD',
       title: 'Department Score',
-      subtitle: 'A composite index of performance across four departments, Q3 2026.',
+      subtitle: 'A composite index of performance\nacross four departments, Q3 2026.',
       source: 'internal scorecard',
       footnote: 'Index, 0–100',
       backgroundColor: '#f8f7f3',
@@ -102,17 +105,26 @@ const barDesignExamples = [
       barGapRatio: 0.72,
       barTrack: { enabled: true, color: '#e9e5db', cornerRadius: 0 },
       dataLabels: { show: true, position: 'outside', offset: 8 },
+      interaction: { mode: 'intersect', keyboard: true },
+      crosshair: { enabled: false },
+      highlight: { type: 'fill', backgroundColor: '#b74331', opacity: 0.1, borderRadius: 2 },
       scales: {
         x: { display: false },
         y: { display: true, min: 0, max: 100, beginAtZero: true },
       },
-      yLabels: { color: '#1d1d1a', fontFamily: 'Georgia, serif', fontSize: 15, fontWeight: 700 },
+      yLabels: {
+        color: '#1d1d1a',
+        fontFamily: 'Georgia, serif',
+        fontSize: 13,
+        fontWeight: 700,
+        maxWidth: 170,
+      },
       typography: {
         fontFamily: 'Georgia, serif',
         kicker: { color: '#a84636', fontSize: 10, fontWeight: 700, letterSpacing: 2.3 },
-        title: { color: '#171714', fontSize: 29, fontWeight: 750 },
-        subtitle: { color: '#6f7068', fontSize: 15, fontWeight: 600, fontStyle: 'italic' },
-        dataLabel: { color: '#171714', fontSize: 16, fontWeight: 750 },
+        title: { color: '#171714', fontSize: 26, fontWeight: 750 },
+        subtitle: { color: '#6f7068', fontSize: 13, fontWeight: 600, fontStyle: 'italic' },
+        dataLabel: { color: '#171714', fontSize: 14, fontWeight: 750 },
       },
       layout: { padding: { top: 32, right: 62, bottom: 38, left: 34 } },
     },
@@ -151,18 +163,27 @@ const barDesignExamples = [
       cornerRadius: 0,
       barGapRatio: 0.62,
       barTrack: { enabled: true, color: '#43f17a', pattern: 'dots', cornerRadius: 0 },
-      dataLabels: { show: true, position: 'outside', offset: 8 },
+      dataLabels: {
+        show: true,
+        position: 'outside',
+        offset: 7,
+        backgroundColor: '#061009',
+        padding: { top: 2, right: 4, bottom: 2, left: 4 },
+      },
+      interaction: { mode: 'intersect', keyboard: true },
+      crosshair: { enabled: false },
+      highlight: { type: 'fill', backgroundColor: '#43f17a', opacity: 0.1, borderRadius: 1 },
       scales: {
         x: { display: false },
         y: { display: true, min: 0, max: 100, beginAtZero: true },
       },
-      yLabels: { color: '#d9fbe4', fontSize: 14, fontWeight: 500, maxWidth: 190 },
+      yLabels: { color: '#d9fbe4', fontSize: 12, fontWeight: 500, maxWidth: 190 },
       typography: {
         fontFamily: "'Space Mono', monospace",
         kicker: { color: '#48d878', fontSize: 13, fontWeight: 500 },
-        title: { color: '#45f27d', fontSize: 26, fontWeight: 700 },
-        subtitle: { color: '#355a40', fontSize: 12, fontWeight: 500 },
-        dataLabel: { color: '#43f17a', fontSize: 17, fontWeight: 700 },
+        title: { color: '#45f27d', fontSize: 23, fontWeight: 700 },
+        subtitle: { color: '#598164', fontSize: 11, fontWeight: 500 },
+        dataLabel: { color: '#43f17a', fontSize: 14, fontWeight: 700 },
       },
       layout: { padding: { top: 32, right: 70, bottom: 34, left: 34 } },
     },
@@ -191,7 +212,7 @@ const barDesignExamples = [
       horizontal: false,
       kicker: 'Q3 2026 · INTERNAL SCORECARD',
       title: 'Department\nScore',
-      subtitle: 'Composite performance index across four departments, scaled 0–100.',
+      subtitle: 'Composite performance index\nacross four departments,\nscaled 0–100.',
       source: 'INTERNAL SCORECARD',
       footnote: 'INDEX 0–100',
       backgroundColor: '#f7f7f4',
@@ -201,17 +222,20 @@ const barDesignExamples = [
       cornerRadius: 0,
       barGapRatio: 0.12,
       dataLabels: { show: true, position: 'outside', offset: 7 },
+      interaction: { mode: 'intersect', keyboard: true },
+      crosshair: { enabled: false },
+      highlight: { type: 'fill', backgroundColor: '#dc4c2b', opacity: 0.1, borderRadius: 2 },
       scales: {
         x: { display: true, line: { color: '#171714', width: 3 } },
         y: { display: false, min: 0, max: 100, beginAtZero: true },
       },
-      xLabels: { color: '#171714', fontSize: 12, fontWeight: 700, maxWidth: 130 },
+      xLabels: { color: '#171714', fontSize: 10, fontWeight: 700, maxWidth: 130 },
       typography: {
         fontFamily: 'Inter, system-ui, sans-serif',
         kicker: { color: '#d94d2c', fontSize: 11, fontWeight: 750, letterSpacing: 2 },
-        title: { color: '#111110', fontSize: 34, fontWeight: 800, lineHeight: 1.02 },
-        subtitle: { color: '#5f605a', fontSize: 16, fontWeight: 450, lineHeight: 1.35 },
-        dataLabel: { color: '#111110', fontSize: 20, fontWeight: 800 },
+        title: { color: '#111110', fontSize: 29, fontWeight: 800, lineHeight: 1.02 },
+        subtitle: { color: '#5f605a', fontSize: 13, fontWeight: 450, lineHeight: 1.35 },
+        dataLabel: { color: '#111110', fontSize: 16, fontWeight: 800 },
       },
       layout: { padding: { top: 30, right: 34, bottom: 42, left: 34 } },
     },
@@ -1050,10 +1074,11 @@ function freshEditor(chart) {
     canvasBorderColor: chart.options.canvas?.borderColor ?? '#d7dce5',
     canvasBorderWidth: chart.options.canvas?.borderWidth ?? 0,
     canvasBorderRadius: chart.options.canvas?.borderRadius ?? 8,
-    highlightType: chart.options.highlight?.type ?? 'outline',
-    highlightColor: chart.options.highlight?.color ?? '#111827',
-    highlightBackground: chart.options.highlight?.backgroundColor ?? '#a8ff1a',
-    highlightBorderWidth: chart.options.highlight?.borderWidth ?? 2,
+    highlightType: chart.options.highlight?.type ?? 'fill',
+    highlightColor: chart.options.highlight?.color ?? chart.datasets[0]?.colors?.[0] ?? '#625bf6',
+    highlightBackground:
+      chart.options.highlight?.backgroundColor ?? chart.datasets[0]?.colors?.[0] ?? '#625bf6',
+    highlightBorderWidth: chart.options.highlight?.borderWidth ?? 1,
     highlightBorderRadius: chart.options.highlight?.borderRadius ?? 8,
     highlightOpacity: chart.options.highlight?.opacity ?? 0.16,
     highlightGlowBlur: chart.options.highlight?.glowBlur ?? 14,
@@ -1063,12 +1088,8 @@ function freshEditor(chart) {
     source: chart.options.source ?? '',
     footnote: chart.options.footnote ?? '',
     watermark: chart.options.watermark ?? '',
-    xTitle:
-      chart.options.scales?.x?.title ??
-      (caps.axes ? (chart.type === 'scatter' ? 'X value' : horizontal ? 'Value' : 'Category') : ''),
-    yTitle:
-      chart.options.scales?.y?.title ??
-      (caps.axes ? (chart.type === 'scatter' ? 'Y value' : horizontal ? 'Category' : 'Value') : ''),
+    xTitle: chart.options.scales?.x?.title ?? '',
+    yTitle: chart.options.scales?.y?.title ?? '',
     y1Title: chart.options.scales?.y1?.title ?? 'Secondary value',
     textStyles,
     showLabels: Boolean(chart.options.dataLabels?.show),
@@ -1134,10 +1155,12 @@ function freshEditor(chart) {
         : chart.options.scales?.x?.labelDensity) ?? 0.7) * 100,
     ),
     radialGap: chart.options.radialGap ?? 1,
-    tooltips: true,
-    pinTooltip: false,
-    crosshair: chart.family === 'cartesian',
-    interactionMode: chart.datasets.length > 1 ? 'index' : 'nearest',
+    tooltips: chart.options.tooltip?.enabled !== false,
+    pinTooltip: Boolean(chart.options.tooltip?.pinOnClick),
+    crosshair: Boolean(chart.options.crosshair?.enabled),
+    interactionMode:
+      chart.options.interaction?.mode ??
+      (caps.bar || caps.radial ? 'intersect' : chart.datasets.length > 1 ? 'index' : 'nearest'),
     showLegend: chart.options.showLegend ?? true,
     legendPosition: chart.options.legend?.position ?? 'top',
     legendBackgroundEnabled: Boolean(chart.options.legend?.backgroundColor),
@@ -1430,6 +1453,19 @@ function renderControls() {
     true,
   )}`;
   const panels = {
+    content: `${controlSection(
+      'Chart text',
+      `<p class="panel-intro content-intro">Every visible heading and note is editable here and included in the generated code.</p><label>Kicker<input type="text" data-setting="kicker" value="${escapeHTML(editor.kicker)}" placeholder="Optional section label"></label><label>Title<textarea rows="2" data-setting="title" placeholder="Chart title">${escapeHTML(editor.title)}</textarea></label><label>Subtitle<textarea rows="3" data-setting="subtitle" placeholder="Optional explanation">${escapeHTML(editor.subtitle)}</textarea></label><label>Source<input type="text" data-setting="source" value="${escapeHTML(editor.source)}" placeholder="Optional source"></label><label>Footnote<input type="text" data-setting="footnote" value="${escapeHTML(editor.footnote)}" placeholder="Optional footnote"></label><label>Watermark<input type="text" data-setting="watermark" value="${escapeHTML(editor.watermark)}" placeholder="Optional watermark"></label>`,
+      true,
+    )}${
+      caps.axes
+        ? controlSection(
+            'Axis titles',
+            `<label>X-axis title<input type="text" data-setting="xTitle" value="${escapeHTML(editor.xTitle)}" placeholder="Leave blank to hide"></label><label>Y-axis title<input type="text" data-setting="yTitle" value="${escapeHTML(editor.yTitle)}" placeholder="Leave blank to hide"></label>${caps.dualAxis ? `<label>Y2-axis title<input type="text" data-setting="y1Title" value="${escapeHTML(editor.y1Title)}" placeholder="Leave blank to hide"></label>` : ''}<small class="panel-intro">Axis titles are never inserted automatically. A blank box means no title is drawn.</small>`,
+            true,
+          )
+        : ''
+    }`,
     text: `${controlSection('Text target', `<label>Editing<select data-role>${selectOptions(TEXT_ROLES, state.activeRole)}</select></label><div class="text-preview" style="font-family:'${escapeHTML(style.fontFamily)}';font-size:${style.fontSize}px;font-weight:${style.fontWeight};font-style:${style.fontStyle};color:${style.color};background:${style.backgroundColor};border:${style.borderWidth}px solid ${style.borderColor};border-radius:${style.borderRadius}px;padding:${style.padding.top}px ${style.padding.right}px ${style.padding.bottom}px ${style.padding.left}px;text-decoration:${style.underline ? 'underline' : 'none'}">Chartix typography</div>`, true)}${controlSection(
       'Font and style',
       `<label>Font family<select data-text-setting="fontFamily" class="font-select" style="font-family:'${escapeHTML(style.fontFamily)}', sans-serif">${fontOptions(style.fontFamily)}</select><small>${FONT_CATALOG.length} fonts. Every name is previewed in its own typeface when supported by the browser.</small></label>${rangeControl('Font size', 'text.fontSize', style.fontSize, 8, 72, 1, 'px')}<div class="button-group" aria-label="Text style"><button type="button" data-text-toggle="fontWeight" class="${style.fontWeight >= 700 ? 'is-active' : ''}" aria-label="Bold" aria-pressed="${style.fontWeight >= 700}" title="Toggle bold"><strong>B</strong></button><button type="button" data-text-toggle="fontStyle" class="${style.fontStyle === 'italic' ? 'is-active' : ''}" aria-label="Italic" aria-pressed="${style.fontStyle === 'italic'}" title="Toggle italic"><em>I</em></button><button type="button" data-text-toggle="underline" class="${style.underline ? 'is-active' : ''}" aria-label="Underline" aria-pressed="${style.underline}" title="Toggle underline"><u>U</u></button></div><small class="style-status">Active for ${escapeHTML(TEXT_ROLES.find(([role]) => role === state.activeRole)?.[1] ?? state.activeRole)}: ${[style.fontWeight >= 700 ? 'Bold' : '', style.fontStyle === 'italic' ? 'Italic' : '', style.underline ? 'Underline' : ''].filter(Boolean).join(', ') || 'Regular'}</small><label>Text effect<select data-text-setting="effect">${selectOptions(
@@ -1444,7 +1480,7 @@ function renderControls() {
       )}</select></label>`,
       true,
     )}${controlSection('Text colors', `${colorEditor('Font color', 'text.color', style.color)}${colorEditor('Text background', 'text.backgroundColor', style.backgroundColor)}${colorEditor('Effect color', 'text.effectColor', style.effectColor)}`)}${controlSection('Border and spacing', `${colorEditor('Border color', 'text.borderColor', style.borderColor)}${rangeControl('Border width', 'text.borderWidth', style.borderWidth, 0, 12, 1, 'px')}${rangeControl('Corner roundness', 'text.borderRadius', style.borderRadius, 0, 40, 1, 'px')}<label>Hyperlink<input type="url" data-text-setting="href" value="${escapeHTML(style.href)}" placeholder="https://example.com"></label>${rangeControl('Line height', 'text.lineHeight', style.lineHeight, 0.8, 3, 0.1)}${rangeControl('Letter spacing', 'text.letterSpacing', style.letterSpacing, -2, 12, 0.5, 'px')}<div class="spacing-grid"><span>Text box padding</span>${['top', 'right', 'bottom', 'left'].map((side) => `<label>${side}<input type="number" min="0" max="80" data-text-padding="${side}" value="${style.padding[side]}"></label>`).join('')}</div><button class="apply-all-button" type="button" data-apply-all>Apply this text style to all</button>`)}`,
-    layout: `${controlSection('Titles and context', `<label>Kicker<input type="text" data-setting="kicker" value="${escapeHTML(editor.kicker)}" placeholder="Q3 PERFORMANCE REVIEW"></label><label>Title<input type="text" data-setting="title" value="${escapeHTML(editor.title)}"></label><label>Subtitle<input type="text" data-setting="subtitle" value="${escapeHTML(editor.subtitle)}"></label><label>Source<input type="text" data-setting="source" value="${escapeHTML(editor.source)}"></label><label>Footnote<input type="text" data-setting="footnote" value="${escapeHTML(editor.footnote)}"></label><label>Watermark<input type="text" data-setting="watermark" value="${escapeHTML(editor.watermark)}"></label>`, true)}${controlSection('Chart spacing', `<div class="spacing-grid"><span>Chart padding</span>${['top', 'right', 'bottom', 'left'].map((side) => `<label>${side}<input type="number" min="0" max="120" data-padding="${side}" value="${editor.padding[side]}"></label>`).join('')}</div>${rangeControl('Title spacing', 'titleOffset', editor.titleOffset, 0, 80)}${rangeControl('Plot spacing', 'plotGap', editor.plotGap, -40, 100)}`, true)}`,
+    layout: `${controlSection('Chart spacing', `<div class="spacing-grid"><span>Chart padding</span>${['top', 'right', 'bottom', 'left'].map((side) => `<label>${side}<input type="number" min="0" max="120" data-padding="${side}" value="${editor.padding[side]}"></label>`).join('')}</div>${rangeControl('Title spacing', 'titleOffset', editor.titleOffset, 0, 80)}${rangeControl('Plot spacing', 'plotGap', editor.plotGap, -40, 100)}`, true)}`,
     chart: `${chartDesign}${axes}${line}${bar}${points}${radial || ''}${controlSection(
       'Motion and annotations',
       `${rangeControl('Animation duration', 'duration', editor.duration, 0, 2000, 20, 'ms')}${rangeControl('Series stagger', 'stagger', editor.stagger, 0, 300, 10, 'ms')}${
@@ -1517,6 +1553,7 @@ function renderControls() {
     )}${controlSection('Accessibility', `${toggleControl('Accessible patterns', 'patterns', editor.patterns)}${toggleControl('Screen-reader table', 'dataTable', editor.dataTable)}${toggleControl('High contrast', 'highContrast', editor.highContrast)}${toggleControl('Dyslexia-friendly text', 'dyslexia', editor.dyslexia)}${toggleControl('Right-to-left layout', 'rtl', editor.rtl)}`)}`,
   };
   const tabs = [
+    ['content', 'Content'],
     ['chart', 'Chart'],
     ['text', 'Text'],
     ['layout', 'Layout'],
@@ -1619,7 +1656,7 @@ function renderBarDesignTabs() {
 function resetControls() {
   state.editor = freshEditor(state.selected);
   state.activeRole = 'title';
-  state.controlTab = 'chart';
+  state.controlTab = state.selected.showcaseOnly ? 'content' : 'chart';
   state.previewWidth = 0;
   state.previewHeight = 470;
   updateImportButton();
