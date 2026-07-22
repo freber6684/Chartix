@@ -120,6 +120,8 @@ changes so the next session can resume without reconstructing history.
       scales, and align tooltips correctly when responsive previews are visually scaled.
 - [x] Replace generic typography with professional role-aware light/dark defaults, guarantee readable
       dark-tooltip contrast and spacing, and remove direct title/plot dragging from the playground.
+- [x] Measure horizontal category labels and axis-title styling before layout so long labels, Y-axis
+      titles, and the plot keep separate responsive space without overlaps.
 
 ## Remaining for v0.1
 

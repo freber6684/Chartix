@@ -139,6 +139,69 @@ export function fitAxisLabel(
   return lines.join('\n');
 }
 
+/** Reserve enough room for horizontal-bar category labels and their perpendicular axis title. */
+export function horizontalCategoryAxisMetrics(
+  rendererWidth: number,
+  data: ChartData,
+  options: ChartOptions,
+  theme: ThemeObject,
+): { labelWidth: number; titleReserve: number; gutter: number } {
+  const axis = options.scales?.y;
+  if (axis?.display === false) return { labelWidth: 0, titleReserve: 0, gutter: 0 };
+  const labelOptions = options.yLabels;
+  const labelStyle = {
+    ...textStyle(options, 'yAxis', {
+      color: theme.mutedText,
+      fontFamily: theme.fontFamily,
+      fontSize: theme.fontSize.tick,
+      fontWeight: 450,
+    }),
+    ...labelOptions,
+  };
+  const fontSize = labelStyle.fontSize ?? theme.fontSize.tick;
+  const padding = labelStyle.padding;
+  const horizontalPadding =
+    typeof padding === 'number' ? padding * 2 : (padding?.left ?? 0) + (padding?.right ?? 0);
+  const letterSpacing = labelStyle.letterSpacing ?? 0;
+  const naturalWidth = Math.max(
+    0,
+    ...data.labels.flatMap((label) =>
+      label
+        .split('\n')
+        .map(
+          (line) => line.length * fontSize * 0.62 + Math.max(0, line.length - 1) * letterSpacing,
+        ),
+    ),
+  );
+  const rotation = (Math.abs(labelOptions?.rotation ?? 0) * Math.PI) / 180;
+  const rotatedWidth =
+    Math.abs(Math.cos(rotation)) * naturalWidth +
+    Math.abs(Math.sin(rotation)) * fontSize * (labelStyle.lineHeight ?? 1.3);
+  const labelLimit = Math.max(52, Math.min(180, rendererWidth * 0.28));
+  const labelWidth =
+    labelOptions?.show === false
+      ? 0
+      : Math.min(rotatedWidth + horizontalPadding, labelLimit) + (labelOptions?.offset ?? 0);
+  const titleStyle = textStyle(options, 'yAxisTitle', {
+    color: theme.mutedText,
+    fontFamily: theme.fontFamily,
+    fontSize: theme.fontSize.label,
+    fontWeight: 600,
+  });
+  const titlePadding = titleStyle.padding;
+  const titleThickness =
+    (titleStyle.fontSize ?? theme.fontSize.label) +
+    (typeof titlePadding === 'number'
+      ? titlePadding * 2
+      : (titlePadding?.top ?? 0) + (titlePadding?.bottom ?? 0));
+  const titleReserve = axis?.title ? titleThickness + 14 + Math.max(0, axis.titleOffset ?? 0) : 0;
+  return {
+    labelWidth,
+    titleReserve,
+    gutter: Math.max(44, labelWidth + titleReserve + 12),
+  };
+}
+
 /** Resolve an axis configuration to a continuous scale. */
 export function createAxisScale(
   values: number[],
@@ -480,9 +543,12 @@ export function createPlotArea(
     xAxis?.display !== false && xAxis?.position === 'top'
       ? 24 + (xAxis.title ? 26 + (xAxis.titleOffset ?? 0) : 0)
       : 0;
+  const horizontalCategoryGutter = options.horizontal
+    ? horizontalCategoryAxisMetrics(renderer.width, data, options, theme).gutter
+    : 0;
   const baseLeft =
     boxPadding.left +
-    Math.max(44, leftAxisSpace) +
+    Math.max(44, leftAxisSpace, horizontalCategoryGutter) +
     (legendPosition === 'left' ? sideLegendWidth : 0);
   const baseTop = Math.max(boxPadding.top + 10, headerBottom + 10) + topAxisSpace;
   const baseRight =

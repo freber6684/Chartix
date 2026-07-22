@@ -4,6 +4,7 @@ import {
   drawVerticalFrame,
   fitAxisLabel,
   formatTick,
+  horizontalCategoryAxisMetrics,
   numericValues,
   rendererTextStyle,
   textStyle,
@@ -149,6 +150,7 @@ function renderVertical(context: ChartRenderContext): void {
 
 function renderHorizontal(context: ChartRenderContext): void {
   const { data, options, plot, renderer, theme } = context;
+  const categoryAxis = horizontalCategoryAxisMetrics(renderer.width, data, options, theme);
   const allValues = options.stacked
     ? stackDomain(context)
     : numericValues(data.datasets.flatMap((dataset) => dataset.values));
@@ -211,7 +213,7 @@ function renderHorizontal(context: ChartRenderContext): void {
     renderer.text(
       fitAxisLabel(
         label,
-        labels?.maxWidth ?? Math.max(40, plot.left - 20),
+        labels?.maxWidth ?? categoryAxis.labelWidth,
         labels?.fontSize ?? theme.fontSize.tick,
         labels?.overflow ?? 'truncate',
       ),
@@ -256,7 +258,7 @@ function renderHorizontal(context: ChartRenderContext): void {
     });
     renderer.text(
       options.scales.y.title,
-      plot.left - 42 - (options.scales.y.titleOffset ?? 0),
+      plot.left - categoryAxis.labelWidth - categoryAxis.titleReserve / 2 - 6,
       plot.top + plot.height / 2,
       {
         align: 'center',

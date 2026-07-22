@@ -16,6 +16,7 @@ class RecordingRenderer implements Renderer {
   public circles = 0;
   public labels: string[] = [];
   public textStyles: Array<Parameters<Renderer['text']>[3]> = [];
+  public textPositions: Array<{ value: string; x: number; y: number }> = [];
   public rectangles = 0;
   public lines = 0;
   public radii: number[] = [];
@@ -43,14 +44,10 @@ class RecordingRenderer implements Renderer {
     this.rectangles += 1;
     this.radii.push(radius);
   }
-  public text(
-    value: string,
-    _x: number,
-    _y: number,
-    options: Parameters<Renderer['text']>[3],
-  ): void {
+  public text(value: string, x: number, y: number, options: Parameters<Renderer['text']>[3]): void {
     this.labels.push(value);
     this.textStyles.push(options);
+    this.textPositions.push({ value, x, y });
   }
   public resize(): void {}
 }
@@ -141,6 +138,30 @@ describe('built-in chart modules', () => {
     scatter.options = { scales: { x: { title: 'Age' }, y: { title: 'Income' } } };
     ScatterChart.render(scatter);
     expect(scatterRenderer.labels).toEqual(expect.arrayContaining(['Age', 'Income']));
+  });
+
+  it('reserves separate horizontal-bar space for category labels and the Y-axis title', () => {
+    const renderer = new RecordingRenderer();
+    const value = context(renderer);
+    value.data.labels = ['Product design', 'Engineering', 'Marketing'];
+    value.options = {
+      horizontal: true,
+      showLegend: false,
+      scales: { x: { title: 'Score' }, y: { title: 'Department', titleOffset: 12 } },
+      yLabels: { overflow: 'truncate' },
+    };
+    value.plot = createPlotArea(renderer, value.data, value.options, value.theme);
+    BarChart.render(value);
+    const title = renderer.textPositions.find((item) => item.value === 'Department');
+    const categories = renderer.textPositions.filter((item) =>
+      ['Product design', 'Engineering', 'Marketing'].some((label) =>
+        label.startsWith(item.value.replace('…', '')),
+      ),
+    );
+    expect(value.plot.left).toBeGreaterThan(120);
+    expect(title).toBeDefined();
+    expect(categories).toHaveLength(3);
+    expect(title!.x).toBeLessThan(Math.min(...categories.map((item) => item.x)) - 20);
   });
 
   it('renders visible axis lines and can hide either complete axis', () => {
