@@ -204,18 +204,27 @@ describe('built-in chart modules', () => {
         borderColor: '#223344',
         borderWidth: 2,
         cornerRadius: 9,
-        padding: 8,
+        padding: { top: 5, right: 12, bottom: 9, left: 7 },
         itemGap: 24,
         markerSize: 14,
       },
       typography: {
-        legend: { color: '#334455', fontWeight: 700, fontStyle: 'italic' },
+        legend: {
+          color: '#334455',
+          fontWeight: 700,
+          fontStyle: 'italic',
+          borderColor: '#556677',
+          borderWidth: 1,
+          borderRadius: 4,
+          padding: { top: 2, right: 4, bottom: 2, left: 4 },
+        },
       },
     };
     createPlotArea(renderer, value.data, value.options, value.theme);
     expect(renderer.labels).toEqual(expect.arrayContaining(['Series', 'Growth']));
     expect(renderer.radii).toContain(9);
     expect(renderer.textStyles.some((style) => style.font.startsWith('italic 700'))).toBe(true);
+    expect(renderer.textStyles.some((style) => style.borderColor === '#556677')).toBe(true);
   });
 
   it('renders null values as gaps and object-form bubble points', () => {

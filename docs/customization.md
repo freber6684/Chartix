@@ -17,6 +17,7 @@ const config = {
     responsive: true,
     resizable: true,
     backgroundColor: '#f4fbff',
+    canvas: { borderColor: '#cbd5e1', borderWidth: 1, borderRadius: 12 },
     colors: ['#023e8a', '#0077b6', '#48cae4'],
     typography: {
       fontFamily: 'Inter, sans-serif',
@@ -28,6 +29,10 @@ const config = {
       rotation: -35,
       color: '#12324a',
       backgroundColor: '#ffffffcc',
+      borderColor: '#cbd5e1',
+      borderWidth: 1,
+      borderRadius: 6,
+      padding: { top: 4, right: 8, bottom: 4, left: 8 },
       fontSize: 12,
       offset: 4,
     },
@@ -48,7 +53,13 @@ const config = {
     tooltip: { enabled: true, backgroundColor: '#111827', color: '#ffffff' },
     interaction: { enabled: true, keyboard: true, intersect: true },
     crosshair: { enabled: true, color: '#64748b88', width: 1 },
-    legend: { interactive: true },
+    legend: {
+      interactive: true,
+      borderColor: '#cbd5e1',
+      borderWidth: 1,
+      cornerRadius: 10,
+      padding: { top: 8, right: 12, bottom: 8, left: 12 },
+    },
     annotations: [
       { type: 'line', value: 40, label: 'Target', color: '#ef4444' },
       { type: 'band', from: 20, to: 30, color: '#38bdf822' },
@@ -71,7 +82,10 @@ included. Use `options.colors` for any palette, `dataset.color` for one series, 
 - `dataLabels` controls values attached to bars, points, and radial slices.
 - `position` accepts `inside`, `outside`, `center`, or `auto`. Placement is relative to each mark;
   axis labels use `offset` and `rotation` instead.
-- Every label family supports font, size, weight, text color, background color, angle, and offset.
+- Every text and label family supports font, size, weight, text color, background color, border
+  color, border width, corner radius, and independent top/right/bottom/left padding.
+- The legend container and canvas use the same border vocabulary, so editor settings map directly
+  to reusable configuration.
 
 ## Sizing
 

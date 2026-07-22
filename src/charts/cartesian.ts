@@ -49,6 +49,9 @@ export function rendererTextStyle(style: TextStyleOptions) {
       style.fontStyle,
     ),
     ...(style.backgroundColor ? { backgroundColor: style.backgroundColor } : {}),
+    ...(style.borderColor ? { borderColor: style.borderColor } : {}),
+    ...(style.borderWidth !== undefined ? { borderWidth: style.borderWidth } : {}),
+    ...(style.borderRadius !== undefined ? { borderRadius: style.borderRadius } : {}),
     ...(style.padding ? { padding: style.padding } : {}),
     ...(style.underline || style.href ? { underline: true } : {}),
     ...(style.effect ? { effect: style.effect } : {}),
@@ -56,6 +59,33 @@ export function rendererTextStyle(style: TextStyleOptions) {
     ...(style.lineHeight ? { lineHeight: style.lineHeight } : {}),
     ...(style.letterSpacing ? { letterSpacing: style.letterSpacing } : {}),
   };
+}
+
+function resolveSpacing(
+  value: number | Partial<{ top: number; right: number; bottom: number; left: number }> | undefined,
+) {
+  if (typeof value === 'number') return { top: value, right: value, bottom: value, left: value };
+  return {
+    top: value?.top ?? 0,
+    right: value?.right ?? 0,
+    bottom: value?.bottom ?? 0,
+    left: value?.left ?? 0,
+  };
+}
+
+function textBoxHeight(style: TextStyleOptions, fallbackSize: number): number {
+  const padding = resolveSpacing(style.padding);
+  return (
+    (style.fontSize ?? fallbackSize) +
+    padding.top +
+    padding.bottom +
+    Math.max(0, style.borderWidth ?? 0) * 2
+  );
+}
+
+function textBoxHorizontalSpace(style: TextStyleOptions): number {
+  const padding = resolveSpacing(style.padding);
+  return padding.left + padding.right + Math.max(0, style.borderWidth ?? 0) * 2;
 }
 
 export function dataLabelRendererStyle(
@@ -162,6 +192,7 @@ export function horizontalCategoryAxisMetrics(
   const padding = labelStyle.padding;
   const horizontalPadding =
     typeof padding === 'number' ? padding * 2 : (padding?.left ?? 0) + (padding?.right ?? 0);
+  const labelBorder = Math.max(0, labelStyle.borderWidth ?? 0) * 2;
   const letterSpacing = labelStyle.letterSpacing ?? 0;
   const naturalWidth = Math.max(
     0,
@@ -181,7 +212,8 @@ export function horizontalCategoryAxisMetrics(
   const labelWidth =
     labelOptions?.show === false
       ? 0
-      : Math.min(rotatedWidth + horizontalPadding, labelLimit) + (labelOptions?.offset ?? 0);
+      : Math.min(rotatedWidth + horizontalPadding + labelBorder, labelLimit) +
+        (labelOptions?.offset ?? 0);
   const titleStyle = textStyle(options, 'yAxisTitle', {
     color: theme.mutedText,
     fontFamily: theme.fontFamily,
@@ -193,7 +225,8 @@ export function horizontalCategoryAxisMetrics(
     (titleStyle.fontSize ?? theme.fontSize.label) +
     (typeof titlePadding === 'number'
       ? titlePadding * 2
-      : (titlePadding?.top ?? 0) + (titlePadding?.bottom ?? 0));
+      : (titlePadding?.top ?? 0) + (titlePadding?.bottom ?? 0)) +
+    Math.max(0, titleStyle.borderWidth ?? 0) * 2;
   const titleReserve = axis?.title ? titleThickness + 14 + Math.max(0, axis.titleOffset ?? 0) : 0;
   return {
     labelWidth,
@@ -394,7 +427,7 @@ export function drawHeader(
       baseline: 'top',
       ...rendererTextStyle(style),
     });
-    y = Math.max(y + 30, titleY + (style.fontSize ?? theme.fontSize.title) + 10);
+    y = Math.max(y + 30, titleY + textBoxHeight(style, theme.fontSize.title) + 10);
   }
   if (options.subtitle) {
     const style = textStyle(options, 'subtitle', {
@@ -408,7 +441,7 @@ export function drawHeader(
       baseline: 'top',
       ...rendererTextStyle(style),
     });
-    y = Math.max(y + 24, subtitleY + (style.fontSize ?? theme.fontSize.label) + 10);
+    y = Math.max(y + 24, subtitleY + textBoxHeight(style, theme.fontSize.label) + 10);
   }
   if (
     options.showLegend !== false &&
@@ -443,7 +476,7 @@ export function drawHeader(
     const legend = options.legend ?? {};
     const markerSize = Math.max(4, legend.markerSize ?? 10);
     const itemGap = Math.max(0, legend.itemGap ?? 18);
-    const legendPadding = Math.max(0, legend.padding ?? 0);
+    const legendPadding = resolveSpacing(legend.padding);
     const legendStyle = textStyle(options, 'legend', {
       color: theme.mutedText,
       fontFamily: theme.fontFamily,
@@ -454,28 +487,37 @@ export function drawHeader(
       (dataset) =>
         markerSize +
         8 +
-        dataset.label.length * (legendStyle.fontSize ?? theme.fontSize.label) * 0.62,
+        dataset.label.length * (legendStyle.fontSize ?? theme.fontSize.label) * 0.62 +
+        textBoxHorizontalSpace(legendStyle),
     );
     const contentWidth =
       itemWidths.reduce((sum, width) => sum + width, 0) +
       Math.max(0, itemWidths.length - 1) * itemGap;
-    const boxWidth = Math.min(renderer.width - leftPadding * 2, contentWidth + legendPadding * 2);
+    const boxWidth = Math.min(
+      renderer.width - leftPadding * 2,
+      contentWidth + legendPadding.left + legendPadding.right,
+    );
     const boxHeight =
-      Math.max(markerSize, legendStyle.fontSize ?? theme.fontSize.label) + legendPadding * 2 + 6;
+      Math.max(markerSize, textBoxHeight(legendStyle, theme.fontSize.label)) +
+      legendPadding.top +
+      legendPadding.bottom +
+      6;
     drawLegendBackground(renderer, leftPadding, y - 3, boxWidth, boxHeight, legend);
-    let x = leftPadding + legendPadding;
+    let x = leftPadding + legendPadding.left;
+    const legendCenterY =
+      y + legendPadding.top + Math.max(markerSize, textBoxHeight(legendStyle, 11)) / 2;
     data.datasets.forEach((dataset, index) => {
       const color = dataset.color ?? theme.palette[index % theme.palette.length] ?? theme.text;
       const markerColor = hiddenDatasets.has(index) ? theme.grid : color;
       renderer.roundedRect(
         x,
-        y + 2,
+        legendCenterY - markerSize / 2,
         markerSize,
         markerSize,
         Math.min(4, markerSize / 2),
         markerColor,
       );
-      renderer.text(dataset.label, x + markerSize + 8, y + 2 + markerSize / 2, {
+      renderer.text(dataset.label, x + markerSize + 8, legendCenterY, {
         baseline: 'middle',
         ...rendererTextStyle({
           ...legendStyle,
@@ -490,7 +532,7 @@ export function drawHeader(
         value: 0,
         color,
         x: x + (itemWidths[index] ?? 80) / 2,
-        y: y + 2 + markerSize / 2,
+        y: legendCenterY,
         bounds: { x: x - 4, y: y - 4, width: itemWidths[index] ?? 80, height: boxHeight },
       });
       x += (itemWidths[index] ?? 80) + itemGap;
@@ -526,6 +568,7 @@ export function createPlotArea(
   );
   const legendPosition = options.showLegend === false ? undefined : options.legend?.position;
   const sideLegendWidth = legendPosition === 'left' || legendPosition === 'right' ? 132 : 0;
+  const sideLegendPadding = resolveSpacing(options.legend?.padding);
   const plotLayout = options.layout?.plot;
   const yAxes = [options.scales?.y, options.scales?.y1].filter((axis): axis is AxisOptions =>
     Boolean(axis && axis.display !== false),
@@ -549,13 +592,17 @@ export function createPlotArea(
   const baseLeft =
     boxPadding.left +
     Math.max(44, leftAxisSpace, horizontalCategoryGutter) +
-    (legendPosition === 'left' ? sideLegendWidth : 0);
+    (legendPosition === 'left'
+      ? sideLegendWidth + sideLegendPadding.left + sideLegendPadding.right
+      : 0);
   const baseTop = Math.max(boxPadding.top + 10, headerBottom + 10) + topAxisSpace;
   const baseRight =
     renderer.width -
     boxPadding.right -
     Math.max(0, rightAxisSpace) -
-    (legendPosition === 'right' ? sideLegendWidth : 0);
+    (legendPosition === 'right'
+      ? sideLegendWidth + sideLegendPadding.left + sideLegendPadding.right
+      : 0);
   const xRotation = Math.abs(options.xLabels?.rotation ?? 0);
   const xTitleSpace =
     xAxis?.display !== false && xAxis?.position !== 'top' && xAxis?.title
@@ -664,7 +711,7 @@ function drawPositionedLegend(
   const legend = options.legend ?? {};
   const markerSize = Math.max(4, legend.markerSize ?? 10);
   const itemGap = Math.max(0, legend.itemGap ?? 14);
-  const padding = Math.max(0, legend.padding ?? 0);
+  const padding = resolveSpacing(legend.padding);
   const legendStyle = textStyle(options, 'legend', {
     color: theme.mutedText,
     fontFamily: theme.fontFamily,
@@ -673,32 +720,38 @@ function drawPositionedLegend(
   });
   const vertical = position === 'left' || position === 'right';
   const itemWidths = data.datasets.map(
-    (dataset) => markerSize + 8 + dataset.label.length * (legendStyle.fontSize ?? 11) * 0.62,
+    (dataset) =>
+      markerSize +
+      8 +
+      dataset.label.length * (legendStyle.fontSize ?? 11) * 0.62 +
+      textBoxHorizontalSpace(legendStyle),
   );
   const contentWidth = vertical
     ? Math.max(...itemWidths, 0)
     : itemWidths.reduce((sum, width) => sum + width, 0) +
       Math.max(0, itemWidths.length - 1) * itemGap;
   const contentHeight = vertical
-    ? data.datasets.length * Math.max(markerSize + 8, (legendStyle.fontSize ?? 11) + 8) +
+    ? data.datasets.length * Math.max(markerSize + 8, textBoxHeight(legendStyle, 11) + 8) +
       Math.max(0, data.datasets.length - 1) * itemGap
-    : Math.max(markerSize, legendStyle.fontSize ?? 11) + 6;
+    : Math.max(markerSize, textBoxHeight(legendStyle, 11)) + 6;
   const boxX =
     position === 'left' ? plot.left - 132 : position === 'right' ? plot.right + 12 : plot.left + 8;
   const boxY =
     position === 'bottom' ? plot.bottom + 30 : position === 'inside' ? plot.top + 8 : plot.top;
   drawLegendBackground(
     renderer,
-    boxX - padding,
-    boxY - padding,
-    contentWidth + padding * 2,
-    contentHeight + padding * 2,
+    boxX,
+    boxY,
+    contentWidth + padding.left + padding.right,
+    contentHeight + padding.top + padding.bottom,
     legend,
   );
+  const contentX = boxX + padding.left;
+  const contentY = boxY + padding.top;
   let cursor = 0;
   data.datasets.forEach((dataset, index) => {
-    const x = boxX + (vertical ? 0 : cursor);
-    const y = boxY + (vertical ? cursor : 0);
+    const x = contentX + (vertical ? 0 : cursor);
+    const y = contentY + (vertical ? cursor : 0);
     const color = dataset.color ?? theme.palette[index % theme.palette.length] ?? theme.text;
     const markerColor = hiddenDatasets.has(index) ? theme.grid : color;
     renderer.roundedRect(x, y, markerSize, markerSize, Math.min(4, markerSize / 2), markerColor);
@@ -722,7 +775,7 @@ function drawPositionedLegend(
     });
     cursor +=
       (vertical
-        ? Math.max(markerSize + 8, (legendStyle.fontSize ?? 11) + 8)
+        ? Math.max(markerSize + 8, textBoxHeight(legendStyle, 11) + 8)
         : (itemWidths[index] ?? 80)) + itemGap;
   });
 }

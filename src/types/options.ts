@@ -219,8 +219,8 @@ export interface LegendOptions {
   borderWidth?: number;
   /** Legend container corner radius in CSS pixels. */
   cornerRadius?: number;
-  /** Inner spacing around legend items in CSS pixels. */
-  padding?: number;
+  /** Inner spacing around legend items, uniformly or independently by side. */
+  padding?: number | Partial<SpacingOptions>;
   /** Horizontal or vertical distance between legend items. */
   itemGap?: number;
   /** Size of each legend color marker. */
@@ -391,6 +391,9 @@ export interface TextStyleOptions {
   fontStyle?: 'normal' | 'italic';
   color?: string;
   backgroundColor?: string;
+  borderColor?: string;
+  borderWidth?: number;
+  borderRadius?: number;
   underline?: boolean;
   href?: string;
   effect?: 'none' | 'soft-shadow' | 'outline' | 'emboss' | 'gradient';
@@ -406,6 +409,13 @@ export interface SpacingOptions {
   right: number;
   bottom: number;
   left: number;
+}
+
+/** Border styling for the complete chart canvas. */
+export interface CanvasStyleOptions {
+  borderColor?: string;
+  borderWidth?: number;
+  borderRadius?: number;
 }
 
 export interface PositionOptions {
@@ -429,6 +439,9 @@ export interface LabelOptions {
   color?: string;
   /** Optional CSS background color behind text. */
   backgroundColor?: string;
+  borderColor?: string;
+  borderWidth?: number;
+  borderRadius?: number;
   /** CSS font-family stack. */
   fontFamily?: string;
   /** Font size in CSS pixels. */
@@ -471,6 +484,8 @@ export interface ChartOptions {
   backgroundImage?: string;
   /** Background-image opacity. */
   backgroundImageOpacity?: number;
+  /** Border styling applied inside the complete canvas edge. */
+  canvas?: CanvasStyleOptions;
   /** Override the theme palette for all datasets or slices. */
   colors?: string[];
   /** Corner radius for rectangular marks such as bars and columns. */

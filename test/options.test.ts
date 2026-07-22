@@ -26,15 +26,27 @@ describe('normalizeConfig', () => {
       data: { labels: ['A'], datasets: [{ label: 'Share', values: [10] }] },
       options: {
         colors: ['#123456'],
-        dataLabels: { show: true, rotation: 15 },
+        canvas: { borderColor: '#334155', borderWidth: 2, borderRadius: 8 },
+        dataLabels: {
+          show: true,
+          rotation: 15,
+          padding: { top: 1, right: 2, bottom: 3, left: 4 },
+        },
+        legend: { padding: { top: 5, right: 6, bottom: 7, left: 8 } },
         typography: { fontFamily: 'Inter' },
       },
     };
     const normalized = normalizeConfig(config);
     normalized.options.colors![0] = '#ffffff';
+    normalized.options.canvas!.borderWidth = 6;
     normalized.options.dataLabels!.rotation = 45;
+    normalized.options.dataLabels!.padding!.top = 20;
+    normalized.options.legend!.padding = 20;
     expect(config.options.colors[0]).toBe('#123456');
+    expect(config.options.canvas.borderWidth).toBe(2);
     expect(config.options.dataLabels.rotation).toBe(15);
+    expect(config.options.dataLabels.padding.top).toBe(1);
+    expect(config.options.legend.padding).toEqual({ top: 5, right: 6, bottom: 7, left: 8 });
   });
 
   it('deep-clones drill-down data and gesture options', () => {

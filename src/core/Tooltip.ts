@@ -66,6 +66,8 @@ export class Tooltip {
     this.element.style.fontWeight = String(style?.fontWeight ?? 600);
     this.element.style.fontStyle = style?.fontStyle ?? 'normal';
     this.element.style.textDecoration = style?.underline ? 'underline' : 'none';
+    this.element.style.border = `${style?.borderWidth ?? 0}px solid ${style?.borderColor ?? 'transparent'}`;
+    this.element.style.borderRadius = `${style?.borderRadius ?? 10}px`;
     this.element.style.lineHeight = style?.lineHeight
       ? style.lineHeight <= 4
         ? String(style.lineHeight)

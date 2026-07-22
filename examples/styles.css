@@ -836,7 +836,7 @@ a {
   top: 0;
   z-index: 8;
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   padding: 8px;
   gap: 4px;
   border-bottom: 1px solid var(--line);

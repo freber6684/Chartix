@@ -652,6 +652,9 @@ function defaultTextStyle(role, theme) {
       backgroundColor: '#0f172a',
       lineHeight: 1.45,
       padding: { top: 10, right: 12, bottom: 10, left: 12 },
+      borderColor: '#334155',
+      borderWidth: 1,
+      borderRadius: 10,
     },
   };
   const preset = presets[role] ?? presets.legend;
@@ -664,6 +667,9 @@ function defaultTextStyle(role, theme) {
     effect: 'none',
     effectColor: '#625bf6',
     padding: { top: 0, right: 0, bottom: 0, left: 0 },
+    borderColor: '#cbd5e1',
+    borderWidth: 0,
+    borderRadius: 6,
     letterSpacing: 0,
     ...preset,
   };
@@ -693,7 +699,7 @@ const state = {
   previewWidth: 0,
   previewHeight: 470,
   activeRole: 'title',
-  controlTab: 'design',
+  controlTab: 'chart',
   editor: null,
 };
 
@@ -767,10 +773,23 @@ function chartCapabilities(chart) {
 function freshEditor(chart) {
   const caps = chartCapabilities(chart);
   const horizontal = chart.options.horizontal || chart.type === 'horizontal-bar';
+  const legendPadding = chart.options.legend?.padding;
+  const normalizedLegendPadding =
+    typeof legendPadding === 'number'
+      ? { top: legendPadding, right: legendPadding, bottom: legendPadding, left: legendPadding }
+      : {
+          top: legendPadding?.top ?? 8,
+          right: legendPadding?.right ?? 8,
+          bottom: legendPadding?.bottom ?? 8,
+          left: legendPadding?.left ?? 8,
+        };
   return {
     theme: chart.theme,
     seriesColors: initialSeriesColors(chart),
     background: themeBackgrounds[chart.theme],
+    canvasBorderColor: '#d7dce5',
+    canvasBorderWidth: 0,
+    canvasBorderRadius: 8,
     title: `${chart.name} example`,
     subtitle: 'Interactive Chartix visualization',
     xTitle:
@@ -826,7 +845,7 @@ function freshEditor(chart) {
     legendBorderColor: chart.options.legend?.borderColor ?? '#d7dce5',
     legendBorderWidth: chart.options.legend?.borderWidth ?? 0,
     legendCornerRadius: chart.options.legend?.cornerRadius ?? 8,
-    legendPadding: chart.options.legend?.padding ?? 8,
+    legendPadding: normalizedLegendPadding,
     legendItemGap: chart.options.legend?.itemGap ?? 18,
     legendMarkerSize: chart.options.legend?.markerSize ?? 10,
     zoom: false,
@@ -997,19 +1016,26 @@ function renderControls() {
         true,
       )
     : '';
+  const chartDesign = `${controlSection(
+    'Chart colors',
+    `${colorTargets(state.selected)
+      .map(({ label }, index) =>
+        colorEditor(label, `seriesColors.${index}`, editor.seriesColors[index]),
+      )
+      .join(
+        '',
+      )}<small class="panel-intro">Colors follow the chart data. Every new series receives its own distinct color automatically.</small>`,
+    true,
+  )}${controlSection(
+    'Canvas',
+    `${colorEditor('Canvas background', 'background', editor.background)}${colorEditor('Canvas border', 'canvasBorderColor', editor.canvasBorderColor)}${rangeControl('Border width', 'canvasBorderWidth', editor.canvasBorderWidth, 0, 12, 1, 'px')}${rangeControl('Corner roundness', 'canvasBorderRadius', editor.canvasBorderRadius, 0, 40, 1, 'px')}`,
+  )}${controlSection(
+    'Legend',
+    `${toggleControl('Show legend', 'showLegend', editor.showLegend)}<label>Position<select data-setting="legendPosition">${selectOptions(['top', 'bottom', 'left', 'right', 'inside'], editor.legendPosition)}</select></label>${toggleControl('Background panel', 'legendBackgroundEnabled', editor.legendBackgroundEnabled)}${colorEditor('Legend background', 'legendBackground', editor.legendBackground)}${colorEditor('Legend border', 'legendBorderColor', editor.legendBorderColor)}${rangeControl('Border width', 'legendBorderWidth', editor.legendBorderWidth, 0, 6, 1, 'px')}${rangeControl('Corner roundness', 'legendCornerRadius', editor.legendCornerRadius, 0, 24, 1, 'px')}<div class="spacing-grid"><span>Legend box padding</span>${['top', 'right', 'bottom', 'left'].map((side) => `<label>${side}<input type="number" min="0" max="80" data-legend-padding="${side}" value="${editor.legendPadding[side]}"></label>`).join('')}</div>${rangeControl('Item spacing', 'legendItemGap', editor.legendItemGap, 0, 48, 1, 'px')}${rangeControl('Marker size', 'legendMarkerSize', editor.legendMarkerSize, 4, 24, 1, 'px')}<small class="panel-intro">Use Text → Legend to style each legend label and its own border.</small>`,
+    true,
+  )}`;
   const panels = {
-    design: `${controlSection(
-      'Chart colors',
-      `${colorTargets(state.selected)
-        .map(({ label }, index) =>
-          colorEditor(label, `seriesColors.${index}`, editor.seriesColors[index]),
-        )
-        .join(
-          '',
-        )}<small class="panel-intro">Colors follow the chart data. Every new series receives its own distinct color automatically.</small>${colorEditor('Canvas background', 'background', editor.background)}`,
-      true,
-    )}${controlSection('Legend', `${toggleControl('Show legend', 'showLegend', editor.showLegend)}<label>Position<select data-setting="legendPosition">${selectOptions(['top', 'bottom', 'left', 'right', 'inside'], editor.legendPosition)}</select></label>${toggleControl('Background panel', 'legendBackgroundEnabled', editor.legendBackgroundEnabled)}${colorEditor('Legend background', 'legendBackground', editor.legendBackground)}${colorEditor('Legend border', 'legendBorderColor', editor.legendBorderColor)}${rangeControl('Border width', 'legendBorderWidth', editor.legendBorderWidth, 0, 6, 1, 'px')}${rangeControl('Corner roundness', 'legendCornerRadius', editor.legendCornerRadius, 0, 24, 1, 'px')}${rangeControl('Inner padding', 'legendPadding', editor.legendPadding, 0, 30, 1, 'px')}${rangeControl('Item spacing', 'legendItemGap', editor.legendItemGap, 0, 48, 1, 'px')}${rangeControl('Marker size', 'legendMarkerSize', editor.legendMarkerSize, 4, 24, 1, 'px')}<small class="panel-intro">Use Text → Legend for font, size, style, text color, and text background.</small>`, true)}`,
-    text: `${controlSection('Text target', `<label>Editing<select data-role>${selectOptions(TEXT_ROLES, state.activeRole)}</select></label><div class="text-preview" style="font-family:'${escapeHTML(style.fontFamily)}';font-size:${style.fontSize}px;font-weight:${style.fontWeight};font-style:${style.fontStyle};color:${style.color};background:${style.backgroundColor};text-decoration:${style.underline ? 'underline' : 'none'}">Chartix typography</div>`, true)}${controlSection(
+    text: `${controlSection('Text target', `<label>Editing<select data-role>${selectOptions(TEXT_ROLES, state.activeRole)}</select></label><div class="text-preview" style="font-family:'${escapeHTML(style.fontFamily)}';font-size:${style.fontSize}px;font-weight:${style.fontWeight};font-style:${style.fontStyle};color:${style.color};background:${style.backgroundColor};border:${style.borderWidth}px solid ${style.borderColor};border-radius:${style.borderRadius}px;padding:${style.padding.top}px ${style.padding.right}px ${style.padding.bottom}px ${style.padding.left}px;text-decoration:${style.underline ? 'underline' : 'none'}">Chartix typography</div>`, true)}${controlSection(
       'Font and style',
       `<label>Font family<select data-text-setting="fontFamily" class="font-select" style="font-family:'${escapeHTML(style.fontFamily)}', sans-serif">${fontOptions(style.fontFamily)}</select><small>${FONT_CATALOG.length} fonts. Every name is previewed in its own typeface when supported by the browser.</small></label>${rangeControl('Font size', 'text.fontSize', style.fontSize, 8, 72, 1, 'px')}<div class="button-group" aria-label="Text style"><button type="button" data-text-toggle="fontWeight" class="${style.fontWeight >= 700 ? 'is-active' : ''}" aria-label="Bold" aria-pressed="${style.fontWeight >= 700}" title="Toggle bold"><strong>B</strong></button><button type="button" data-text-toggle="fontStyle" class="${style.fontStyle === 'italic' ? 'is-active' : ''}" aria-label="Italic" aria-pressed="${style.fontStyle === 'italic'}" title="Toggle italic"><em>I</em></button><button type="button" data-text-toggle="underline" class="${style.underline ? 'is-active' : ''}" aria-label="Underline" aria-pressed="${style.underline}" title="Toggle underline"><u>U</u></button></div><small class="style-status">Active for ${escapeHTML(TEXT_ROLES.find(([role]) => role === state.activeRole)?.[1] ?? state.activeRole)}: ${[style.fontWeight >= 700 ? 'Bold' : '', style.fontStyle === 'italic' ? 'Italic' : '', style.underline ? 'Underline' : ''].filter(Boolean).join(', ') || 'Regular'}</small><label>Text effect<select data-text-setting="effect">${selectOptions(
         [
@@ -1022,9 +1048,9 @@ function renderControls() {
         style.effect,
       )}</select></label>`,
       true,
-    )}${controlSection('Text colors', `${colorEditor('Font color', 'text.color', style.color)}${colorEditor('Text background', 'text.backgroundColor', style.backgroundColor)}${colorEditor('Effect color', 'text.effectColor', style.effectColor)}`)}${controlSection('Spacing and link', `<label>Hyperlink<input type="url" data-text-setting="href" value="${escapeHTML(style.href)}" placeholder="https://example.com"></label>${rangeControl('Line height', 'text.lineHeight', style.lineHeight, 0.8, 3, 0.1)}${rangeControl('Letter spacing', 'text.letterSpacing', style.letterSpacing, -2, 12, 0.5, 'px')}<div class="spacing-grid"><span>Text padding</span>${['top', 'right', 'bottom', 'left'].map((side) => `<label>${side}<input type="number" min="0" max="80" data-text-padding="${side}" value="${style.padding[side]}"></label>`).join('')}</div><button class="apply-all-button" type="button" data-apply-all>Apply this text style to all</button>`)}`,
+    )}${controlSection('Text colors', `${colorEditor('Font color', 'text.color', style.color)}${colorEditor('Text background', 'text.backgroundColor', style.backgroundColor)}${colorEditor('Effect color', 'text.effectColor', style.effectColor)}`)}${controlSection('Border and spacing', `${colorEditor('Border color', 'text.borderColor', style.borderColor)}${rangeControl('Border width', 'text.borderWidth', style.borderWidth, 0, 12, 1, 'px')}${rangeControl('Corner roundness', 'text.borderRadius', style.borderRadius, 0, 40, 1, 'px')}<label>Hyperlink<input type="url" data-text-setting="href" value="${escapeHTML(style.href)}" placeholder="https://example.com"></label>${rangeControl('Line height', 'text.lineHeight', style.lineHeight, 0.8, 3, 0.1)}${rangeControl('Letter spacing', 'text.letterSpacing', style.letterSpacing, -2, 12, 0.5, 'px')}<div class="spacing-grid"><span>Text box padding</span>${['top', 'right', 'bottom', 'left'].map((side) => `<label>${side}<input type="number" min="0" max="80" data-text-padding="${side}" value="${style.padding[side]}"></label>`).join('')}</div><button class="apply-all-button" type="button" data-apply-all>Apply this text style to all</button>`)}`,
     layout: `${controlSection('Titles', `<label>Title<input type="text" data-setting="title" value="${escapeHTML(editor.title)}"></label><label>Subtitle<input type="text" data-setting="subtitle" value="${escapeHTML(editor.subtitle)}"></label>`, true)}${controlSection('Chart spacing', `<div class="spacing-grid"><span>Chart padding</span>${['top', 'right', 'bottom', 'left'].map((side) => `<label>${side}<input type="number" min="0" max="120" data-padding="${side}" value="${editor.padding[side]}"></label>`).join('')}</div>${rangeControl('Title spacing', 'titleOffset', editor.titleOffset, 0, 80)}${rangeControl('Plot spacing', 'plotGap', editor.plotGap, -40, 100)}`, true)}`,
-    chart: `${axes}${line}${bar}${points}${radial || ''}${controlSection(
+    chart: `${chartDesign}${axes}${line}${bar}${points}${radial || ''}${controlSection(
       'Motion and annotations',
       `${rangeControl('Animation duration', 'duration', editor.duration, 0, 2000, 20, 'ms')}${rangeControl('Series stagger', 'stagger', editor.stagger, 0, 300, 10, 'ms')}${
         caps.cartesian
@@ -1067,10 +1093,9 @@ function renderControls() {
     )}${controlSection('Accessibility', `${toggleControl('Accessible patterns', 'patterns', editor.patterns)}${toggleControl('Screen-reader table', 'dataTable', editor.dataTable)}${toggleControl('High contrast', 'highContrast', editor.highContrast)}${toggleControl('Dyslexia-friendly text', 'dyslexia', editor.dyslexia)}${toggleControl('Right-to-left layout', 'rtl', editor.rtl)}`)}`,
   };
   const tabs = [
-    ['design', 'Design'],
+    ['chart', 'Chart'],
     ['text', 'Text'],
     ['layout', 'Layout'],
-    ['chart', 'Chart'],
     ['interaction', 'Interact'],
   ];
   document.querySelector('#chart-controls').innerHTML =
@@ -1141,7 +1166,7 @@ function renderDetailNavigation() {
 function resetControls() {
   state.editor = freshEditor(state.selected);
   state.activeRole = 'title';
-  state.controlTab = 'design';
+  state.controlTab = 'chart';
   state.previewWidth = 0;
   state.previewHeight = 470;
   renderControls();
@@ -1172,6 +1197,11 @@ function currentConfig() {
   const editor = state.editor;
   config.theme = editor.theme;
   config.options.backgroundColor = editor.background;
+  config.options.canvas = {
+    borderColor: editor.canvasBorderColor,
+    borderWidth: Number(editor.canvasBorderWidth),
+    borderRadius: Number(editor.canvasBorderRadius),
+  };
   const targetCount = colorTargets(state.selected).length;
   while (editor.seriesColors.length < targetCount)
     editor.seriesColors.push(PALETTE[editor.seriesColors.length % PALETTE.length]);
@@ -1213,7 +1243,7 @@ function currentConfig() {
     borderColor: editor.legendBorderColor,
     borderWidth: Number(editor.legendBorderWidth),
     cornerRadius: Number(editor.legendCornerRadius),
-    padding: Number(editor.legendPadding),
+    padding: deepClone(editor.legendPadding),
     itemGap: Number(editor.legendItemGap),
     markerSize: Number(editor.legendMarkerSize),
   };
@@ -1682,6 +1712,11 @@ document.querySelector('#chart-controls').addEventListener('input', (event) => {
     state.editor.textStyles[state.activeRole].padding[target.dataset.textPadding] = Number(
       target.value,
     );
+    rerenderFromEditor();
+    return;
+  }
+  if (target.matches('[data-legend-padding]')) {
+    state.editor.legendPadding[target.dataset.legendPadding] = Number(target.value);
     rerenderFromEditor();
     return;
   }

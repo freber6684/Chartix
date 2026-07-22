@@ -63,6 +63,15 @@ export interface Renderer {
     radius: number,
     fill: Paint,
   ): void;
+  strokeRoundedRect?(
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    radius: number,
+    stroke: string,
+    strokeWidth: number,
+  ): void;
   text(
     value: string,
     x: number,
@@ -73,6 +82,9 @@ export interface Renderer {
       font: string;
       baseline?: CanvasTextBaseline;
       backgroundColor?: string | undefined;
+      borderColor?: string | undefined;
+      borderWidth?: number | undefined;
+      borderRadius?: number | undefined;
       padding?: number | { top?: number; right?: number; bottom?: number; left?: number };
       rotation?: number | undefined;
       underline?: boolean;
@@ -228,6 +240,25 @@ export class CanvasRenderer implements Renderer {
     this.context.roundRect(x, y, width, height, safeRadius);
     this.context.fillStyle = fill;
     this.context.fill();
+  }
+
+  /** Draw a rounded outline without covering the rectangle interior. */
+  public strokeRoundedRect(
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    radius: number,
+    stroke: string,
+    strokeWidth: number,
+  ): void {
+    if (width <= 0 || height <= 0 || strokeWidth <= 0) return;
+    const safeRadius = Math.min(radius, width / 2, height / 2);
+    this.context.beginPath();
+    this.context.roundRect(x, y, width, height, safeRadius);
+    this.context.strokeStyle = stroke;
+    this.context.lineWidth = strokeWidth;
+    this.context.stroke();
   }
 
   /** Draw a polyline with rounded joins. */
@@ -419,6 +450,9 @@ export class CanvasRenderer implements Renderer {
       font: string;
       baseline?: CanvasTextBaseline;
       backgroundColor?: string | undefined;
+      borderColor?: string | undefined;
+      borderWidth?: number | undefined;
+      borderRadius?: number | undefined;
       padding?: number | { top?: number; right?: number; bottom?: number; left?: number };
       rotation?: number | undefined;
       underline?: boolean;
@@ -458,7 +492,7 @@ export class CanvasRenderer implements Renderer {
             bottom: options.padding?.bottom ?? 2,
             left: options.padding?.left ?? 4,
           };
-    if (options.backgroundColor) {
+    if (options.backgroundColor || (options.borderColor && (options.borderWidth ?? 0) > 0)) {
       const metrics = lines.map((line) => this.context.measureText(line));
       const width = Math.max(0, ...metrics.map((metric) => metric.width));
       const firstMetrics = metrics[0]!;
@@ -477,13 +511,33 @@ export class CanvasRenderer implements Renderer {
           : this.context.textBaseline === 'top' || this.context.textBaseline === 'hanging'
             ? 0
             : -firstMetrics.actualBoundingBoxAscent;
-      this.context.fillStyle = options.backgroundColor;
-      this.context.fillRect(
-        left - spacing.left,
-        top - spacing.top,
-        width + spacing.left + spacing.right,
-        height + spacing.top + spacing.bottom,
-      );
+      const boxX = left - spacing.left;
+      const boxY = top - spacing.top;
+      const boxWidth = width + spacing.left + spacing.right;
+      const boxHeight = height + spacing.top + spacing.bottom;
+      const borderWidth = Math.max(0, options.borderWidth ?? 0);
+      if (borderWidth > 0 || (options.borderRadius ?? 0) > 0) {
+        this.context.beginPath();
+        this.context.roundRect(
+          boxX,
+          boxY,
+          boxWidth,
+          boxHeight,
+          Math.min(options.borderRadius ?? 0, boxWidth / 2, boxHeight / 2),
+        );
+        if (options.backgroundColor) {
+          this.context.fillStyle = options.backgroundColor;
+          this.context.fill();
+        }
+        if (options.borderColor && borderWidth > 0) {
+          this.context.strokeStyle = options.borderColor;
+          this.context.lineWidth = borderWidth;
+          this.context.stroke();
+        }
+      } else if (options.backgroundColor) {
+        this.context.fillStyle = options.backgroundColor;
+        this.context.fillRect(boxX, boxY, boxWidth, boxHeight);
+      }
     }
     if (options.effect === 'soft-shadow') {
       this.context.shadowColor = options.effectColor ?? '#00000066';

@@ -12,6 +12,7 @@ describe('advanced renderer appearance', () => {
       createRadialGradient: vi.fn(() => gradient),
       createPattern: vi.fn(() => pattern),
       fillRect: vi.fn(),
+      roundRect: vi.fn(),
       beginPath: vi.fn(),
       arc: vi.fn(),
       fill: vi.fn(),
@@ -38,6 +39,8 @@ describe('advanced renderer appearance', () => {
     });
     renderer.image(document.createElement('canvas'), 0.5);
     expect(context.drawImage).toHaveBeenCalled();
+    renderer.strokeRoundedRect(1, 1, 318, 198, 12, '#223344', 2);
+    expect(context.roundRect).toHaveBeenCalledWith(1, 1, 318, 198, 12);
   });
 
   it('renders professional text effects, underline, and independent padding', () => {
@@ -54,6 +57,8 @@ describe('advanced renderer appearance', () => {
         actualBoundingBoxDescent: 3,
       })),
       fillRect: vi.fn(),
+      roundRect: vi.fn(),
+      fill: vi.fn(),
       fillText: vi.fn(),
       strokeText: vi.fn(),
       beginPath: vi.fn(),
@@ -71,6 +76,9 @@ describe('advanced renderer appearance', () => {
       color: '#172033',
       font: 'italic 700 18px Inter',
       backgroundColor: '#ffffff',
+      borderColor: '#223344',
+      borderWidth: 2,
+      borderRadius: 8,
       padding: { top: 3, right: 8, bottom: 5, left: 6 },
       effect: 'gradient',
       effectColor: '#625bf6',
@@ -80,7 +88,8 @@ describe('advanced renderer appearance', () => {
     });
     expect(context.createLinearGradient).toHaveBeenCalled();
     expect(gradient.addColorStop).toHaveBeenCalledTimes(2);
-    expect(context.fillRect).toHaveBeenCalled();
+    expect(context.roundRect).toHaveBeenCalledWith(-6, -12, 62, 20, 8);
+    expect(context.fill).toHaveBeenCalled();
     expect(context.fillText).toHaveBeenCalledWith('Chartix', 0, 0);
     expect(context.stroke).toHaveBeenCalled();
   });

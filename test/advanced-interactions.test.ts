@@ -32,6 +32,9 @@ describe('advanced interaction utilities', () => {
           fontFamily: 'Space Mono',
           fontSize: 12,
           fontWeight: 600,
+          borderColor: '#334155',
+          borderWidth: 1,
+          borderRadius: 10,
           padding: { top: 10, right: 12, bottom: 10, left: 12 },
         },
       },
@@ -41,6 +44,8 @@ describe('advanced interaction utilities', () => {
     expect(element.style.background).toBe('rgb(15, 23, 42)');
     expect(element.style.color).toBe('rgb(248, 250, 252)');
     expect(element.style.padding).toBe('10px 12px');
+    expect(element.style.border).toBe('1px solid rgb(51, 65, 85)');
+    expect(element.style.borderRadius).toBe('10px');
     tooltip.pin();
     tooltip.hide();
     expect(element.style.display).toBe('block');

@@ -70,6 +70,7 @@ export function normalizeConfig(config: ChartConfig): ChartConfig & { options: C
         ...(config.options?.scales?.y1 ? { y1: { ...config.options.scales.y1 } } : {}),
       },
       ...(config.options?.colors ? { colors: [...config.options.colors] } : {}),
+      ...(config.options?.canvas ? { canvas: { ...config.options.canvas } } : {}),
       ...(config.options?.explodedSlices
         ? { explodedSlices: [...config.options.explodedSlices] }
         : {}),
@@ -89,7 +90,16 @@ export function normalizeConfig(config: ChartConfig): ChartConfig & { options: C
             },
           }
         : {}),
-      ...(config.options?.dataLabels ? { dataLabels: { ...config.options.dataLabels } } : {}),
+      ...(config.options?.dataLabels
+        ? {
+            dataLabels: {
+              ...config.options.dataLabels,
+              ...(config.options.dataLabels.padding
+                ? { padding: { ...config.options.dataLabels.padding } }
+                : {}),
+            },
+          }
+        : {}),
       ...(config.options?.drilldown
         ? {
             drilldown: Object.fromEntries(
@@ -99,7 +109,13 @@ export function normalizeConfig(config: ChartConfig): ChartConfig & { options: C
         : {}),
       decimation: { ...defaultOptions.decimation, ...config.options?.decimation },
       interaction: { ...defaultOptions.interaction, ...config.options?.interaction },
-      legend: { ...defaultOptions.legend, ...config.options?.legend },
+      legend: {
+        ...defaultOptions.legend,
+        ...config.options?.legend,
+        ...(config.options?.legend?.padding && typeof config.options.legend.padding === 'object'
+          ? { padding: { ...config.options.legend.padding } }
+          : {}),
+      },
       ...(config.options?.layout
         ? {
             layout: {
@@ -121,7 +137,14 @@ export function normalizeConfig(config: ChartConfig): ChartConfig & { options: C
         ...defaultOptions.tooltip,
         ...config.options?.tooltip,
         ...(config.options?.tooltip?.textStyle
-          ? { textStyle: { ...config.options.tooltip.textStyle } }
+          ? {
+              textStyle: {
+                ...config.options.tooltip.textStyle,
+                ...(config.options.tooltip.textStyle.padding
+                  ? { padding: { ...config.options.tooltip.textStyle.padding } }
+                  : {}),
+              },
+            }
           : {}),
       },
       ...(config.options?.typography
@@ -129,7 +152,12 @@ export function normalizeConfig(config: ChartConfig): ChartConfig & { options: C
             typography: Object.fromEntries(
               Object.entries(config.options.typography).map(([key, value]) => [
                 key,
-                value && typeof value === 'object' ? { ...value } : value,
+                value && typeof value === 'object'
+                  ? {
+                      ...value,
+                      ...(value.padding ? { padding: { ...value.padding } } : {}),
+                    }
+                  : value,
               ]),
             ),
           }
@@ -138,8 +166,26 @@ export function normalizeConfig(config: ChartConfig): ChartConfig & { options: C
         ? { transforms: config.options.transforms.map((transform) => ({ ...transform })) }
         : {}),
       ...(config.options?.plugins ? { plugins: [...config.options.plugins] } : {}),
-      ...(config.options?.xLabels ? { xLabels: { ...config.options.xLabels } } : {}),
-      ...(config.options?.yLabels ? { yLabels: { ...config.options.yLabels } } : {}),
+      ...(config.options?.xLabels
+        ? {
+            xLabels: {
+              ...config.options.xLabels,
+              ...(config.options.xLabels.padding
+                ? { padding: { ...config.options.xLabels.padding } }
+                : {}),
+            },
+          }
+        : {}),
+      ...(config.options?.yLabels
+        ? {
+            yLabels: {
+              ...config.options.yLabels,
+              ...(config.options.yLabels.padding
+                ? { padding: { ...config.options.yLabels.padding } }
+                : {}),
+            },
+          }
+        : {}),
       ...(config.options?.zoom ? { zoom: { ...config.options.zoom } } : {}),
       animation:
         config.options?.animation === false

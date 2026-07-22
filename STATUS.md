@@ -122,6 +122,8 @@ changes so the next session can resume without reconstructing history.
       dark-tooltip contrast and spacing, and remove direct title/plot dragging from the playground.
 - [x] Measure horizontal category labels and axis-title styling before layout so long labels, Y-axis
       titles, and the plot keep separate responsive space without overlaps.
+- [x] Consolidate design controls into Chart and add independently padded legend boxes, canvas
+      borders, and reusable borders for every text and label role.
 
 ## Remaining for v0.1
 
@@ -193,7 +195,7 @@ formatting, lint, strict types, unit tests, production bundles, and separate lea
 - Unit tests: 153 passed across 35 test files, including 45 chart/theme visual baselines.
 - Production build: ESM, CJS, standalone embed ESM, browser IIFE, minified browser IIFE, and TypeScript declarations generated.
 - Lean original-family core: measured on every build against a 35 KB gzip budget.
-- Complete library and public embed: measured against 71 KB and 40 KB gzip budgets respectively.
+- Complete library and public embed: measured against 72 KB and 40 KB gzip budgets respectively.
 - Browser check: the public demo rendered bar, line, pie, doughnut, and scatter charts without page errors.
 - Accessibility check: all five canvases had generated `role="img"` labels and matching data tables.
 - GitHub-hosted CI: push and pull-request checks completed successfully.

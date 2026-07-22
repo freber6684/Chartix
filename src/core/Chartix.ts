@@ -37,6 +37,7 @@ const validOptionKeys = new Set<keyof ChartOptions>([
   'backgroundColor',
   'backgroundImage',
   'backgroundImageOpacity',
+  'canvas',
   'colors',
   'cornerRadius',
   'crosshair',
@@ -840,6 +841,18 @@ export class Chartix {
         );
     }
     this.drawGestureOverlay(theme.mutedText);
+    const canvasStyle = drawOptions.canvas;
+    const canvasBorderWidth = Math.max(0, canvasStyle?.borderWidth ?? 0);
+    if (canvasStyle?.borderColor && canvasBorderWidth > 0)
+      this.renderer.strokeRoundedRect?.(
+        canvasBorderWidth / 2,
+        canvasBorderWidth / 2,
+        Math.max(1, this.renderer.width - canvasBorderWidth),
+        Math.max(1, this.renderer.height - canvasBorderWidth),
+        Math.max(0, canvasStyle.borderRadius ?? 0),
+        canvasStyle.borderColor,
+        canvasBorderWidth,
+      );
     if (progress >= 1) {
       this.transitionFrom = undefined;
       this.performanceStats = {
@@ -891,7 +904,10 @@ export class Chartix {
       display: 'flex',
       flexWrap: 'wrap',
       gap: `${legendOptions.itemGap ?? 18}px`,
-      padding: `${legendOptions.padding ?? 0}px`,
+      padding:
+        typeof legendOptions.padding === 'number'
+          ? `${legendOptions.padding}px`
+          : `${legendOptions.padding?.top ?? 0}px ${legendOptions.padding?.right ?? 0}px ${legendOptions.padding?.bottom ?? 0}px ${legendOptions.padding?.left ?? 0}px`,
       background: legendOptions.backgroundColor ?? 'transparent',
       border: `${legendOptions.borderWidth ?? 0}px solid ${legendOptions.borderColor ?? 'transparent'}`,
       borderRadius: `${legendOptions.cornerRadius ?? 0}px`,
@@ -910,6 +926,9 @@ export class Chartix {
         fontWeight: String(legendText?.fontWeight ?? 500),
         fontStyle: legendText?.fontStyle ?? 'normal',
         textDecoration: legendText?.underline ? 'underline' : 'none',
+        border: `${legendText?.borderWidth ?? 0}px solid ${legendText?.borderColor ?? 'transparent'}`,
+        borderRadius: `${legendText?.borderRadius ?? 0}px`,
+        padding: `${legendText?.padding?.top ?? 0}px ${legendText?.padding?.right ?? 0}px ${legendText?.padding?.bottom ?? 0}px ${legendText?.padding?.left ?? 0}px`,
       });
       button.style.setProperty(
         '--chartix-legend-color',
