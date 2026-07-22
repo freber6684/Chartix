@@ -93,10 +93,13 @@ changes so the next session can resume without reconstructing history.
 - [x] Add responsive embed previews, optional feature plugins, and a synchronized no-code builder.
 - [x] Make the playground inspector capability-aware so each chart shows only relevant controls.
 - [x] Add independent title, subtitle, axis, data-label, and tooltip typography with an apply-all
-      workflow, 110 on-demand fonts, professional text effects, hyperlinks, and per-side spacing.
+      workflow, 115 on-demand and system fonts, professional text effects, hyperlinks, and per-side
+      spacing.
 - [x] Add synchronized palette, HEX, and RGB color editing with reusable role-based controls.
 - [x] Add working phone/tablet/fluid preview frames plus drag positioning, plot resizing, and
       double-click editing for headings and chart values with live generated code.
+- [x] Replace the long chart sidebar and scrolling inspector with a chart dropdown, real settings
+      tabs, chart-aware collapsible groups, compact color popovers, and styled font choices.
 
 ## Remaining for v0.1
 

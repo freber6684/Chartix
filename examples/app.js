@@ -403,6 +403,11 @@ charts.push(...specializedExamples);
 
 const FONT_CATALOG = [
   'Space Mono',
+  'Times New Roman',
+  'Arial',
+  'Georgia',
+  'Verdana',
+  'Trebuchet MS',
   'Inter',
   'Roboto',
   'Open Sans',
@@ -558,6 +563,7 @@ const state = {
   tab: 'playground',
   previewWidth: 0,
   activeRole: 'title',
+  controlTab: 'design',
   editor: null,
   activePoint: null,
 };
@@ -702,6 +708,17 @@ function selectOptions(values, selected) {
     .join('');
 }
 
+function fontOptions(selected) {
+  return FONT_CATALOG.map(
+    (font) =>
+      `<option value="${escapeHTML(font)}" style="font-family:'${escapeHTML(font)}', sans-serif" ${font === selected ? 'selected' : ''}>${escapeHTML(font)}</option>`,
+  ).join('');
+}
+
+function controlSection(title, content, open = false) {
+  return `<details class="control-section" ${open ? 'open' : ''}><summary><span>${title}</span><span class="section-chevron" aria-hidden="true"></span></summary><div class="control-section-body">${content}</div></details>`;
+}
+
 function toggleControl(label, key, checked) {
   return `<label class="toggle-row">${label}<input type="checkbox" data-setting="${key}" ${checked ? 'checked' : ''}><span></span></label>`;
 }
@@ -713,7 +730,7 @@ function rangeControl(label, key, value, min, max, step = 1, suffix = '') {
 function colorEditor(label, key, value) {
   const hex = colorToHex(value);
   const rgb = hexToRgb(hex);
-  return `<div class="color-editor" data-color-key="${key}"><div class="color-heading"><span>${label}</span><span class="color-chip" style="background:${hex}"></span></div><div class="color-main"><input type="color" value="${hex}" data-color-part="picker"><input class="code-input" value="${hex}" data-color-part="hex" aria-label="${label} hex"></div><div class="rgb-row"><label>R<input type="number" min="0" max="255" value="${rgb.r}" data-color-part="r"></label><label>G<input type="number" min="0" max="255" value="${rgb.g}" data-color-part="g"></label><label>B<input type="number" min="0" max="255" value="${rgb.b}" data-color-part="b"></label></div><div class="palette-row">${PALETTE.map((color) => `<button type="button" data-palette="${color}" title="${color}" style="background:${color}"></button>`).join('')}</div><small>${hex.toUpperCase()} · rgb(${rgb.r}, ${rgb.g}, ${rgb.b})</small></div>`;
+  return `<div class="color-editor" data-color-key="${key}"><span class="color-label">${label}</span><button class="color-trigger" type="button" data-color-trigger aria-expanded="false"><span class="color-chip" style="background:${hex}"></span><code>${hex.toUpperCase()}</code><span class="color-trigger-arrow" aria-hidden="true"></span></button><div class="color-popover" hidden><div class="color-popover-header"><strong>${label}</strong><button type="button" data-color-close aria-label="Close ${label} color palette">×</button></div><label class="visual-picker">Choose visually<input type="color" value="${hex}" data-color-part="picker"></label><label>HEX<input class="code-input" value="${hex.toUpperCase()}" data-color-part="hex" aria-label="${label} hex"></label><div class="rgb-row"><label>R<input type="number" min="0" max="255" value="${rgb.r}" data-color-part="r"></label><label>G<input type="number" min="0" max="255" value="${rgb.g}" data-color-part="g"></label><label>B<input type="number" min="0" max="255" value="${rgb.b}" data-color-part="b"></label></div><div class="palette-row" aria-label="Suggested colors">${PALETTE.map((color) => `<button type="button" data-palette="${color}" aria-label="Use ${color}" title="${color}" style="background:${color}"></button>`).join('')}</div><small>${hex.toUpperCase()} · rgb(${rgb.r}, ${rgb.g}, ${rgb.b})</small></div></div>`;
 }
 
 function colorToHex(value) {
@@ -750,63 +767,123 @@ function renderControls() {
   const style = editor.textStyles[state.activeRole];
   const caps = chartCapabilities(state.selected);
   const axes = caps.axes
-    ? `<fieldset><legend>Axes + labels</legend>${toggleControl('Show data labels', 'showLabels', editor.showLabels)}<label>Data-label position<select data-setting="labelPosition">${selectOptions(
-        [
-          ['outside', 'Outside'],
-          ['inside', 'Inside'],
-          ['center', 'Center'],
-        ],
-        editor.labelPosition,
-      )}</select></label>${rangeControl('X label angle', 'xAngle', editor.xAngle, -90, 90, 1, '°')}${rangeControl('Y label angle', 'yAngle', editor.yAngle, -90, 90, 1, '°')}<label>X-axis title<input type="text" data-setting="xTitle" value="${escapeHTML(editor.xTitle)}"></label><label>Y-axis title<input type="text" data-setting="yTitle" value="${escapeHTML(editor.yTitle)}"></label><label>Y scale<select data-setting="yScale">${selectOptions(
-        [
-          ['linear', 'Linear'],
-          ['logarithmic', 'Logarithmic'],
-          ['percentage', 'Percentage'],
-        ],
-        editor.yScale,
-      )}</select></label>${toggleControl('Reverse Y axis', 'reverseAxis', editor.reverseAxis)}</fieldset>`
+    ? controlSection(
+        'Axes and labels',
+        `${toggleControl('Show data labels', 'showLabels', editor.showLabels)}<label>Data-label position<select data-setting="labelPosition">${selectOptions(
+          [
+            ['outside', 'Outside'],
+            ['inside', 'Inside'],
+            ['center', 'Center'],
+          ],
+          editor.labelPosition,
+        )}</select></label>${rangeControl('X label angle', 'xAngle', editor.xAngle, -90, 90, 1, '°')}${rangeControl('Y label angle', 'yAngle', editor.yAngle, -90, 90, 1, '°')}<label>X-axis title<input type="text" data-setting="xTitle" value="${escapeHTML(editor.xTitle)}"></label><label>Y-axis title<input type="text" data-setting="yTitle" value="${escapeHTML(editor.yTitle)}"></label><label>Y scale<select data-setting="yScale">${selectOptions(
+          [
+            ['linear', 'Linear'],
+            ['logarithmic', 'Logarithmic'],
+            ['percentage', 'Percentage'],
+          ],
+          editor.yScale,
+        )}</select></label>${toggleControl('Reverse Y axis', 'reverseAxis', editor.reverseAxis)}`,
+        true,
+      )
     : '';
   const line = caps.line
-    ? `<fieldset><legend>Line + area</legend><label>Line style<select data-setting="lineStyle">${selectOptions(
-        [
-          ['straight', 'Straight'],
-          ['smooth', 'Smooth'],
-          ['step-after', 'Step'],
-        ],
-        editor.lineStyle,
-      )}</select></label>${rangeControl('Line width', 'borderWidth', editor.borderWidth, 1, 10)}${toggleControl('Fill area', 'fill', editor.fill)}</fieldset>`
+    ? controlSection(
+        'Line and area',
+        `<label>Line style<select data-setting="lineStyle">${selectOptions(
+          [
+            ['straight', 'Straight'],
+            ['smooth', 'Smooth'],
+            ['step-after', 'Step'],
+          ],
+          editor.lineStyle,
+        )}</select></label>${rangeControl('Line width', 'borderWidth', editor.borderWidth, 1, 10)}${toggleControl('Fill area', 'fill', editor.fill)}`,
+      )
     : '';
   const bar = caps.bar
-    ? `<fieldset><legend>Bars</legend>${toggleControl('Stack datasets', 'stacked', editor.stacked)}${rangeControl('Mark width', 'borderWidth', editor.borderWidth, 1, 10)}</fieldset>`
+    ? controlSection(
+        'Bars',
+        `${toggleControl('Stack datasets', 'stacked', editor.stacked)}${rangeControl('Mark width', 'borderWidth', editor.borderWidth, 1, 10)}`,
+      )
     : '';
   const points = caps.points
-    ? `<fieldset><legend>Markers</legend>${rangeControl('Marker size', 'pointSize', editor.pointSize, 1, 20)}</fieldset>`
+    ? controlSection('Markers', rangeControl('Marker size', 'pointSize', editor.pointSize, 1, 20))
     : '';
   const radial = caps.radial
-    ? `<fieldset><legend>Radial chart</legend>${rangeControl('Start angle', 'startAngle', editor.startAngle, -180, 180, 1, '°')}${rangeControl('Slice gap', 'radialGap', editor.radialGap, 0, 12, 0.5, '°')}${caps.doughnut ? rangeControl('Inner radius', 'innerRadius', editor.innerRadius, 0.1, 0.9, 0.01) : ''}</fieldset>`
+    ? controlSection(
+        'Radial chart',
+        `${rangeControl('Start angle', 'startAngle', editor.startAngle, -180, 180, 1, '°')}${rangeControl('Slice gap', 'radialGap', editor.radialGap, 0, 12, 0.5, '°')}${caps.doughnut ? rangeControl('Inner radius', 'innerRadius', editor.innerRadius, 0.1, 0.9, 0.01) : ''}`,
+        true,
+      )
     : '';
+  const panels = {
+    design: `${controlSection('Theme', `<label>Theme<select data-setting="theme">${selectOptions(themes, editor.theme)}</select></label>`, true)}${controlSection('Chart colors', `${colorEditor('Primary', 'primary', editor.primary)}${colorEditor('Accent', 'accent', editor.accent)}${colorEditor('Canvas background', 'background', editor.background)}`, true)}`,
+    text: `${controlSection('Text target', `<label>Editing<select data-role>${selectOptions(TEXT_ROLES, state.activeRole)}</select></label><div class="text-preview" style="font-family:'${escapeHTML(style.fontFamily)}';font-size:${style.fontSize}px;font-weight:${style.fontWeight};font-style:${style.fontStyle};color:${style.color};background:${style.backgroundColor};text-decoration:${style.underline ? 'underline' : 'none'}">Chartix typography</div>`, true)}${controlSection(
+      'Font and style',
+      `<label>Font family<select data-text-setting="fontFamily" class="font-select" style="font-family:'${escapeHTML(style.fontFamily)}', sans-serif">${fontOptions(style.fontFamily)}</select><small>${FONT_CATALOG.length} fonts. Every name is previewed in its own typeface when supported by the browser.</small></label>${rangeControl('Font size', 'text.fontSize', style.fontSize, 8, 72, 1, 'px')}<div class="button-group" aria-label="Text style"><button type="button" data-text-toggle="fontWeight" class="${style.fontWeight >= 700 ? 'is-active' : ''}" aria-label="Bold"><strong>B</strong></button><button type="button" data-text-toggle="fontStyle" class="${style.fontStyle === 'italic' ? 'is-active' : ''}" aria-label="Italic"><em>I</em></button><button type="button" data-text-toggle="underline" class="${style.underline ? 'is-active' : ''}" aria-label="Underline"><u>U</u></button></div><label>Text effect<select data-text-setting="effect">${selectOptions(
+        [
+          ['none', 'None'],
+          ['soft-shadow', 'Soft shadow'],
+          ['outline', 'Outline'],
+          ['emboss', 'Emboss'],
+          ['gradient', 'Gradient'],
+        ],
+        style.effect,
+      )}</select></label>`,
+      true,
+    )}${controlSection('Text colors', `${colorEditor('Font color', 'text.color', style.color)}${colorEditor('Text background', 'text.backgroundColor', style.backgroundColor)}${colorEditor('Effect color', 'text.effectColor', style.effectColor)}`)}${controlSection('Spacing and link', `<label>Hyperlink<input type="url" data-text-setting="href" value="${escapeHTML(style.href)}" placeholder="https://example.com"></label>${rangeControl('Line height', 'text.lineHeight', style.lineHeight, 0.8, 3, 0.1)}${rangeControl('Letter spacing', 'text.letterSpacing', style.letterSpacing, -2, 12, 0.5, 'px')}<div class="spacing-grid"><span>Text padding</span>${['top', 'right', 'bottom', 'left'].map((side) => `<label>${side}<input type="number" min="0" max="80" data-text-padding="${side}" value="${style.padding[side]}"></label>`).join('')}</div><button class="apply-all-button" type="button" data-apply-all>Apply this text style to all</button>`)}`,
+    layout: `${controlSection('Titles', `<label>Title<input type="text" data-setting="title" value="${escapeHTML(editor.title)}"><small>Double-click the preview title to edit it in place.</small></label><label>Subtitle<input type="text" data-setting="subtitle" value="${escapeHTML(editor.subtitle)}"></label>`, true)}${controlSection('Chart spacing', `<div class="spacing-grid"><span>Chart padding</span>${['top', 'right', 'bottom', 'left'].map((side) => `<label>${side}<input type="number" min="0" max="120" data-padding="${side}" value="${editor.padding[side]}"></label>`).join('')}</div>${rangeControl('Title spacing', 'titleOffset', editor.titleOffset, 0, 80)}${rangeControl('Axis-title spacing', 'axisOffset', editor.axisOffset, 0, 80)}${rangeControl('Plot spacing', 'plotGap', editor.plotGap, -40, 100)}`, true)}${controlSection('Direct manipulation', `<button class="copy-button" type="button" data-reset-layout>Reset dragged positions</button><p class="panel-intro">Drag the title, subtitle, or plot in the preview. Use the corner handle to resize the plot.</p>`)}`,
+    chart: `${axes}${line}${bar}${points}${radial || ''}${controlSection(
+      'Motion and annotations',
+      `${rangeControl('Animation duration', 'duration', editor.duration, 0, 2000, 20, 'ms')}${rangeControl('Series stagger', 'stagger', editor.stagger, 0, 300, 10, 'ms')}${
+        caps.cartesian
+          ? `<label>Annotation<select data-setting="annotation">${selectOptions(
+              [
+                ['none', 'None'],
+                ['line', 'Reference line'],
+                ['box', 'Highlight box'],
+                ['point', 'Point label'],
+                ['arrow', 'Arrow'],
+                ['image', 'Image'],
+              ],
+              editor.annotation,
+            )}</select></label>${editor.annotation === 'image' ? `<label>Image URL<input type="url" data-setting="annotationImage" value="${escapeHTML(editor.annotationImage)}"></label>` : ''}`
+          : ''
+      }`,
+    )}`,
+    interaction: `${controlSection(
+      'Tooltips and legend',
+      `${toggleControl('Tooltips', 'tooltips', editor.tooltips)}${toggleControl('Pin tooltip on click', 'pinTooltip', editor.pinTooltip)}${caps.cartesian ? toggleControl('Crosshair', 'crosshair', editor.crosshair) : ''}<label>Tooltip mode<select data-setting="interactionMode">${selectOptions(
+        [
+          ['nearest', 'Nearest'],
+          ['index', 'Same index'],
+          ['dataset', 'Dataset'],
+          ['intersect', 'Intersect'],
+        ],
+        editor.interactionMode,
+      )}</select></label><label>Legend position<select data-setting="legendPosition">${selectOptions(['top', 'bottom', 'left', 'right', 'inside'], editor.legendPosition)}</select></label>${toggleControl('HTML legend', 'htmlLegend', editor.htmlLegend)}`,
+      true,
+    )}${controlSection(
+      'Navigation and selection',
+      `${caps.cartesian ? toggleControl('Zoom and pan', 'zoom', editor.zoom) : ''}<label>Drag selection<select data-setting="selection">${selectOptions(
+        [
+          ['off', 'Off'],
+          ['brush', 'Box selection'],
+          ['lasso', 'Lasso selection'],
+        ],
+        editor.selection,
+      )}</select></label>${toggleControl('Adaptive layout', 'adaptive', editor.adaptive)}${toggleControl('Resizable chart', 'resizable', editor.resizable)}`,
+    )}${controlSection('Accessibility', `${toggleControl('Accessible patterns', 'patterns', editor.patterns)}${toggleControl('Screen-reader table', 'dataTable', editor.dataTable)}${toggleControl('High contrast', 'highContrast', editor.highContrast)}${toggleControl('Dyslexia-friendly text', 'dyslexia', editor.dyslexia)}${toggleControl('Right-to-left layout', 'rtl', editor.rtl)}`)}`,
+  };
+  const tabs = [
+    ['design', 'Design'],
+    ['text', 'Text'],
+    ['layout', 'Layout'],
+    ['chart', 'Chart'],
+    ['interaction', 'Interact'],
+  ];
   document.querySelector('#chart-controls').innerHTML =
-    `<div class="control-tabs"><button type="button" class="is-active" data-control-jump="design">Design</button><button type="button" data-control-jump="text">Text</button><button type="button" data-control-jump="layout">Layout</button><button type="button" data-control-jump="chart">Chart</button></div><fieldset id="control-design"><legend>Design system</legend><label>Theme<select data-setting="theme">${selectOptions(themes, editor.theme)}</select></label>${colorEditor('Primary', 'primary', editor.primary)}${colorEditor('Accent', 'accent', editor.accent)}${colorEditor('Canvas background', 'background', editor.background)}</fieldset><fieldset id="control-text"><legend>Text studio</legend><label>Editing<select data-role>${selectOptions(TEXT_ROLES, state.activeRole)}</select></label><div class="text-preview" style="font-family:${style.fontFamily};font-size:${style.fontSize}px;font-weight:${style.fontWeight};font-style:${style.fontStyle};color:${style.color};background:${style.backgroundColor};text-decoration:${style.underline ? 'underline' : 'none'}">Chartix typography</div><label>Font family<select data-text-setting="fontFamily" class="font-select">${selectOptions(
-      FONT_CATALOG.map((font) => [font, font]),
-      style.fontFamily,
-    )}</select><small>${FONT_CATALOG.length} professional fonts · selected font loads on demand</small></label>${rangeControl('Font size', 'text.fontSize', style.fontSize, 8, 72, 1, 'px')}<div class="button-group"><button type="button" data-text-toggle="fontWeight" class="${style.fontWeight >= 700 ? 'is-active' : ''}"><strong>B</strong></button><button type="button" data-text-toggle="fontStyle" class="${style.fontStyle === 'italic' ? 'is-active' : ''}"><em>I</em></button><button type="button" data-text-toggle="underline" class="${style.underline ? 'is-active' : ''}"><u>U</u></button></div><label>Text effect<select data-text-setting="effect">${selectOptions(
-      [
-        ['none', 'None'],
-        ['soft-shadow', 'Soft shadow'],
-        ['outline', 'Outline'],
-        ['emboss', 'Emboss'],
-        ['gradient', 'Gradient'],
-      ],
-      style.effect,
-    )}</select></label>${colorEditor('Font color', 'text.color', style.color)}${colorEditor('Text background', 'text.backgroundColor', style.backgroundColor)}${colorEditor('Effect color', 'text.effectColor', style.effectColor)}<label>Hyperlink<input type="url" data-text-setting="href" value="${escapeHTML(style.href)}" placeholder="https://example.com"></label>${rangeControl('Line height', 'text.lineHeight', style.lineHeight, 0.8, 3, 0.1)}${rangeControl('Letter spacing', 'text.letterSpacing', style.letterSpacing, -2, 12, 0.5, 'px')}<div class="spacing-grid"><span>Text padding</span>${['top', 'right', 'bottom', 'left'].map((side) => `<label>${side}<input type="number" min="0" max="80" data-text-padding="${side}" value="${style.padding[side]}"></label>`).join('')}</div><button class="apply-all-button" type="button" data-apply-all>Apply this text style to all</button></fieldset><fieldset id="control-layout"><legend>Content + spacing</legend><label>Title<input type="text" data-setting="title" value="${escapeHTML(editor.title)}"><small>Double-click it in the preview to edit there.</small></label><label>Subtitle<input type="text" data-setting="subtitle" value="${escapeHTML(editor.subtitle)}"></label><div class="spacing-grid"><span>Chart padding</span>${['top', 'right', 'bottom', 'left'].map((side) => `<label>${side}<input type="number" min="0" max="120" data-padding="${side}" value="${editor.padding[side]}"></label>`).join('')}</div>${rangeControl('Title spacing', 'titleOffset', editor.titleOffset, 0, 80)}${rangeControl('Axis-title spacing', 'axisOffset', editor.axisOffset, 0, 80)}${rangeControl('Plot spacing', 'plotGap', editor.plotGap, -40, 100)}<button class="copy-button" type="button" data-reset-layout>Reset dragged positions</button><p class="panel-intro">Drag the title, subtitle, or plot in the preview. Use the corner handle to resize the plot.</p></fieldset><div id="control-chart">${axes}${line}${bar}${points}${radial}</div><fieldset><legend>Interaction + access</legend>${toggleControl('Tooltips', 'tooltips', editor.tooltips)}${toggleControl('Pin tooltip on click', 'pinTooltip', editor.pinTooltip)}${caps.cartesian ? toggleControl('Crosshair', 'crosshair', editor.crosshair) : ''}<label>Tooltip mode<select data-setting="interactionMode">${selectOptions(
-      [
-        ['nearest', 'Nearest'],
-        ['index', 'Same index'],
-        ['dataset', 'Dataset'],
-        ['intersect', 'Intersect'],
-      ],
-      editor.interactionMode,
-    )}</select></label><label>Legend position<select data-setting="legendPosition">${selectOptions(['top', 'bottom', 'left', 'right', 'inside'], editor.legendPosition)}</select></label>${caps.cartesian ? toggleControl('Zoom + pan', 'zoom', editor.zoom) : ''}${toggleControl('HTML legend', 'htmlLegend', editor.htmlLegend)}${toggleControl('Accessible patterns', 'patterns', editor.patterns)}${toggleControl('Screen-reader table', 'dataTable', editor.dataTable)}</fieldset>`;
+    `<div class="control-tabs" role="tablist" aria-label="Chart settings">${tabs.map(([key, label]) => `<button type="button" role="tab" data-control-tab="${key}" aria-selected="${state.controlTab === key}" class="${state.controlTab === key ? 'is-active' : ''}">${label}</button>`).join('')}</div><div class="control-panel" role="tabpanel" data-control-panel="${state.controlTab}">${panels[state.controlTab]}</div>`;
 }
 
 function deepClone(value) {
@@ -857,10 +934,15 @@ function renderGallery() {
 }
 
 function renderDetailNavigation() {
-  document.querySelector('#detail-chart-list').innerHTML = charts
+  const groups = charts.reduce((result, chart) => {
+    const group = chart.family === 'radial' ? 'Radial charts' : 'Cartesian charts';
+    (result[group] ??= []).push(chart);
+    return result;
+  }, {});
+  document.querySelector('#chart-type-select').innerHTML = Object.entries(groups)
     .map(
-      (chart) =>
-        `<button type="button" data-open-chart="${chart.id}" class="${chart.id === state.selected.id ? 'is-active' : ''}">${chart.name}</button>`,
+      ([label, items]) =>
+        `<optgroup label="${label}">${items.map((chart) => `<option value="${chart.id}" ${chart.id === state.selected.id ? 'selected' : ''}>${escapeHTML(chart.name)}</option>`).join('')}</optgroup>`,
     )
     .join('');
 }
@@ -868,6 +950,7 @@ function renderDetailNavigation() {
 function resetControls() {
   state.editor = freshEditor(state.selected);
   state.activeRole = 'title';
+  state.controlTab = 'design';
   state.previewWidth = 0;
   renderControls();
   applyPreviewWidth(0);
@@ -1047,7 +1130,9 @@ function applyPreviewWidth(width) {
 
 function loadFont(font) {
   if (
-    ['system-ui', 'Arial', 'Georgia'].includes(font) ||
+    ['system-ui', 'Arial', 'Georgia', 'Times New Roman', 'Verdana', 'Trebuchet MS'].includes(
+      font,
+    ) ||
     document.querySelector(`link[data-chartix-font="${window.CSS.escape(font)}"]`)
   )
     return;
@@ -1072,6 +1157,7 @@ function updateColorEditor(container, color) {
   container.querySelector('[data-color-part="g"]').value = rgb.g;
   container.querySelector('[data-color-part="b"]').value = rgb.b;
   container.querySelector('.color-chip').style.background = hex;
+  container.querySelector('.color-trigger code').textContent = hex.toUpperCase();
   container.querySelector('small').textContent =
     `${hex.toUpperCase()} · rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`;
   return hex;
@@ -1338,11 +1424,41 @@ document.addEventListener('click', (event) => {
   if (tab) switchTab(tab.dataset.tab);
   const preview = event.target.closest('[data-preview-width]');
   if (preview) applyPreviewWidth(Number(preview.dataset.previewWidth));
-  const jump = event.target.closest('[data-control-jump]');
-  if (jump)
-    document
-      .querySelector(`#control-${jump.dataset.controlJump}`)
-      ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  const controlTab = event.target.closest('[data-control-tab]');
+  if (controlTab) {
+    state.controlTab = controlTab.dataset.controlTab;
+    renderControls();
+  }
+  const colorTrigger = event.target.closest('[data-color-trigger]');
+  if (colorTrigger) {
+    const editor = colorTrigger.closest('[data-color-key]');
+    const popover = editor.querySelector('.color-popover');
+    const willOpen = popover.hidden;
+    document.querySelectorAll('.color-popover').forEach((panel) => {
+      panel.hidden = true;
+      panel
+        .closest('[data-color-key]')
+        ?.querySelector('[data-color-trigger]')
+        ?.setAttribute('aria-expanded', 'false');
+    });
+    popover.hidden = !willOpen;
+    colorTrigger.setAttribute('aria-expanded', String(willOpen));
+  }
+  const colorClose = event.target.closest('[data-color-close]');
+  if (colorClose) {
+    const editor = colorClose.closest('[data-color-key]');
+    editor.querySelector('.color-popover').hidden = true;
+    editor.querySelector('[data-color-trigger]').setAttribute('aria-expanded', 'false');
+  }
+  if (!event.target.closest('[data-color-key]')) {
+    document.querySelectorAll('.color-popover').forEach((panel) => {
+      panel.hidden = true;
+      panel
+        .closest('[data-color-key]')
+        ?.querySelector('[data-color-trigger]')
+        ?.setAttribute('aria-expanded', 'false');
+    });
+  }
   const toggle = event.target.closest('[data-text-toggle]');
   if (toggle) {
     const style = state.editor.textStyles[state.activeRole];
@@ -1374,6 +1490,9 @@ document.addEventListener('click', (event) => {
 
 document.querySelector('#back-to-gallery').addEventListener('click', closeDetail);
 document.querySelector('#reset-controls').addEventListener('click', resetControls);
+document.querySelector('#chart-type-select').addEventListener('change', (event) => {
+  openChart(event.target.value);
+});
 document.querySelector('#chart-controls').addEventListener('change', (event) => {
   const target = event.target;
   if (target.matches('[data-role]')) {

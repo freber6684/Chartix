@@ -14,9 +14,9 @@
       href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="./styles.css?v=b3b745f" />
-    <script src="../dist/chartix.min.js?v=b3b745f" defer></script>
-    <script src="./app.js?v=b3b745f" defer></script>
+    <link rel="stylesheet" href="./styles.css?v=editor-3" />
+    <script src="../dist/chartix.min.js?v=editor-3" defer></script>
+    <script src="./app.js?v=editor-3" defer></script>
   </head>
   <body>
     <header class="site-header">
@@ -175,8 +175,13 @@ Chartix.register(BarChart);
 
         <div class="studio">
           <aside class="chart-nav" aria-label="Chart examples">
-            <p class="aside-label">Examples</p>
-            <div id="detail-chart-list"></div>
+            <label class="chart-picker" for="chart-type-select">
+              <span>Chart type</span>
+              <select id="chart-type-select" aria-describedby="chart-picker-help"></select>
+            </label>
+            <p id="chart-picker-help" class="chart-picker-help">
+              Switch examples without leaving the playground.
+            </p>
           </aside>
 
           <div class="preview-column">
