@@ -50,7 +50,7 @@ export class EventManager {
     this.canvas.removeEventListener('wheel', this.onWheel);
   }
 
-  private point(event: PointerEvent | WheelEvent): Point {
+  private point(event: PointerEvent | WheelEvent | MouseEvent): Point {
     const rect = this.canvas.getBoundingClientRect();
     // Hit regions use renderer coordinates. Read those dimensions directly instead of
     // inferring them from inline CSS: responsive containers, borders, transforms, and
@@ -124,7 +124,8 @@ export class EventManager {
     this.callbacks.onActive([]);
   };
 
-  private readonly onClick = (): void => {
+  private readonly onClick = (event: MouseEvent): void => {
+    this.onPointerMove(event as PointerEvent);
     const region = this.callbacks.regions()[this.activeIndex];
     if (region) this.callbacks.onActivate(region);
   };
