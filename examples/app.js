@@ -41,7 +41,21 @@ const barDesignExamples = [
       kicker: '●  Q3 PERFORMANCE REVIEW',
       title: 'Department Score',
       subtitle: 'Composite score by department,\nindexed to 100',
-      source: 'internal scorecard · Updated Jul 2026',
+      textBoxes: [
+        {
+          id: 'aurora-source',
+          name: 'Source note',
+          text: 'Source: internal scorecard · Updated Jul 2026',
+          x: 5,
+          y: 94,
+          style: {
+            fontFamily: 'Inter, system-ui, sans-serif',
+            fontSize: 10,
+            fontWeight: 500,
+            color: '#667085',
+          },
+        },
+      ],
       backgroundColor: '#0f172a',
       showLegend: false,
       showGrid: false,
@@ -95,8 +109,25 @@ const barDesignExamples = [
       kicker: 'THE QUARTERLY SCORECARD',
       title: 'Department Score',
       subtitle: 'A composite index of performance\nacross four departments, Q3 2026.',
-      source: 'internal scorecard',
-      footnote: 'Index, 0–100',
+      textBoxes: [
+        {
+          id: 'editorial-source',
+          name: 'Source note',
+          text: 'Source: internal scorecard',
+          x: 5,
+          y: 94,
+          style: { fontFamily: 'Georgia, serif', fontSize: 10, color: '#6f7068' },
+        },
+        {
+          id: 'editorial-index',
+          name: 'Index note',
+          text: 'Index, 0–100',
+          x: 95,
+          y: 94,
+          align: 'right',
+          style: { fontFamily: 'Georgia, serif', fontSize: 10, color: '#6f7068' },
+        },
+      ],
       backgroundColor: '#f8f7f3',
       showLegend: false,
       showGrid: false,
@@ -155,7 +186,21 @@ const barDesignExamples = [
       kicker: '$ ./scorecard --quarter Q3 --format bar',
       title: 'DEPARTMENT_SCORE.LOG',
       subtitle: 'index: 0–100 · run: 2026-07-22T09:14:02',
-      footnote: '----------------------------------------',
+      textBoxes: [
+        {
+          id: 'terminal-divider',
+          name: 'Footer divider',
+          text: '----------------------------------------',
+          x: 5,
+          y: 94,
+          style: {
+            fontFamily: "'Space Mono', monospace",
+            fontSize: 10,
+            color: '#24472d',
+            letterSpacing: 1,
+          },
+        },
+      ],
       backgroundColor: '#061009',
       showLegend: false,
       showGrid: false,
@@ -213,8 +258,50 @@ const barDesignExamples = [
       kicker: 'Q3 2026 · INTERNAL SCORECARD',
       title: 'Department\nScore',
       subtitle: 'Composite performance index\nacross four departments,\nscaled 0–100.',
-      source: 'INTERNAL SCORECARD',
-      footnote: 'INDEX 0–100',
+      textBoxes: [
+        {
+          id: 'poster-quarter',
+          name: 'Quarter watermark',
+          text: 'Q3',
+          x: 94,
+          y: 5,
+          align: 'right',
+          layer: 'back',
+          style: {
+            fontFamily: 'Inter, system-ui, sans-serif',
+            fontSize: 56,
+            fontWeight: 800,
+            color: '#dededb',
+          },
+        },
+        {
+          id: 'poster-index',
+          name: 'Index note',
+          text: 'INDEX 0–100',
+          x: 5,
+          y: 94,
+          style: {
+            fontFamily: 'Inter, system-ui, sans-serif',
+            fontSize: 10,
+            fontWeight: 600,
+            color: '#77766d',
+          },
+        },
+        {
+          id: 'poster-source',
+          name: 'Source note',
+          text: 'INTERNAL SCORECARD',
+          x: 95,
+          y: 94,
+          align: 'right',
+          style: {
+            fontFamily: 'Inter, system-ui, sans-serif',
+            fontSize: 10,
+            fontWeight: 600,
+            color: '#77766d',
+          },
+        },
+      ],
       backgroundColor: '#f7f7f4',
       showLegend: false,
       showGrid: false,
@@ -938,6 +1025,7 @@ const state = {
   previewWidth: 0,
   previewHeight: 470,
   activeRole: 'title',
+  activeTextBoxId: null,
   controlTab: 'chart',
   editor: null,
   importedData: null,
@@ -1026,6 +1114,46 @@ function chartCapabilities(chart) {
   };
 }
 
+function normalizeTextBox(box, index, chart) {
+  const presetStyle = box.style ?? {};
+  return {
+    id: box.id || `text-box-${index + 1}`,
+    name: box.name || `Text box ${index + 1}`,
+    text: box.text ?? '',
+    visible: box.visible !== false,
+    anchor: box.anchor ?? 'canvas',
+    unit: box.unit ?? 'percent',
+    x: box.x ?? 8,
+    y: box.y ?? 10 + index * 6,
+    align: box.align ?? 'left',
+    rotation: box.rotation ?? 0,
+    layer: box.layer ?? 'front',
+    style: {
+      fontFamily:
+        presetStyle.fontFamily ?? chart.options.typography?.fontFamily ?? "'Space Mono', monospace",
+      fontSize: presetStyle.fontSize ?? 13,
+      fontWeight: presetStyle.fontWeight ?? 500,
+      fontStyle: presetStyle.fontStyle ?? 'normal',
+      color: presetStyle.color ?? '#172033',
+      backgroundColor: presetStyle.backgroundColor ?? '#ffffff00',
+      borderColor: presetStyle.borderColor ?? '#d7dce5',
+      borderWidth: presetStyle.borderWidth ?? 0,
+      borderRadius: presetStyle.borderRadius ?? 6,
+      underline: Boolean(presetStyle.underline),
+      effect: presetStyle.effect ?? 'none',
+      effectColor: presetStyle.effectColor ?? '#00000055',
+      lineHeight: presetStyle.lineHeight ?? 1.3,
+      letterSpacing: presetStyle.letterSpacing ?? 0,
+      padding: {
+        top: presetStyle.padding?.top ?? 0,
+        right: presetStyle.padding?.right ?? 0,
+        bottom: presetStyle.padding?.bottom ?? 0,
+        left: presetStyle.padding?.left ?? 0,
+      },
+    },
+  };
+}
+
 function freshEditor(chart) {
   const caps = chartCapabilities(chart);
   const horizontal = chart.options.horizontal || chart.type === 'horizontal-bar';
@@ -1091,6 +1219,9 @@ function freshEditor(chart) {
     source: chart.options.source ?? '',
     footnote: chart.options.footnote ?? '',
     watermark: chart.options.watermark ?? '',
+    textBoxes: (chart.options.textBoxes ?? []).map((box, index) =>
+      normalizeTextBox(box, index, chart),
+    ),
     xTitle: chart.options.scales?.x?.title ?? '',
     yTitle: chart.options.scales?.y?.title ?? '',
     y1Title: chart.options.scales?.y1?.title ?? 'Secondary value',
@@ -1272,6 +1403,62 @@ function colorEditor(label, key, value) {
   return `<div class="color-editor" data-color-key="${key}"><span class="color-label">${label}</span><button class="color-trigger" type="button" data-color-trigger aria-expanded="false"><span class="color-chip" style="background:${hex}"></span><code>${hex.toUpperCase()}</code><span class="color-trigger-arrow" aria-hidden="true"></span></button><div class="color-popover" hidden><div class="color-popover-header"><strong>${label}</strong><button type="button" data-color-close aria-label="Close ${label} color palette">×</button></div><label class="visual-picker">Choose visually<input type="color" value="${hex}" data-color-part="picker"></label><label>HEX<input class="code-input" value="${hex.toUpperCase()}" data-color-part="hex" aria-label="${label} hex"></label><div class="rgb-row"><label>R<input type="number" min="0" max="255" value="${rgb.r}" data-color-part="r"></label><label>G<input type="number" min="0" max="255" value="${rgb.g}" data-color-part="g"></label><label>B<input type="number" min="0" max="255" value="${rgb.b}" data-color-part="b"></label></div><div class="palette-row" aria-label="Suggested colors">${PALETTE.map((color) => `<button type="button" data-palette="${color}" aria-label="Use ${color}" title="${color}" style="background:${color}"></button>`).join('')}</div><small>${hex.toUpperCase()} · rgb(${rgb.r}, ${rgb.g}, ${rgb.b})</small></div></div>`;
 }
 
+function activeTextBox() {
+  return state.editor.textBoxes.find((box) => box.id === state.activeTextBoxId) ?? null;
+}
+
+function textBoxControls(editor) {
+  const box = activeTextBox();
+  const items = editor.textBoxes
+    .map(
+      (item) =>
+        `<button type="button" class="text-box-item ${item.id === state.activeTextBoxId ? 'is-active' : ''}" data-select-text-box="${escapeHTML(item.id)}"><span><strong>${escapeHTML(item.name)}</strong><small>${escapeHTML(item.text || 'Empty text box')}</small></span><i aria-hidden="true">${item.visible ? 'On' : 'Off'}</i></button>`,
+    )
+    .join('');
+  const editorPanel = box
+    ? `<div class="text-box-editor">
+        <div class="text-box-editor-heading"><strong>Design independently</strong><button type="button" class="text-box-delete" data-delete-text-box="${escapeHTML(box.id)}">Delete</button></div>
+        <label>Box name<input type="text" data-textbox-setting="name" value="${escapeHTML(box.name)}"></label>
+        <label>Text<textarea rows="4" data-textbox-setting="text" placeholder="Write anything…">${escapeHTML(box.text)}</textarea></label>
+        <label class="toggle-row">Show text box<input type="checkbox" data-textbox-setting="visible" ${box.visible ? 'checked' : ''}><span></span></label>
+        <div class="two-column-controls"><label>Anchor<select data-textbox-setting="anchor">${selectOptions(
+          [
+            ['canvas', 'Whole canvas'],
+            ['plot', 'Plot area'],
+          ],
+          box.anchor,
+        )}</select></label><label>Position unit<select data-textbox-setting="unit">${selectOptions(
+          [
+            ['percent', 'Responsive %'],
+            ['pixel', 'Exact pixels'],
+          ],
+          box.unit,
+        )}</select></label></div>
+        <div class="two-column-controls"><label>X position<input type="number" step="1" data-textbox-setting="x" value="${box.x}"></label><label>Y position<input type="number" step="1" data-textbox-setting="y" value="${box.y}"></label></div>
+        <div class="two-column-controls"><label>Alignment<select data-textbox-setting="align">${selectOptions(['left', 'center', 'right'], box.align)}</select></label><label>Layer<select data-textbox-setting="layer">${selectOptions(
+          [
+            ['front', 'In front of chart'],
+            ['back', 'Behind chart'],
+          ],
+          box.layer,
+        )}</select></label></div>
+        ${rangeControl('Rotation', 'textBox.rotation', box.rotation, -180, 180, 1, '°')}
+        <label>Font family<select class="font-select" data-textbox-style="fontFamily" style="font-family:'${escapeHTML(box.style.fontFamily)}', sans-serif">${fontOptions(box.style.fontFamily)}</select></label>
+        ${rangeControl('Font size', 'textBox.fontSize', box.style.fontSize, 8, 96, 1, 'px')}
+        <div class="button-group" aria-label="Text box style"><button type="button" data-textbox-toggle="fontWeight" class="${box.style.fontWeight >= 700 ? 'is-active' : ''}" aria-pressed="${box.style.fontWeight >= 700}"><strong>B</strong></button><button type="button" data-textbox-toggle="fontStyle" class="${box.style.fontStyle === 'italic' ? 'is-active' : ''}" aria-pressed="${box.style.fontStyle === 'italic'}"><em>I</em></button><button type="button" data-textbox-toggle="underline" class="${box.style.underline ? 'is-active' : ''}" aria-pressed="${box.style.underline}"><u>U</u></button></div>
+        ${colorEditor('Font color', 'textBox.color', box.style.color)}
+        ${colorEditor('Background', 'textBox.backgroundColor', box.style.backgroundColor)}
+        ${colorEditor('Border color', 'textBox.borderColor', box.style.borderColor)}
+        ${rangeControl('Border width', 'textBox.borderWidth', box.style.borderWidth, 0, 12, 1, 'px')}
+        ${rangeControl('Corner roundness', 'textBox.borderRadius', box.style.borderRadius, 0, 40, 1, 'px')}
+        ${rangeControl('Line height', 'textBox.lineHeight', box.style.lineHeight, 0.8, 3, 0.1)}
+        ${rangeControl('Letter spacing', 'textBox.letterSpacing', box.style.letterSpacing, -2, 12, 0.5, 'px')}
+        <div class="spacing-grid"><span>Inner padding</span>${['top', 'right', 'bottom', 'left'].map((side) => `<label>${side}<input type="number" min="0" max="80" data-textbox-padding="${side}" value="${box.style.padding[side]}"></label>`).join('')}</div>
+      </div>`
+    : `<div class="text-box-empty"><strong>No independent text boxes yet</strong><p>Add notes, labels, callouts, sources, badges, or any other text.</p></div>`;
+  return `<div class="text-box-toolbar"><div><strong>Independent text boxes</strong><small>${editor.textBoxes.length} created · unlimited</small></div><button type="button" data-add-text-box>+ Add text box</button></div><div class="text-box-list">${items}</div>${editorPanel}<p class="panel-intro">Every box is stored in <code>options.textBoxes</code>, updates the generated code live, and can use responsive percentage positioning.</p>`;
+}
+
 function exportActionEditor(editor, key, fallbackLabel) {
   const action = editor.exportActions[key];
   return `<details class="control-subsection"><summary>${escapeHTML(fallbackLabel)} button</summary><div class="control-subsection-body"><label>Button text<input type="text" data-export-action="${key}" data-export-property="label" value="${escapeHTML(action.label)}"></label><label>Content<select data-export-action="${key}" data-export-property="display">${selectOptions(
@@ -1324,6 +1511,8 @@ function hexToRgb(value) {
 
 function renderControls() {
   const editor = state.editor;
+  if (!editor.textBoxes.some((box) => box.id === state.activeTextBoxId))
+    state.activeTextBoxId = editor.textBoxes[0]?.id ?? null;
   const style = editor.textStyles[state.activeRole];
   const caps = chartCapabilities(state.selected);
   const hasY1 = state.selected.datasets.some((dataset) => dataset.yAxisId === 'y1');
@@ -1460,7 +1649,7 @@ function renderControls() {
       'Chart text',
       `<p class="panel-intro content-intro">Every visible heading and note is editable here and included in the generated code.</p><label>Kicker<input type="text" data-setting="kicker" value="${escapeHTML(editor.kicker)}" placeholder="Optional section label"></label><label>Title<textarea rows="2" data-setting="title" placeholder="Chart title">${escapeHTML(editor.title)}</textarea></label><label>Subtitle<textarea rows="3" data-setting="subtitle" placeholder="Optional explanation">${escapeHTML(editor.subtitle)}</textarea></label><label>Source<input type="text" data-setting="source" value="${escapeHTML(editor.source)}" placeholder="Optional source"></label><label>Footnote<input type="text" data-setting="footnote" value="${escapeHTML(editor.footnote)}" placeholder="Optional footnote"></label><label>Watermark<input type="text" data-setting="watermark" value="${escapeHTML(editor.watermark)}" placeholder="Optional watermark"></label>`,
       true,
-    )}${
+    )}${controlSection('Independent text boxes', textBoxControls(editor), true)}${
       caps.axes
         ? controlSection(
             'Axis titles',
@@ -1664,6 +1853,7 @@ function resetControls() {
   }
   state.editor = freshEditor(state.selected);
   state.activeRole = 'title';
+  state.activeTextBoxId = state.editor.textBoxes[0]?.id ?? null;
   state.controlTab = state.selected.showcaseOnly ? 'content' : 'chart';
   state.previewWidth = 0;
   state.previewHeight = 470;
@@ -1744,6 +1934,7 @@ function currentConfig() {
   config.options.source = editor.source || undefined;
   config.options.footnote = editor.footnote || undefined;
   config.options.watermark = editor.watermark || undefined;
+  config.options.textBoxes = editor.textBoxes.map((box) => deepClone(box));
   config.options.typography = textStyles;
   config.options.xLabels = {
     ...config.options.xLabels,
@@ -2075,6 +2266,7 @@ function applyCodeConfiguration() {
     state.codeEdited = true;
     mutated = true;
     state.activeRole = 'title';
+    state.activeTextBoxId = state.editor.textBoxes[0]?.id ?? null;
     const nextWidth = Number(config.options?.width) || 0;
     const nextHeight = Number(config.options?.height) || state.previewHeight;
     renderDetailNavigation();
@@ -2188,7 +2380,10 @@ function updateColorEditor(container, color) {
 function setColor(key, color, container) {
   const normalized = updateColorEditor(container, color);
   if (key.startsWith('text.')) state.editor.textStyles[state.activeRole][key.slice(5)] = normalized;
-  else if (key.startsWith('seriesColors.'))
+  else if (key.startsWith('textBox.')) {
+    const box = activeTextBox();
+    if (box) box.style[key.slice('textBox.'.length)] = normalized;
+  } else if (key.startsWith('seriesColors.'))
     state.editor.seriesColors[Number(key.slice('seriesColors.'.length))] = normalized;
   else state.editor[key] = normalized;
   rerenderFromEditor();
@@ -2450,6 +2645,42 @@ document.addEventListener('click', (event) => {
     renderControls();
   }
   if (event.target.closest('[data-open-import]')) openDataImport();
+  const addTextBox = event.target.closest('[data-add-text-box]');
+  if (addTextBox) {
+    let number = state.editor.textBoxes.length + 1;
+    while (state.editor.textBoxes.some((box) => box.id === `text-box-${number}`)) number += 1;
+    const box = normalizeTextBox(
+      {
+        id: `text-box-${number}`,
+        name: `Text box ${number}`,
+        text: 'New text',
+        x: 8 + (((number - 1) * 4) % 28),
+        y: 12 + (((number - 1) * 6) % 48),
+      },
+      number - 1,
+      state.selected,
+    );
+    state.editor.textBoxes.push(box);
+    state.activeTextBoxId = box.id;
+    renderControls();
+    rerenderFromEditor();
+  }
+  const selectTextBox = event.target.closest('[data-select-text-box]');
+  if (selectTextBox) {
+    state.activeTextBoxId = selectTextBox.dataset.selectTextBox;
+    renderControls();
+  }
+  const deleteTextBox = event.target.closest('[data-delete-text-box]');
+  if (deleteTextBox) {
+    const index = state.editor.textBoxes.findIndex(
+      (box) => box.id === deleteTextBox.dataset.deleteTextBox,
+    );
+    if (index >= 0) state.editor.textBoxes.splice(index, 1);
+    state.activeTextBoxId =
+      state.editor.textBoxes[Math.min(index, state.editor.textBoxes.length - 1)]?.id ?? null;
+    renderControls();
+    rerenderFromEditor();
+  }
   const colorTrigger = event.target.closest('[data-color-trigger]');
   if (colorTrigger) {
     const editor = colorTrigger.closest('[data-color-key]');
@@ -2489,6 +2720,16 @@ document.addEventListener('click', (event) => {
     if (key === 'underline') style.underline = !style.underline;
     if (key === 'fontWeight' || key === 'fontStyle') loadFont(style.fontFamily);
     rerenderFromEditor(true);
+  }
+  const textBoxToggle = event.target.closest('[data-textbox-toggle]');
+  if (textBoxToggle && activeTextBox()) {
+    const style = activeTextBox().style;
+    const key = textBoxToggle.dataset.textboxToggle;
+    if (key === 'fontWeight') style.fontWeight = style.fontWeight >= 700 ? 400 : 700;
+    if (key === 'fontStyle') style.fontStyle = style.fontStyle === 'italic' ? 'normal' : 'italic';
+    if (key === 'underline') style.underline = !style.underline;
+    renderControls();
+    rerenderFromEditor();
   }
   if (event.target.closest('[data-apply-all]')) {
     const source = deepClone(state.editor.textStyles[state.activeRole]);
@@ -2550,6 +2791,23 @@ document.querySelector('#chart-controls').addEventListener('change', (event) => 
     rerenderFromEditor(true);
     return;
   }
+  if (target.matches('[data-textbox-setting]') && activeTextBox()) {
+    const key = target.dataset.textboxSetting;
+    activeTextBox()[key] =
+      target.type === 'checkbox'
+        ? target.checked
+        : target.type === 'number'
+          ? Number(target.value)
+          : target.value;
+    rerenderFromEditor();
+    return;
+  }
+  if (target.matches('[data-textbox-style]') && activeTextBox()) {
+    activeTextBox().style[target.dataset.textboxStyle] = target.value;
+    if (target.dataset.textboxStyle === 'fontFamily') loadFont(target.value);
+    rerenderFromEditor();
+    return;
+  }
   if (target.matches('[data-export-action][data-export-property]')) {
     state.editor.exportActions[target.dataset.exportAction][target.dataset.exportProperty] =
       target.value;
@@ -2565,7 +2823,11 @@ document.querySelector('#chart-controls').addEventListener('change', (event) => 
           ? Number(target.value)
           : target.value;
     if (key.startsWith('text.')) state.editor.textStyles[state.activeRole][key.slice(5)] = value;
-    else if (key.startsWith('exportAction.')) {
+    else if (key.startsWith('textBox.') && activeTextBox()) {
+      const property = key.slice('textBox.'.length);
+      if (property === 'rotation') activeTextBox().rotation = value;
+      else activeTextBox().style[property] = value;
+    } else if (key.startsWith('exportAction.')) {
       const [, action, property] = key.split('.');
       state.editor.exportActions[action][property] = value;
     } else state.editor[key] = value;
@@ -2576,6 +2838,22 @@ document.querySelector('#chart-controls').addEventListener('change', (event) => 
 });
 document.querySelector('#chart-controls').addEventListener('input', (event) => {
   const target = event.target;
+  if (target.matches('[data-textbox-setting]') && activeTextBox()) {
+    activeTextBox()[target.dataset.textboxSetting] =
+      target.type === 'checkbox'
+        ? target.checked
+        : target.type === 'number'
+          ? Number(target.value)
+          : target.value;
+    const selectedItem = [...document.querySelectorAll('[data-select-text-box]')].find(
+      (item) => item.dataset.selectTextBox === state.activeTextBoxId,
+    );
+    if (selectedItem) {
+      selectedItem.querySelector('strong').textContent = activeTextBox().name;
+      selectedItem.querySelector('small').textContent = activeTextBox().text || 'Empty text box';
+    }
+    rerenderFromEditor();
+  }
   if (
     target.matches('input[type="text"][data-setting]') &&
     ['title', 'subtitle', 'xTitle', 'yTitle', 'y1Title'].includes(target.dataset.setting)
@@ -2604,6 +2882,11 @@ document.querySelector('#chart-controls').addEventListener('input', (event) => {
     state.editor.textStyles[state.activeRole].padding[target.dataset.textPadding] = Number(
       target.value,
     );
+    rerenderFromEditor();
+    return;
+  }
+  if (target.matches('[data-textbox-padding]') && activeTextBox()) {
+    activeTextBox().style.padding[target.dataset.textboxPadding] = Number(target.value);
     rerenderFromEditor();
     return;
   }

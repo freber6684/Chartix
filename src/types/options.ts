@@ -597,6 +597,34 @@ export interface DataTableOptions {
   pageSize?: number;
 }
 
+/** Independently editable text placed anywhere on the chart canvas or plot. */
+export interface ChartTextBoxOptions {
+  /** Stable identifier used by editors and generated configurations. */
+  id: string;
+  /** Optional editor-facing name. */
+  name?: string;
+  /** Plain text content; line breaks create multiple lines. */
+  text: string;
+  /** Hide the box without deleting its design. */
+  visible?: boolean;
+  /** Position relative to the complete canvas or the data plot. */
+  anchor?: 'canvas' | 'plot';
+  /** Use responsive percentages or exact CSS pixels. */
+  unit?: 'percent' | 'pixel';
+  /** Horizontal position in the selected unit. */
+  x?: number;
+  /** Vertical position in the selected unit. */
+  y?: number;
+  /** Horizontal text alignment around the position. */
+  align?: 'left' | 'center' | 'right';
+  /** Rotation in degrees. */
+  rotation?: number;
+  /** Draw behind data marks or in front of them. */
+  layer?: 'back' | 'front';
+  /** Independent typography, background, border, effect, and spacing. */
+  style?: TextStyleOptions;
+}
+
 /** Runtime options shared by built-in charts. */
 export interface ChartOptions {
   /** Accessibility studio controls. */
@@ -709,6 +737,8 @@ export interface ChartOptions {
   source?: string;
   /** Subtle text drawn behind chart marks. */
   watermark?: string;
+  /** Unlimited independently designed and positioned text boxes. */
+  textBoxes?: ChartTextBoxOptions[];
   /** Optional chart title. */
   title?: string;
   /** Global typography overrides. */

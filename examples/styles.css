@@ -1293,6 +1293,116 @@ a {
   display: grid;
   gap: 14px;
 }
+.text-box-toolbar,
+.text-box-editor-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.text-box-toolbar > div {
+  display: grid;
+  gap: 3px;
+}
+.text-box-toolbar strong,
+.text-box-editor-heading strong {
+  color: #f1f2f5;
+  font-size: 10px;
+}
+.text-box-toolbar small {
+  color: #777a86;
+  font-size: 8px;
+}
+.text-box-toolbar button,
+.text-box-delete {
+  min-height: 34px;
+  padding: 0 11px;
+  border: 1px solid var(--accent);
+  background: rgb(182 255 40 / 8%);
+  color: var(--accent);
+  font: inherit;
+  font-size: 8px;
+  cursor: pointer;
+}
+.text-box-list {
+  display: grid;
+  gap: 6px;
+}
+.text-box-item {
+  width: 100%;
+  min-width: 0;
+  padding: 10px 11px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  border: 1px solid #303138;
+  border-radius: 7px;
+  background: #17181d;
+  color: #c7c9d1;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+}
+.text-box-item:hover,
+.text-box-item.is-active {
+  border-color: var(--accent);
+  background: rgb(182 255 40 / 6%);
+}
+.text-box-item span {
+  min-width: 0;
+  display: grid;
+  gap: 4px;
+}
+.text-box-item strong,
+.text-box-item small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.text-box-item strong {
+  font-size: 9px;
+}
+.text-box-item small {
+  color: #777a86;
+  font-size: 8px;
+}
+.text-box-item i {
+  color: var(--accent);
+  font-size: 7px;
+  font-style: normal;
+  text-transform: uppercase;
+}
+.text-box-editor {
+  padding: 14px;
+  display: grid;
+  gap: 13px;
+  border: 1px solid #303138;
+  border-radius: 8px;
+  background: #0d0e11;
+}
+.text-box-delete {
+  border-color: #6e3540;
+  background: #351820;
+  color: #ff9aab;
+}
+.text-box-empty {
+  padding: 20px 16px;
+  border: 1px dashed #383a43;
+  color: #a7a9b2;
+  text-align: center;
+}
+.text-box-empty p {
+  margin: 7px 0 0;
+  color: #747783;
+  font-size: 8px;
+  line-height: 1.7;
+}
+.two-column-controls {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
 .control-subsection {
   border: 1px solid #303139;
   border-radius: 8px;

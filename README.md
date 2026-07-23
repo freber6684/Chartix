@@ -111,6 +111,11 @@ solid or accessible patterned fills and independent corner roundness. The demo p
 ready-to-copy design presets—each is a normal generated Chartix configuration rather than
 hardcoded presentation markup.
 
+Add any number of independent notes, callouts, badges, sources, or watermarks with
+`options.textBoxes`. Every box has its own content, responsive position, layer, typography,
+background, border, and spacing, and the playground keeps these settings synchronized with the
+generated JSON.
+
 Export actions can remain in one compact toolbar or become separately positioned buttons. Each
 action supports custom text, text/icon/both display, an icon URL and size, independent corner and
 edge padding, plus shared or per-action button and typography styling.

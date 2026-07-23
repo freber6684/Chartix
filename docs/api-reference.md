@@ -57,6 +57,7 @@ gaps. Scatter and bubble datasets may additionally use `points: [{x, y, r?}]`. D
 | `showLegend`           | `true`                        | Draw the dataset legend.                                              |
 | `startAngle`           | `-90`                         | Pie/doughnut starting angle in degrees.                               |
 | `title`                | unset                         | Chart heading drawn inside the canvas.                                |
+| `textBoxes`            | `[]`                          | Unlimited independently styled and positioned canvas text.            |
 | `tooltip`              | enabled                       | Accessible floating value card and its colors.                        |
 | `transforms`           | `[]`                          | Ordered sort, filter, aggregate, and normalize pipeline.              |
 | `typography`           | theme tokens                  | Shared font family and title/label/tick sizes.                        |
@@ -69,6 +70,15 @@ gaps. Scatter and bubble datasets may additionally use `points: [{x, y, r?}]`. D
 `LabelOptions` supports `show`, `color`, `backgroundColor`, `fontFamily`, `fontSize`, `fontWeight`,
 `rotation`, `offset`, and `position`. Data-label positions are `auto`, `inside`, `outside`, and
 `center`; axis labels use rotation and offset.
+
+## Independent text boxes
+
+`textBoxes` accepts any number of editable text objects. Each box requires an `id` and `text`, and
+can independently set `visible`, `anchor` (`canvas` or `plot`), `unit` (`percent` or `pixel`), `x`,
+`y`, `align`, `rotation`, and `layer` (`back` or `front`). Its `style` uses the complete
+`TextStyleOptions` model, including font, size, weight, italic, underline, colors, background,
+border, effects, line height, letter spacing, and per-side padding. Percentage coordinates remain
+responsive when the chart changes size.
 
 ## Bar tracks and scorecards
 

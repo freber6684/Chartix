@@ -157,6 +157,21 @@ export function normalizeConfig(config: ChartConfig): ChartConfig & { options: C
           }
         : {}),
       ...(config.options?.dataTable ? { dataTable: { ...config.options.dataTable } } : {}),
+      ...(config.options?.textBoxes
+        ? {
+            textBoxes: config.options.textBoxes.map((box) => ({
+              ...box,
+              ...(box.style
+                ? {
+                    style: {
+                      ...box.style,
+                      ...(box.style.padding ? { padding: { ...box.style.padding } } : {}),
+                    },
+                  }
+                : {}),
+            })),
+          }
+        : {}),
       decimation: { ...defaultOptions.decimation, ...config.options?.decimation },
       interaction: { ...defaultOptions.interaction, ...config.options?.interaction },
       legend: {

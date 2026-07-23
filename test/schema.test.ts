@@ -66,6 +66,7 @@ describe('embed JSON Schema', () => {
         'explodedSlices',
         'explodeOffset',
         'subtitle',
+        'textBoxes',
         'footnote',
         'source',
         'watermark',

@@ -145,6 +145,10 @@ changes so the next session can resume without reconstructing history.
       patterned full-domain tracks, contextual kicker text, per-bar colors, and rounded styling.
 - [x] Make the Code tab a safe live JSON editor with validation, automatic chart updates,
       bidirectional visual-control synchronization, and copy-ready embed output.
+- [x] Add unlimited configuration-driven text boxes with independent content, visibility,
+      responsive/pixel placement, canvas/plot anchoring, alignment, rotation, layers, typography,
+      colors, borders, effects, and padding; migrate showcase notes and watermarks to editable
+      text-box objects.
 
 ## Remaining for v0.1
 
@@ -213,11 +217,14 @@ formatting, lint, strict types, unit tests, production bundles, and separate lea
 ## Latest validation
 
 - Formatting, ESLint, and strict TypeScript: passed with no warnings or errors.
-- Unit tests: 165 passed across 37 test files, including responsive pointer-coordinate and direct tap coverage plus 45 chart/theme visual baselines.
+- Unit tests: 166 passed across 37 test files, including responsive pointer-coordinate, direct tap,
+  and independent text-box coverage plus 45 chart/theme visual baselines.
 - Production build: ESM, CJS, standalone embed ESM, browser IIFE, minified browser IIFE, and TypeScript declarations generated.
 - Lean original-family core: measured on every build against a 35 KB gzip budget.
-- Complete library and public embed: measured against 77 KB and 41 KB gzip budgets respectively.
-- Browser check: the public demo rendered bar, line, pie, doughnut, and scatter charts without page errors.
+- Complete library and public embed: measured against 78 KB and 42 KB gzip budgets respectively.
+- Browser check: the playground rendered bar, line, pie, doughnut, and scatter charts without page
+  errors; independent text-box presets, creation, editing, and generated JSON synchronization were
+  verified in the browser.
 - Accessibility check: all five canvases had generated `role="img"` labels and matching data tables.
 - GitHub-hosted CI: push and pull-request checks completed successfully.
 - GitHub Pages: deployment completed successfully at `https://freber6684.github.io/Chartix/`.

@@ -10,7 +10,7 @@ import {
 } from './interactions.js';
 import { describeChart, updateDataTable } from './accessibility.js';
 import { resolveTheme } from './theme.js';
-import { createPlotArea } from '../charts/cartesian.js';
+import { createPlotArea, rendererTextStyle } from '../charts/cartesian.js';
 import type { ChartModule, PlotArea } from '../charts/types.js';
 import type {
   ChartConfig,
@@ -19,6 +19,7 @@ import type {
   ExportActionName,
   PerformanceStats,
   SpacingOptions,
+  ThemeObject,
 } from '../types/options.js';
 import { cloneData, normalizeConfig } from '../utils/options.js';
 import { applyDataTransforms } from '../utils/transforms.js';
@@ -93,6 +94,7 @@ const validOptionKeys = new Set<keyof ChartOptions>([
   'footnote',
   'source',
   'watermark',
+  'textBoxes',
   'title',
   'typography',
   'tooltip',
@@ -886,6 +888,7 @@ export class Chartix {
       this.hiddenDatasets,
     );
     this.lastPlot = plot;
+    this.drawTextBoxes(plot, drawOptions, theme, 'back');
     this.runPlugins('beforeDatasets', { theme, plot, progress });
     module.render({
       renderer: this.renderer,
@@ -935,6 +938,7 @@ export class Chartix {
           lineStyle,
         );
     }
+    this.drawTextBoxes(plot, drawOptions, theme, 'front');
     this.drawGestureOverlay(theme.mutedText);
     const canvasStyle = drawOptions.canvas;
     const canvasBorderWidth = Math.max(0, canvasStyle?.borderWidth ?? 0);
@@ -972,6 +976,39 @@ export class Chartix {
         performance: this.performanceStats,
       });
     }
+  }
+
+  private drawTextBoxes(
+    plot: PlotArea,
+    options: ChartOptions,
+    theme: ThemeObject,
+    layer: 'back' | 'front',
+  ): void {
+    options.textBoxes?.forEach((box) => {
+      if (box.visible === false || !box.text || (box.layer ?? 'front') !== layer) return;
+      const anchoredToPlot = box.anchor === 'plot';
+      const left = anchoredToPlot ? plot.left : 0;
+      const top = anchoredToPlot ? plot.top : 0;
+      const width = anchoredToPlot ? plot.right - plot.left : this.renderer.width;
+      const height = anchoredToPlot ? plot.bottom - plot.top : this.renderer.height;
+      const percent = (box.unit ?? 'percent') === 'percent';
+      const x = left + (percent ? (width * (box.x ?? 0)) / 100 : (box.x ?? 0));
+      const y = top + (percent ? (height * (box.y ?? 0)) / 100 : (box.y ?? 0));
+      this.renderer.text(box.text, x, y, {
+        ...rendererTextStyle({
+          fontFamily: theme.fontFamily,
+          fontSize: theme.fontSize.label,
+          fontWeight: 500,
+          color: theme.text,
+          lineHeight: 1.3,
+          padding: { top: 0, right: 0, bottom: 0, left: 0 },
+          ...box.style,
+        }),
+        align: box.align ?? 'left',
+        baseline: 'top',
+        rotation: box.rotation ?? 0,
+      });
+    });
   }
 
   private loadBackgroundImage(): void {

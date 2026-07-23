@@ -184,6 +184,25 @@
         "shadow": { "type": "string" }
       }
     },
+    "textBox": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "text"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "name": { "type": "string" },
+        "text": { "type": "string" },
+        "visible": { "type": "boolean" },
+        "anchor": { "enum": ["canvas", "plot"] },
+        "unit": { "enum": ["percent", "pixel"] },
+        "x": { "type": "number" },
+        "y": { "type": "number" },
+        "align": { "enum": ["left", "center", "right"] },
+        "rotation": { "type": "number" },
+        "layer": { "enum": ["back", "front"] },
+        "style": { "$ref": "#/$defs/textStyle" }
+      }
+    },
     "exportAction": {
       "type": "object",
       "additionalProperties": false,
@@ -549,6 +568,10 @@
         "footnote": { "type": "string" },
         "source": { "type": "string" },
         "watermark": { "type": "string" },
+        "textBoxes": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/textBox" }
+        },
         "title": { "type": "string" },
         "tooltip": {
           "type": "object",

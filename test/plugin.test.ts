@@ -120,4 +120,67 @@ describe('plugin lifecycle', () => {
     expect(context.stroke).toHaveBeenCalled();
     chart.destroy();
   });
+
+  it('draws independently styled responsive text boxes', () => {
+    const context = {
+      setTransform: vi.fn(),
+      save: vi.fn(),
+      restore: vi.fn(),
+      fillRect: vi.fn(),
+      beginPath: vi.fn(),
+      roundRect: vi.fn(),
+      fill: vi.fn(),
+      stroke: vi.fn(),
+      translate: vi.fn(),
+      rotate: vi.fn(),
+      fillText: vi.fn(),
+      measureText: vi.fn(() => ({
+        width: 80,
+        actualBoundingBoxAscent: 10,
+        actualBoundingBoxDescent: 3,
+      })),
+    };
+    vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(
+      context as unknown as CanvasRenderingContext2D,
+    );
+    Chartix.register({ id: 'text-box-test-chart', render: () => undefined });
+    const parent = document.createElement('div');
+    const canvas = document.createElement('canvas');
+    parent.append(canvas);
+    document.body.append(parent);
+    const chart = new Chartix(canvas, {
+      type: 'text-box-test-chart',
+      data: { labels: ['A'], datasets: [{ label: 'One', values: [1] }] },
+      options: {
+        animation: false,
+        width: 400,
+        height: 200,
+        showGrid: false,
+        showLegend: false,
+        textBoxes: [
+          {
+            id: 'note',
+            text: 'Editable note',
+            x: 50,
+            y: 25,
+            align: 'center',
+            style: {
+              fontSize: 18,
+              fontWeight: 700,
+              backgroundColor: '#ffffff',
+              borderColor: '#223344',
+              borderWidth: 2,
+              borderRadius: 8,
+            },
+          },
+          { id: 'hidden', text: 'Do not draw', visible: false },
+        ],
+      },
+    });
+    expect(context.translate).toHaveBeenCalledWith(200, 50);
+    expect(context.fillText).toHaveBeenCalledWith('Editable note', 0, 0);
+    expect(context.fillText).not.toHaveBeenCalledWith('Do not draw', 0, 0);
+    expect(context.roundRect).toHaveBeenCalled();
+    chart.destroy();
+  });
 });
