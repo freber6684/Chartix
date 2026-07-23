@@ -1,0 +1,610 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Explore Chartix charts, customize every detail, and copy production-ready embed code."
+    />
+    <title>Chartix — Modern charts, beautifully simple</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      data-chartix-font="Space Mono"
+      href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css?v=terminal-bars-24" />
+    <script src="../dist/chartix.min.js?v=terminal-bars-24" defer></script>
+    <script src="./app.js?v=terminal-bars-24" defer></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="#" aria-label="Chartix home">
+        <span class="brand-mark" aria-hidden="true">C</span>
+        <span>chartix</span>
+      </a>
+      <nav class="primary-nav" aria-label="Primary navigation">
+        <a href="#gallery">Examples</a>
+        <a href="#features">Features</a>
+        <a href="#chart/bar">Docs</a>
+        <a href="./benchmarks/">Benchmark</a>
+      </nav>
+      <a class="button button-quiet header-cta" href="https://github.com/freber6684/Chartix">
+        GitHub <span aria-hidden="true">↗</span>
+      </a>
+    </header>
+
+    <main>
+      <div id="overview-view">
+        <section class="hero" aria-labelledby="hero-title">
+          <div class="hero-copy">
+            <p class="eyebrow"><span class="status-dot"></span> Open-source · v0.1 alpha</p>
+            <h1 id="hero-title">Charts that look considered.</h1>
+            <p class="hero-lede">
+              A small, accessible charting library with polished defaults and deep customization.
+              Explore every chart, tune it live, then copy the exact code.
+            </p>
+            <div class="hero-actions">
+              <a class="button button-primary" href="#gallery">Explore charts <span>↓</span></a>
+              <button class="button button-secondary" type="button" data-open-chart="bar">
+                Open playground <span>→</span>
+              </button>
+            </div>
+          </div>
+          <div class="hero-console" aria-label="Chartix code example">
+            <div class="console-toolbar">
+              <span><i></i><i></i><i></i></span>
+              <span>revenue-chart.js</span>
+              <span class="console-live">LIVE</span>
+            </div>
+            <pre><code><span class="code-muted">import</span> { Chartix, BarChart } <span class="code-muted">from</span> <span class="code-green">'chartix'</span>;
+
+Chartix.register(BarChart);
+
+<span class="code-muted">new</span> Chartix(canvas, {
+  type: <span class="code-green">'bar'</span>,
+  theme: <span class="code-green">'minimal'</span>,
+  data: revenue,
+  options: {
+    responsive: <span class="code-blue">true</span>,
+    animation: { duration: <span class="code-orange">420</span> }
+  }
+});</code></pre>
+            <div class="console-chart" aria-hidden="true">
+              <span style="--bar: 38%"></span><span style="--bar: 62%"></span
+              ><span style="--bar: 48%"></span><span style="--bar: 77%"></span
+              ><span style="--bar: 92%"></span>
+            </div>
+          </div>
+        </section>
+
+        <section class="trust-strip" aria-label="Library highlights">
+          <div><strong>9.63 KB</strong><span>Gzipped embed</span></div>
+          <div><strong>9</strong><span>Curated themes</span></div>
+          <div><strong>0</strong><span>Runtime dependencies</span></div>
+          <div><strong>147/147</strong><span>Tests passing</span></div>
+        </section>
+
+        <section class="gallery-section" id="gallery" aria-labelledby="gallery-title">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Chart gallery</p>
+              <h2 id="gallery-title">Choose a starting point.</h2>
+              <p>Every example opens into an interactive playground with documentation and code.</p>
+            </div>
+            <div class="filter-group" role="group" aria-label="Filter chart examples">
+              <button class="filter is-active" type="button" data-filter="all">All</button>
+              <button class="filter" type="button" data-filter="cartesian">Cartesian</button>
+              <button class="filter" type="button" data-filter="radial">Radial</button>
+            </div>
+          </div>
+          <div class="chart-grid" id="chart-grid"></div>
+        </section>
+
+        <section class="features-section" id="features" aria-labelledby="features-title">
+          <div class="section-heading compact-heading">
+            <div>
+              <p class="eyebrow">Designed for real products</p>
+              <h2 id="features-title">Small API. Serious control.</h2>
+            </div>
+          </div>
+          <div class="feature-grid">
+            <article>
+              <span class="feature-number">01</span>
+              <h3>Accessible by default</h3>
+              <p>
+                Canvas visuals include useful screen-reader labels and matching semantic data
+                tables.
+              </p>
+            </article>
+            <article>
+              <span class="feature-number">02</span>
+              <h3>One config everywhere</h3>
+              <p>
+                Use the same JSON configuration in TypeScript, a site builder, or a copy-paste
+                embed.
+              </p>
+            </article>
+            <article>
+              <span class="feature-number">03</span>
+              <h3>Made to become yours</h3>
+              <p>
+                Control fonts, palettes, backgrounds, labels, angles, sizing, motion, and themes.
+              </p>
+            </article>
+          </div>
+        </section>
+
+        <section class="cta-panel">
+          <div>
+            <p class="eyebrow light-eyebrow">Start with a chart. Leave with your chart.</p>
+            <h2>Build the exact visual your product needs.</h2>
+          </div>
+          <button class="button button-light" type="button" data-open-chart="line">
+            Launch playground <span>→</span>
+          </button>
+        </section>
+      </div>
+
+      <section id="detail-view" class="detail-view" hidden aria-labelledby="detail-title">
+        <div class="detail-topbar">
+          <button class="back-button" type="button" id="back-to-gallery">
+            <span aria-hidden="true">←</span> All examples
+          </button>
+          <div class="detail-breadcrumb">
+            <span>Examples</span><b>/</b><strong id="detail-crumb"></strong>
+          </div>
+          <span class="alpha-pill">ALPHA</span>
+        </div>
+
+        <div class="detail-heading">
+          <div>
+            <p class="eyebrow" id="detail-category"></p>
+            <h1 id="detail-title"></h1>
+            <p id="detail-summary"></p>
+          </div>
+          <div class="detail-tabs" role="tablist" aria-label="Chart resources">
+            <button class="detail-tab is-active" type="button" role="tab" data-tab="playground">
+              Playground
+            </button>
+            <button class="detail-tab" type="button" role="tab" data-tab="code">Code</button>
+            <button class="detail-tab" type="button" role="tab" data-tab="docs">Docs</button>
+          </div>
+        </div>
+
+        <div class="studio">
+          <aside class="chart-nav" aria-label="Chart examples">
+            <label class="chart-picker" for="chart-type-select">
+              <span>Chart type</span>
+              <select id="chart-type-select" aria-describedby="chart-picker-help"></select>
+            </label>
+            <p id="chart-picker-help" class="chart-picker-help">
+              Switch examples without leaving the playground.
+            </p>
+            <button class="data-import-button" id="open-data-import" type="button">
+              <span aria-hidden="true">↥</span>
+              <span><strong>Import data</strong><small>CSV, JSON, or API</small></span>
+            </button>
+          </aside>
+
+          <div class="preview-column">
+            <section class="bar-design-switcher" id="bar-design-switcher" hidden>
+              <div>
+                <span>Ready-made bar designs</span>
+                <small>Select a preset, customize it, then copy its exact code.</small>
+              </div>
+              <div
+                class="bar-design-tabs"
+                id="bar-design-tabs"
+                role="tablist"
+                aria-label="Bar design examples"
+              ></div>
+            </section>
+            <div class="preview-card">
+              <div class="preview-toolbar">
+                <div><span class="preview-dot"></span><strong>Live preview</strong></div>
+                <div class="preview-breakpoints" aria-label="Responsive preview size">
+                  <button type="button" data-preview-width="390" data-preview-height="520">
+                    Phone
+                  </button>
+                  <button type="button" data-preview-width="768" data-preview-height="640">
+                    Tablet
+                  </button>
+                  <button type="button" data-preview-width="0" data-preview-height="470">
+                    Fluid
+                  </button>
+                  <div class="preview-dimensions" aria-label="Custom chart dimensions">
+                    <label
+                      >W<input id="preview-width-input" type="number" min="280" max="1600"
+                    /></label>
+                    <span>×</span>
+                    <label
+                      >H<input id="preview-height-input" type="number" min="240" max="1200"
+                    /></label>
+                    <button type="button" id="apply-preview-size">Apply</button>
+                  </div>
+                  <span id="preview-size">Fluid · 470px high</span>
+                </div>
+              </div>
+              <div class="preview-stage" id="preview-stage">
+                <div class="playground-canvas" id="playground-canvas"></div>
+              </div>
+            </div>
+            <div class="tip-bar">
+              <span>TIP</span>
+              Changes are applied instantly. Resize the browser to test responsive behavior.
+            </div>
+          </div>
+
+          <aside class="inspector">
+            <section class="tab-panel" data-panel="playground">
+              <div class="inspector-header">
+                <div><span class="panel-icon">✦</span><strong>Customize</strong></div>
+                <button class="text-button reset-button" type="button" id="reset-controls">
+                  Reset to default
+                </button>
+              </div>
+              <form id="chart-controls">
+                <fieldset>
+                  <legend>Appearance</legend>
+                  <label>Theme<select id="control-theme"></select></label>
+                  <div class="control-pair">
+                    <label>Primary<input id="control-primary" type="color" /></label>
+                    <label>Accent<input id="control-accent" type="color" /></label>
+                  </div>
+                  <label>Background<input id="control-background" type="color" /></label>
+                </fieldset>
+                <fieldset>
+                  <legend>Typography</legend>
+                  <label>
+                    Font family
+                    <select id="control-font">
+                      <option value="'Space Mono', monospace">Space Mono</option>
+                      <option value="Inter, sans-serif">Inter</option>
+                      <option value="system-ui, sans-serif">System UI</option>
+                      <option value="Georgia, serif">Editorial serif</option>
+                    </select>
+                  </label>
+                  <label class="range-label"
+                    >Title size <output id="title-size-value"></output>
+                    <input id="control-title-size" type="range" min="13" max="28" value="17" />
+                  </label>
+                  <label class="range-label"
+                    >Label size <output id="label-size-value"></output>
+                    <input id="control-label-size" type="range" min="9" max="18" value="11" />
+                  </label>
+                </fieldset>
+                <fieldset>
+                  <legend>Labels</legend>
+                  <label class="toggle-row"
+                    >Show data labels<input id="control-labels" type="checkbox" /><span></span
+                  ></label>
+                  <label
+                    >Position
+                    <select id="control-position">
+                      <option value="outside">Outside</option>
+                      <option value="inside">Inside</option>
+                      <option value="center">Center</option>
+                    </select>
+                  </label>
+                  <label class="range-label"
+                    >X-axis angle <output id="angle-value"></output>
+                    <input id="control-angle" type="range" min="-60" max="60" value="0" />
+                  </label>
+                  <div class="control-pair">
+                    <label>Label color<input id="control-label-color" type="color" /></label>
+                    <label>Label backing<input id="control-label-background" type="color" /></label>
+                  </div>
+                </fieldset>
+                <fieldset>
+                  <legend>Marks + axes</legend>
+                  <label
+                    >Line style
+                    <select id="control-line-style">
+                      <option value="straight">Straight</option>
+                      <option value="smooth">Smooth spline</option>
+                      <option value="step-after">Step</option>
+                    </select>
+                  </label>
+                  <label class="range-label"
+                    >Border width <output id="border-width-value"></output>
+                    <input id="control-border-width" type="range" min="1" max="8" value="2" />
+                  </label>
+                  <label
+                    >Y scale
+                    <select id="control-y-scale">
+                      <option value="linear">Linear</option>
+                      <option value="logarithmic">Logarithmic</option>
+                      <option value="percentage">Percentage</option>
+                    </select>
+                  </label>
+                  <label class="toggle-row"
+                    >Reverse Y axis<input id="control-reverse-axis" type="checkbox" /><span></span
+                  ></label>
+                  <label class="toggle-row"
+                    >Stack datasets<input id="control-stacked" type="checkbox" /><span></span
+                  ></label>
+                  <label class="toggle-row"
+                    >Fill area<input id="control-fill" type="checkbox" /><span></span
+                  ></label>
+                  <label class="toggle-row"
+                    >Accessible patterns<input id="control-patterns" type="checkbox" /><span></span
+                  ></label>
+                </fieldset>
+                <fieldset>
+                  <legend>Motion + annotations</legend>
+                  <label class="range-label"
+                    >Duration <output id="duration-value"></output>
+                    <input
+                      id="control-duration"
+                      type="range"
+                      min="0"
+                      max="2000"
+                      step="50"
+                      value="420"
+                    />
+                  </label>
+                  <label class="range-label"
+                    >Series stagger <output id="stagger-value"></output>
+                    <input
+                      id="control-stagger"
+                      type="range"
+                      min="0"
+                      max="300"
+                      step="10"
+                      value="60"
+                    />
+                  </label>
+                  <label
+                    >Annotation
+                    <select id="control-annotation">
+                      <option value="none">None</option>
+                      <option value="line">Target line</option>
+                      <option value="box">Highlight box</option>
+                      <option value="point">Point</option>
+                      <option value="arrow">Arrow</option>
+                      <option value="image">Image</option>
+                    </select>
+                  </label>
+                  <label
+                    >Image URL<input
+                      id="control-annotation-image"
+                      type="url"
+                      placeholder="https://…/icon.png"
+                  /></label>
+                </fieldset>
+                <fieldset>
+                  <legend>Interaction</legend>
+                  <label class="toggle-row"
+                    >Show tooltips<input
+                      id="control-tooltips"
+                      type="checkbox"
+                      checked /><span></span
+                  ></label>
+                  <label class="toggle-row"
+                    >Pin tooltip on click<input
+                      id="control-pin-tooltip"
+                      type="checkbox" /><span></span
+                  ></label>
+                  <label class="toggle-row"
+                    >Show crosshair<input id="control-crosshair" type="checkbox" /><span></span
+                  ></label>
+                  <label
+                    >Tooltip mode
+                    <select id="control-interaction-mode">
+                      <option value="nearest">Nearest</option>
+                      <option value="index">Same index</option>
+                      <option value="dataset">Dataset</option>
+                      <option value="intersect">Intersect only</option>
+                    </select>
+                  </label>
+                  <label
+                    >Legend position
+                    <select id="control-legend-position">
+                      <option value="top">Top</option>
+                      <option value="bottom">Bottom</option>
+                      <option value="left">Left</option>
+                      <option value="right">Right</option>
+                      <option value="inside">Inside</option>
+                    </select>
+                  </label>
+                  <label class="toggle-row"
+                    >Enable zoom + pan<input id="control-zoom" type="checkbox" /><span></span
+                  ></label>
+                  <label class="toggle-row"
+                    >HTML legend<input id="control-html-legend" type="checkbox" /><span></span
+                  ></label>
+                  <label
+                    >Drag selection
+                    <select id="control-selection">
+                      <option value="off">Off</option>
+                      <option value="brush">Brush</option>
+                      <option value="lasso">Lasso</option>
+                    </select>
+                  </label>
+                  <button class="copy-button" id="drill-up" type="button">Drill up</button>
+                  <p class="panel-intro">
+                    Hover/tap marks; use arrows, +/−/0 keys, wheel zoom, drag pan, Shift+drag box
+                    zoom, or click January to test drill-down.
+                  </p>
+                </fieldset>
+                <fieldset>
+                  <legend>Accessibility + layout</legend>
+                  <label class="toggle-row"
+                    >Adaptive mobile layout<input
+                      id="control-adaptive"
+                      type="checkbox" /><span></span
+                  ></label>
+                  <label class="toggle-row"
+                    >Right-to-left<input id="control-rtl" type="checkbox" /><span></span
+                  ></label>
+                  <label class="toggle-row"
+                    >High contrast<input id="control-high-contrast" type="checkbox" /><span></span
+                  ></label>
+                  <label class="toggle-row"
+                    >Dyslexia-friendly type<input
+                      id="control-dyslexia"
+                      type="checkbox" /><span></span
+                  ></label>
+                  <label class="toggle-row"
+                    >Screen-reader table<input
+                      id="control-data-table"
+                      type="checkbox"
+                      checked /><span></span
+                  ></label>
+                </fieldset>
+              </form>
+            </section>
+
+            <section class="tab-panel" data-panel="code" hidden>
+              <div class="inspector-header">
+                <div>
+                  <span class="panel-icon">&lt;/&gt;</span><strong>Live configuration</strong>
+                </div>
+                <div class="code-header-actions">
+                  <button class="copy-button" type="button" id="apply-code">Apply</button>
+                  <button class="copy-button" type="button" id="copy-code">Copy embed</button>
+                </div>
+              </div>
+              <p class="panel-intro">
+                Edit this JSON to update the chart. Valid changes also synchronize the visual
+                controls. Invalid JSON is never applied.
+              </p>
+              <div class="export-actions" aria-label="Export chart">
+                <button class="copy-button" type="button" data-export="png">PNG</button>
+                <button class="copy-button" type="button" data-export="jpeg">JPEG</button>
+                <button class="copy-button" type="button" data-export="csv">CSV</button>
+                <button class="copy-button" type="button" data-export="html">Portable HTML</button>
+              </div>
+              <label class="code-editor-label" for="generated-code">Chart configuration</label>
+              <textarea
+                class="generated-code"
+                id="generated-code"
+                rows="28"
+                spellcheck="false"
+                aria-describedby="copy-status"
+              ></textarea>
+              <p class="copy-status" id="copy-status" aria-live="polite"></p>
+            </section>
+
+            <section class="tab-panel docs-panel" data-panel="docs" hidden>
+              <div class="inspector-header">
+                <div><span class="panel-icon">Aa</span><strong>Chart guide</strong></div>
+              </div>
+              <div id="chart-documentation"></div>
+            </section>
+          </aside>
+        </div>
+      </section>
+    </main>
+
+    <dialog class="confirm-dialog" id="reset-dialog" aria-labelledby="reset-dialog-title">
+      <form method="dialog" class="confirm-dialog-card">
+        <div class="confirm-dialog-icon" aria-hidden="true">↺</div>
+        <div>
+          <p class="confirm-dialog-eyebrow">Reset customization</p>
+          <h2 id="reset-dialog-title">Reset <span id="reset-chart-name">this chart</span>?</h2>
+          <p>
+            This returns the design, text, layout, size, and interactions to their original
+            defaults. Your source data will stay unchanged.
+          </p>
+        </div>
+        <div class="confirm-dialog-actions">
+          <button class="button button-quiet" type="button" id="cancel-reset">Keep changes</button>
+          <button class="button confirm-reset-button" type="button" id="confirm-reset">
+            Reset chart
+          </button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog class="data-dialog" id="data-import-dialog" aria-labelledby="data-dialog-title">
+      <form method="dialog" class="data-dialog-card" id="data-import-form">
+        <header class="data-dialog-header">
+          <div>
+            <p class="confirm-dialog-eyebrow">Data workspace</p>
+            <h2 id="data-dialog-title">Connect your data</h2>
+            <p>Bring in rows, then choose the category and numeric fields that build the chart.</p>
+          </div>
+          <button type="button" class="dialog-close" id="close-data-import" aria-label="Close">
+            ×
+          </button>
+        </header>
+        <div class="data-source-tabs" role="tablist" aria-label="Data source">
+          <button type="button" class="is-active" data-data-source="file">Upload file</button>
+          <button type="button" data-data-source="paste">Paste data</button>
+          <button type="button" data-data-source="api">API URL</button>
+        </div>
+        <section class="data-source-panel" data-data-panel="file">
+          <label class="drop-zone" for="data-file-input">
+            <strong>Choose a CSV or JSON file</strong>
+            <span>Files stay in your browser and are not uploaded to a server.</span>
+            <input id="data-file-input" type="file" accept=".csv,.json,text/csv,application/json" />
+          </label>
+        </section>
+        <section class="data-source-panel" data-data-panel="paste" hidden>
+          <label
+            >Paste CSV or a JSON array<textarea
+              id="data-paste-input"
+              rows="9"
+              placeholder="Month,Revenue,Growth\nJan,120,12\nFeb,190,18"
+            ></textarea>
+          </label>
+          <button type="button" class="button" id="parse-pasted-data">Read pasted data</button>
+        </section>
+        <section class="data-source-panel" data-data-panel="api" hidden>
+          <label
+            >Public JSON or CSV endpoint<input
+              id="data-api-input"
+              type="url"
+              placeholder="https://api.example.com/results.json"
+          /></label>
+          <p class="data-help">
+            The endpoint must allow browser access (CORS). JSON can be an array or use a
+            <code>data</code>, <code>results</code>, or <code>items</code> array.
+          </p>
+          <button type="button" class="button" id="load-api-data">Load API data</button>
+        </section>
+        <p class="data-import-status" id="data-import-status" aria-live="polite">
+          Choose a source to inspect its fields.
+        </p>
+        <section class="field-mapper" id="field-mapper" hidden>
+          <div class="field-mapper-heading">
+            <div><strong>Map chart fields</strong><span id="data-row-count"></span></div>
+            <span class="auto-map-badge">Auto-detected</span>
+          </div>
+          <div class="field-mapper-grid">
+            <label>Category / X axis<select id="category-field"></select></label>
+            <fieldset>
+              <legend>Values / Y axis</legend>
+              <div id="value-fields"></div>
+            </fieldset>
+          </div>
+          <div class="data-preview-table" id="data-preview-table"></div>
+        </section>
+        <footer class="data-dialog-actions">
+          <button class="button button-quiet" type="button" id="cancel-data-import">Cancel</button>
+          <button class="button confirm-reset-button" type="button" id="apply-data-import" disabled>
+            Use this data
+          </button>
+        </footer>
+      </form>
+    </dialog>
+
+    <footer class="site-footer">
+      <a class="brand footer-brand" href="#"
+        ><span class="brand-mark">C</span><span>chartix</span></a
+      >
+      <p>Beautiful, accessible charts for the modern web.</p>
+      <div>
+        <a href="https://github.com/freber6684/Chartix">GitHub</a
+        ><a
+          href="https://github.com/freber6684/Chartix/blob/agent/initial-v0.1-foundation/STATUS.md"
+          >Roadmap</a
+        >
+      </div>
+    </footer>
+  </body>
+</html>

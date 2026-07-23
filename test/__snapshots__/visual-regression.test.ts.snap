@@ -1,0 +1,91 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`MVP visual command baselines > 'bar' / 'corporate' 1`] = `"4867dbf3bd2fc3a048c6adeb931bddc065aa8730f5e25b97639b3ec8a0dd877c"`;
+
+exports[`MVP visual command baselines > 'bar' / 'dark' 1`] = `"349dfcd1f21a0669de5488b8bf3b7b342be3392223ec2f7b6b7347be49bd7374"`;
+
+exports[`MVP visual command baselines > 'bar' / 'forest' 1`] = `"8559d454add44648efeb6dcab95a5c139525de0ebb174051b364db840246c306"`;
+
+exports[`MVP visual command baselines > 'bar' / 'light' 1`] = `"bd614172a00460be615bada0a2b57083efa68a9857760c3d14416032d485d9a5"`;
+
+exports[`MVP visual command baselines > 'bar' / 'minimal' 1`] = `"c95eee446f0184f2863e03192a4149391c7b4d1c058f0367d32edcbbd4452371"`;
+
+exports[`MVP visual command baselines > 'bar' / 'ocean' 1`] = `"e020a210bcd3526bd1d6f34d0034efb76b1cebd8f9ed094baa6b498498468984"`;
+
+exports[`MVP visual command baselines > 'bar' / 'rose' 1`] = `"4e64416b3dc288f471d12ce77c0b62a005255ad5ed02cfea8371e439288601fc"`;
+
+exports[`MVP visual command baselines > 'bar' / 'sunset' 1`] = `"0068b5d6c599b46de48652fefc909e824ab9581e9a16f29171ec49be7ba8381c"`;
+
+exports[`MVP visual command baselines > 'bar' / 'vibrant' 1`] = `"cd758f6128bda54ad0c1ece99a4e9061af4767cd2808c0776448eba5330ed02e"`;
+
+exports[`MVP visual command baselines > 'doughnut' / 'corporate' 1`] = `"1420d598036f6e7a3c497c8afe50f667cc06b8b971901cd17f449634c5f18bc7"`;
+
+exports[`MVP visual command baselines > 'doughnut' / 'dark' 1`] = `"e08ca9a5732da0532d3adef79dc5f26ee14f4f5aa795247491be4bb006403cd0"`;
+
+exports[`MVP visual command baselines > 'doughnut' / 'forest' 1`] = `"8356f7c353fc862f67c27cb07a74b84fce48ba67d1f311b1a45df76191a67a92"`;
+
+exports[`MVP visual command baselines > 'doughnut' / 'light' 1`] = `"94cfb45e3719deec900de1c89c8c1d58a5e7b60d763c112abc52b4a78d58d062"`;
+
+exports[`MVP visual command baselines > 'doughnut' / 'minimal' 1`] = `"e2730befed61a39e531a404a675126923c22d41d6be76ae206899b68b2e5f564"`;
+
+exports[`MVP visual command baselines > 'doughnut' / 'ocean' 1`] = `"0190f966aaa73a59a17d544333c8df10f511d1a6dd686edb4beb978864ea673b"`;
+
+exports[`MVP visual command baselines > 'doughnut' / 'rose' 1`] = `"e6540c749379b3328acdd70a79018a25365cfa2aa7d186eb80cc9db62816c750"`;
+
+exports[`MVP visual command baselines > 'doughnut' / 'sunset' 1`] = `"ec79772dcdd80d8ae2f756ee21bab9524fb21c2b512aca18511f55549fb08fdc"`;
+
+exports[`MVP visual command baselines > 'doughnut' / 'vibrant' 1`] = `"e632f46eebb9b005b3b6769654b1aaee82a753c9b7033445fb41af7120a65b13"`;
+
+exports[`MVP visual command baselines > 'line' / 'corporate' 1`] = `"8efabd605562cc676a8958d34efcc9e02290227589b37b221b205c7f103ba904"`;
+
+exports[`MVP visual command baselines > 'line' / 'dark' 1`] = `"4d42d88d32f8faa2c51b21604e3a07b92499a77c566d3c1990d0a710ab8b2ccb"`;
+
+exports[`MVP visual command baselines > 'line' / 'forest' 1`] = `"5b5d781334c7dbaed7c524107df142b3fc1e93f1c035b1e37a022bbdcc9f3c78"`;
+
+exports[`MVP visual command baselines > 'line' / 'light' 1`] = `"8b42d7e0ac7c33a02f96ec125db551f2efe06ec8cbf54ceb462a060bb3d8d8ab"`;
+
+exports[`MVP visual command baselines > 'line' / 'minimal' 1`] = `"99e7025537e0b514b688c406dde7e43bea61124dcb9a95cbda11f1d7dae07474"`;
+
+exports[`MVP visual command baselines > 'line' / 'ocean' 1`] = `"1b157b7d971e9139d0b8dc0032a6b04c854f9944bc6fe1c98c831a2f9c18b2b1"`;
+
+exports[`MVP visual command baselines > 'line' / 'rose' 1`] = `"b9ee5c235b4702e65b18f083b34573035ab1c2e9ed79d20cc10175a0cc582f63"`;
+
+exports[`MVP visual command baselines > 'line' / 'sunset' 1`] = `"d4479fbc56f12fc2cd004d2590f67c32d23c056d0abd25f5da8104e7af1788a7"`;
+
+exports[`MVP visual command baselines > 'line' / 'vibrant' 1`] = `"3e056d2a8be4f7065ff81e8512e8bf14ed6fd166c9eab8e16ba9988cd0e05624"`;
+
+exports[`MVP visual command baselines > 'pie' / 'corporate' 1`] = `"d878be2ab5359fd43ec6e5f7ddabc2532dee91f93877b4c1f12fe2788799e58f"`;
+
+exports[`MVP visual command baselines > 'pie' / 'dark' 1`] = `"b110dd32ad12c02960288c4f9c706bd0d38dc47d7392745a766e3a7f212a0e0b"`;
+
+exports[`MVP visual command baselines > 'pie' / 'forest' 1`] = `"879b1c9d075e24dbcc4c013fec436fc059fef1cfad76aa06b3785f91e6aeb3cd"`;
+
+exports[`MVP visual command baselines > 'pie' / 'light' 1`] = `"bb362818a0ac7c8da19447d7cd8680bcdfc53c8e27f5607b6a13d9d462809065"`;
+
+exports[`MVP visual command baselines > 'pie' / 'minimal' 1`] = `"9f7249daa9d26614989a9ec656c17d47c1f29d9c99d1313f439af262e3e8fcdd"`;
+
+exports[`MVP visual command baselines > 'pie' / 'ocean' 1`] = `"e17c0b2e4e062db3edd9843d6738f1a83f2fa95e28fcf6a7d29a2be9367ccaf1"`;
+
+exports[`MVP visual command baselines > 'pie' / 'rose' 1`] = `"61f9db6164fa9c092966652c39b732ae37cf30f3d8fa894042a4d31248d09d2e"`;
+
+exports[`MVP visual command baselines > 'pie' / 'sunset' 1`] = `"aca7a7526732025ee5a054c2e23fee15cd0375b7e3b7d3e2ec1f389afaa20f0f"`;
+
+exports[`MVP visual command baselines > 'pie' / 'vibrant' 1`] = `"240a39d5fb58b0c6bcef13988a9d1bd8fdedcf8c9e0bdbf04fb86f85e988eddf"`;
+
+exports[`MVP visual command baselines > 'scatter' / 'corporate' 1`] = `"1ae398415f3b806a323144ef5b9b1da25a3586c0b4338bc4edaf4f5a37b53083"`;
+
+exports[`MVP visual command baselines > 'scatter' / 'dark' 1`] = `"ad24213a1a25333ca2b9752258b8aae1077c0bc834a8a337e823f75f4ef6df5a"`;
+
+exports[`MVP visual command baselines > 'scatter' / 'forest' 1`] = `"bd6a08ed9b9e8b75fb789837bf050ea012f0c633724f31d279cf11adedb2ad03"`;
+
+exports[`MVP visual command baselines > 'scatter' / 'light' 1`] = `"1fc85ba170b7af5b250ce8002f70fb0a1fd1d11eaf737f9123aa8a64bdb459e0"`;
+
+exports[`MVP visual command baselines > 'scatter' / 'minimal' 1`] = `"43bcfc3faca23fbc9bab7788ebf52c3ef5f0c8a907357b536fc2313521faaaf8"`;
+
+exports[`MVP visual command baselines > 'scatter' / 'ocean' 1`] = `"4a89920efb04b46af55baaafc43f95e6d2c565686a6b9c47f880bc398c539ac0"`;
+
+exports[`MVP visual command baselines > 'scatter' / 'rose' 1`] = `"8e07c023f09d8a31c6da60f5ca0916b4448c0de19cbd43cdfe220e2e8b4dd8cd"`;
+
+exports[`MVP visual command baselines > 'scatter' / 'sunset' 1`] = `"d278c377229f1bcab340e1f7d858e5b144fa658c87f6edbf047d6fc06079a689"`;
+
+exports[`MVP visual command baselines > 'scatter' / 'vibrant' 1`] = `"53aef85265830ebf6805166a1eb7075550f92f648d41f3d189ecbb37b8aa0ca4"`;
