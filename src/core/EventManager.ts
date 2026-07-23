@@ -5,6 +5,7 @@ export type GestureMode = 'box' | 'brush' | 'lasso' | 'pan';
 
 interface EventManagerCallbacks {
   regions: () => readonly HitRegion[];
+  size: { width: number; height: number };
   mode: () => 'nearest' | 'dataset' | 'index' | 'intersect' | (string & {});
   gestureMode: (event: PointerEvent) => GestureMode | undefined;
   onActive: (regions: HitRegion[]) => void;
@@ -51,14 +52,13 @@ export class EventManager {
 
   private point(event: PointerEvent | WheelEvent): Point {
     const rect = this.canvas.getBoundingClientRect();
-    // Renderer coordinates are CSS pixels. The canvas may itself be visually scaled by
-    // a responsive preview, so map through its declared logical size instead of the
-    // current device-pixel ratio (which can change when a window moves between screens).
-    const logicalWidth = Number.parseFloat(this.canvas.style.width) || this.canvas.clientWidth;
-    const logicalHeight = Number.parseFloat(this.canvas.style.height) || this.canvas.clientHeight;
+    // Hit regions use renderer coordinates. Read those dimensions directly instead of
+    // inferring them from inline CSS: responsive containers, borders, transforms, and
+    // percentage sizes can all make a CSS string differ from the rendered chart space.
+    const { width, height } = this.callbacks.size;
     return {
-      x: rect.width ? ((event.clientX - rect.left) * logicalWidth) / rect.width : 0,
-      y: rect.height ? ((event.clientY - rect.top) * logicalHeight) / rect.height : 0,
+      x: rect.width ? ((event.clientX - rect.left) * width) / rect.width : 0,
+      y: rect.height ? ((event.clientY - rect.top) * height) / rect.height : 0,
     };
   }
 
@@ -156,10 +156,10 @@ export class EventManager {
       }
     } else if (event.key === '+' || event.key === '=') {
       event.preventDefault();
-      this.callbacks.onWheel(-1, { x: this.canvas.clientWidth / 2, y: 0 });
+      this.callbacks.onWheel(-1, { x: this.callbacks.size.width / 2, y: 0 });
     } else if (event.key === '-') {
       event.preventDefault();
-      this.callbacks.onWheel(1, { x: this.canvas.clientWidth / 2, y: 0 });
+      this.callbacks.onWheel(1, { x: this.callbacks.size.width / 2, y: 0 });
     } else if (event.key === '0') {
       event.preventDefault();
       this.callbacks.onReset();

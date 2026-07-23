@@ -9,7 +9,7 @@ describe('advanced interaction utilities', () => {
     const canvas = document.createElement('canvas');
     parent.append(canvas);
     document.body.append(parent);
-    const tooltip = new Tooltip(canvas);
+    const tooltip = new Tooltip(canvas, { width: 640, height: 400 });
     tooltip.show(
       [
         {

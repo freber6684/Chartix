@@ -6,7 +6,10 @@ export class Tooltip {
   private readonly element: HTMLDivElement;
   private pinned = false;
 
-  public constructor(private readonly canvas: HTMLCanvasElement) {
+  public constructor(
+    private readonly canvas: HTMLCanvasElement,
+    private readonly logicalSize: { width: number; height: number },
+  ) {
     const parent = canvas.parentElement;
     this.element = document.createElement('div');
     this.element.className = 'chartix-tooltip';
@@ -79,8 +82,7 @@ export class Tooltip {
     const parent = this.element.parentElement;
     const canvasRect = this.canvas.getBoundingClientRect();
     const parentRect = parent?.getBoundingClientRect();
-    const logicalWidth = Number.parseFloat(this.canvas.style.width) || this.canvas.clientWidth;
-    const logicalHeight = Number.parseFloat(this.canvas.style.height) || this.canvas.clientHeight;
+    const { width: logicalWidth, height: logicalHeight } = this.logicalSize;
     const displayX =
       (parentRect ? canvasRect.left - parentRect.left : 0) +
       (primary.x * canvasRect.width) / logicalWidth;

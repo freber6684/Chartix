@@ -249,10 +249,11 @@ export class Chartix {
     };
     this.renderer = new CanvasRenderer(canvas);
     this.runPlugins('beforeInit');
-    this.tooltip = new Tooltip(canvas);
+    this.tooltip = new Tooltip(canvas, this.renderer);
     this.resetZoomButton = this.createResetZoomButton();
     this.eventManager = new EventManager(canvas, {
       regions: () => this.regions,
+      size: this.renderer,
       mode: () =>
         this.config.options.interaction?.mode ??
         (this.config.options.interaction?.intersect === false ? 'nearest' : 'intersect'),
