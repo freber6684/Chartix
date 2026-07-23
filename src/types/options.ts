@@ -475,6 +475,8 @@ export interface BarTrackOptions {
   color?: string;
   /** Optional accessible texture for the remaining track. */
   pattern?: 'diagonal' | 'dots' | 'crosshatch';
+  /** Limit the texture to the unfilled portion so it cannot show through translucent bars. */
+  patternPlacement?: 'full' | 'remainder';
   /** Track corner radius in CSS pixels. */
   cornerRadius?: number;
 }

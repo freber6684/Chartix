@@ -207,7 +207,13 @@ const barDesignExamples = [
       exportToolbar: { enabled: false },
       cornerRadius: 0,
       barGapRatio: 0.62,
-      barTrack: { enabled: true, color: '#43f17a', pattern: 'dots', cornerRadius: 0 },
+      barTrack: {
+        enabled: true,
+        color: '#43f17a',
+        pattern: 'dots',
+        patternPlacement: 'remainder',
+        cornerRadius: 0,
+      },
       dataLabels: {
         show: true,
         position: 'outside',
@@ -1278,6 +1284,7 @@ function freshEditor(chart) {
     barTrackEnabled: Boolean(chart.options.barTrack?.enabled),
     barTrackColor: chart.options.barTrack?.color ?? '#e2e8f0',
     barTrackPattern: chart.options.barTrack?.pattern ?? 'none',
+    barTrackPatternPlacement: chart.options.barTrack?.patternPlacement ?? 'full',
     barTrackRadius: chart.options.barTrack?.cornerRadius ?? chart.options.cornerRadius ?? 8,
     categoryMode:
       (horizontal
@@ -1585,7 +1592,17 @@ function renderControls() {
                   ['crosshatch', 'Crosshatch'],
                 ],
                 editor.barTrackPattern,
-              )}</select></label>${rangeControl('Track roundness', 'barTrackRadius', editor.barTrackRadius, 0, 30, 1, 'px')}`
+              )}</select></label>${
+                editor.barTrackPattern === 'none'
+                  ? ''
+                  : `<label>Texture coverage<select data-setting="barTrackPatternPlacement">${selectOptions(
+                      [
+                        ['remainder', 'Unfilled remainder only'],
+                        ['full', 'Full track'],
+                      ],
+                      editor.barTrackPatternPlacement,
+                    )}</select></label>`
+              }${rangeControl('Track roundness', 'barTrackRadius', editor.barTrackRadius, 0, 30, 1, 'px')}`
             : ''
         }${
           caps.barSpacing
@@ -2119,6 +2136,9 @@ function currentConfig() {
       enabled: editor.barTrackEnabled,
       color: editor.barTrackColor,
       ...(editor.barTrackPattern === 'none' ? {} : { pattern: editor.barTrackPattern }),
+      ...(editor.barTrackPattern === 'none'
+        ? {}
+        : { patternPlacement: editor.barTrackPatternPlacement }),
       cornerRadius: Number(editor.barTrackRadius),
     };
   } else {

@@ -1,6 +1,6 @@
 # Chartix project status
 
-Last updated: 2026-07-22
+Last updated: 2026-07-23
 
 Latest testable version: `0.1.0-alpha.2`
 
@@ -20,6 +20,7 @@ changes so the next session can resume without reconstructing history.
 - [x] Add shared light/dark design tokens, readable numeric scales, and reduced-motion support.
 - [x] Implement grouped vertical and horizontal bar charts with rounded gradient bars.
 - [x] Add configurable category and grouped-series spacing to vertical and horizontal bars.
+- [x] Add remainder-only bar-track textures so terminal/progress designs keep clean value fills.
 - [x] Add automatic/categorical/continuous dense-axis modes with adjustable label density while
       preserving every chart mark.
 - [x] Add customizable export-action typography, button styling, icon URLs/sizing, text/icon modes,

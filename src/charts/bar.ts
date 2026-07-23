@@ -123,6 +123,9 @@ function renderVertical(context: ChartRenderContext): void {
         const trackTarget = scale.project(scale.max);
         const trackY = Math.min(baseline, trackTarget);
         const trackHeight = Math.abs(trackTarget - baseline);
+        const remainderOnly = Boolean(track.pattern && track.patternPlacement === 'remainder');
+        const remainderY = Math.min(targetY, trackTarget);
+        const remainderHeight = Math.abs(trackTarget - targetY);
         const trackColor = track.color ?? theme.grid;
         const trackFill =
           track.pattern && renderer.pattern
@@ -134,9 +137,9 @@ function renderVertical(context: ChartRenderContext): void {
             : trackColor;
         renderer.roundedRect(
           x,
-          trackY,
+          remainderOnly ? remainderY : trackY,
           drawnWidth,
-          trackHeight,
+          remainderOnly ? remainderHeight : trackHeight,
           Math.max(0, track.cornerRadius ?? radius),
           trackFill,
         );
@@ -388,6 +391,9 @@ function renderHorizontal(context: ChartRenderContext): void {
         const trackTarget = scale.project(scale.max);
         const trackX = Math.min(baseline, trackTarget);
         const trackWidth = Math.abs(trackTarget - baseline);
+        const remainderOnly = Boolean(track.pattern && track.patternPlacement === 'remainder');
+        const remainderX = Math.min(targetX, trackTarget);
+        const remainderWidth = Math.abs(trackTarget - targetX);
         const trackColor = track.color ?? theme.grid;
         const trackFill =
           track.pattern && renderer.pattern
@@ -398,9 +404,9 @@ function renderHorizontal(context: ChartRenderContext): void {
               )
             : trackColor;
         renderer.roundedRect(
-          trackX,
+          remainderOnly ? remainderX : trackX,
           y,
-          trackWidth,
+          remainderOnly ? remainderWidth : trackWidth,
           drawnHeight,
           Math.max(0, track.cornerRadius ?? radius),
           trackFill,

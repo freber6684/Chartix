@@ -212,6 +212,33 @@ describe('built-in chart modules', () => {
     }
   });
 
+  it('limits textured tracks to the unfilled remainder of vertical and horizontal bars', () => {
+    for (const horizontal of [false, true]) {
+      const renderer = new RecordingRenderer();
+      const value = context(renderer);
+      value.options = {
+        horizontal,
+        showGrid: false,
+        dataLabels: { show: false },
+        scales: { x: { display: false }, y: { display: false, min: 0, max: 100 } },
+        barTrack: {
+          enabled: true,
+          color: '#43f17a',
+          pattern: 'dots',
+          patternPlacement: 'remainder',
+        },
+      };
+      BarChart.render(value);
+
+      const trackSizes = renderer.rectangleSizes.filter((_, index) => index % 2 === 0);
+      expect(trackSizes).toHaveLength(3);
+      trackSizes.forEach((track) => {
+        if (horizontal) expect(track.width).toBeLessThan(value.plot.width);
+        else expect(track.height).toBeLessThan(value.plot.height);
+      });
+    }
+  });
+
   it('renders a styled kicker above the chart title', () => {
     const renderer = new RecordingRenderer();
     const value = context(renderer);
